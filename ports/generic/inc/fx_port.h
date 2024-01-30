@@ -217,7 +217,7 @@ typedef unsigned long long                      ULONG64;
 
 #ifdef FX_SYSTEM_INIT
 CHAR                            _fx_version_id[] = 
-                                    "Copyright (c) Microsoft Corporation. All rights reserved.  *  FileX Generic Version 6.4.0 *";
+                                    "Copyright (c) 2024 Microsoft Corporation.  *  FileX Generic Version 6.4.0 *";
 #else
 extern  CHAR                    _fx_version_id[];
 #endif
