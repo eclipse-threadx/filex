@@ -344,7 +344,7 @@ extern VOID fault_tolerant_apply_log_callback(struct FX_MEDIA_STRUCT *media_ptr,
 
 #ifdef FX_SYSTEM_INIT
 CHAR                            _fx_version_id[] = 
-                                    "Copyright (c) Microsoft Corporation. All rights reserved.  *  FileX Linux/GCC Version 6.4.0 *";
+                                    "Copyright (c) 2024 Microsoft Corporation.  *  FileX Linux/GCC Version 6.4.0 *";
 #else
 extern  CHAR                    _fx_version_id[];
 #endif
