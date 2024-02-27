@@ -25,7 +25,7 @@
 /*  APPLICATION INTERFACE DEFINITION                       RELEASE        */
 /*                                                                        */
 /*    fx_api.h                                            PORTABLE C      */
-/*                                                           6.4.0        */
+/*                                                           6.4.1        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    William E. Lamie, Microsoft Corporation                             */
@@ -86,6 +86,9 @@
 /*  12-31-2023     Xiuwen Cai               Modified comment(s), and      */
 /*                                            updated product constants,  */
 /*                                            resulting in version 6.4.0  */
+/*  03-01-2024      Tiejun Zhou             Modified comment(s),          */
+/*                                            update version number,      */
+/*                                            resulting in version 6.4.1  */
 /*                                                                        */
 /**************************************************************************/
 
@@ -135,7 +138,7 @@ extern   "C" {
 #define AZURE_RTOS_FILEX
 #define FILEX_MAJOR_VERSION     6
 #define FILEX_MINOR_VERSION     4
-#define FILEX_PATCH_VERSION     0
+#define FILEX_PATCH_VERSION     1
 
 /* Define the following symbols for backward compatibility */
 #define EL_PRODUCT_FILEX
