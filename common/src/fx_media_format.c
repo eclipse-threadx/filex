@@ -443,17 +443,24 @@ UINT   sectors_per_fat, f, s;
     _fx_utility_memory_set(&byte_ptr[j + i], ' ', (11 - i));
 #endif /* FX_DISABLE_FORCE_MEMORY_OPERATION */
 
-
+/* Set bootrecord signature. */
 #ifdef FX_FORCE_512_BYTE_BOOT_SECTOR
-
-    /* Set bootrecord signature.  */
-    byte_ptr[510] = 0x55;
-    byte_ptr[511] = 0xAA;
+    /* Put the boot signature in the standard position. */
+    byte_ptr[FX_SIG_OFFSET] = FX_SIG_BYTE_1;
+    byte_ptr[FX_SIG_OFFSET + 1] = FX_SIG_BYTE_2;
 #else
-
-    /* Set bootrecord signature.  */
-    byte_ptr[bytes_per_sector - 2] = 0x55;
-    byte_ptr[bytes_per_sector - 1] = 0xAA;
+    if (bytes_per_sector < 512)
+    {
+        /*  Put the boot signature at the end of the sector. */
+        byte_ptr[bytes_per_sector - 2] = FX_SIG_BYTE_1;
+        byte_ptr[bytes_per_sector - 1] = FX_SIG_BYTE_2;
+    }
+    else
+    {
+        /* Put the boot signature in the standard position. */
+        byte_ptr[FX_SIG_OFFSET] = FX_SIG_BYTE_1;
+        byte_ptr[FX_SIG_OFFSET + 1] = FX_SIG_BYTE_2;
+    }
 #endif
 
     /* Select the boot record write command.  */
