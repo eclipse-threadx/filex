@@ -517,8 +517,8 @@ UINT   sectors_per_fat, f, s;
         byte_ptr[487] =  0x61;
 
         /* Build the final signature word, this too is used to help verify that this is a FSINFO sector.  */
-        byte_ptr[508] =  0x55;
-        byte_ptr[509] =  0xAA;
+        byte_ptr[FX_SIG_OFFSET] = FX_SIG_BYTE_1;
+        byte_ptr[FX_SIG_OFFSET + 1] = FX_SIG_BYTE_2;
 
         /* Setup the total available clusters on the media. We need to subtract 1 for the FAT32 root directory.  */
         _fx_utility_32_unsigned_write(&byte_ptr[488], (total_clusters - 1));
