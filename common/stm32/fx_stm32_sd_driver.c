@@ -1,14 +1,12 @@
-/**************************************************************************/
-/*                                                                        */
-/*       Partial Copyright (c) Microsoft Corporation. All rights reserved.*/
-/*                                                                        */
-/*       This software is licensed under the Microsoft Software License   */
-/*       Terms for Microsoft Azure RTOS. Full text of the license can be  */
-/*       found in the LICENSE file at https://aka.ms/AzureRTOS_EULA       */
-/*       and in the root directory of this software.                      */
-/*      Partial Copyright (c) STMicroelctronics 2020. All rights reserved */
-/**************************************************************************/
-
+/***************************************************************************
+ * Copyright (c) 2024 Microsoft Corporation 
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the MIT License which is available at
+ * https://opensource.org/licenses/MIT.
+ * 
+ * SPDX-License-Identifier: MIT
+ **************************************************************************/
 
 /* Include necessary system files.  */
 #include "fx_stm32_sd_driver.h"
