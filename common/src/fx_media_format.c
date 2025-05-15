@@ -443,17 +443,24 @@ UINT   sectors_per_fat, f, s;
     _fx_utility_memory_set(&byte_ptr[j + i], ' ', (11 - i));
 #endif /* FX_DISABLE_FORCE_MEMORY_OPERATION */
 
-
+/* Set bootrecord signature. */
 #ifdef FX_FORCE_512_BYTE_BOOT_SECTOR
-
-    /* Set bootrecord signature.  */
-    byte_ptr[510] = 0x55;
-    byte_ptr[511] = 0xAA;
+    /* Put the boot signature in the standard position. */
+    byte_ptr[FX_SIG_OFFSET] = FX_SIG_BYTE_1;
+    byte_ptr[FX_SIG_OFFSET + 1] = FX_SIG_BYTE_2;
 #else
-
-    /* Set bootrecord signature.  */
-    byte_ptr[bytes_per_sector - 2] = 0x55;
-    byte_ptr[bytes_per_sector - 1] = 0xAA;
+    if (bytes_per_sector < 512)
+    {
+        /*  Put the boot signature at the end of the sector. */
+        byte_ptr[bytes_per_sector - 2] = FX_SIG_BYTE_1;
+        byte_ptr[bytes_per_sector - 1] = FX_SIG_BYTE_2;
+    }
+    else
+    {
+        /* Put the boot signature in the standard position. */
+        byte_ptr[FX_SIG_OFFSET] = FX_SIG_BYTE_1;
+        byte_ptr[FX_SIG_OFFSET + 1] = FX_SIG_BYTE_2;
+    }
 #endif
 
     /* Select the boot record write command.  */
@@ -510,8 +517,8 @@ UINT   sectors_per_fat, f, s;
         byte_ptr[487] =  0x61;
 
         /* Build the final signature word, this too is used to help verify that this is a FSINFO sector.  */
-        byte_ptr[508] =  0x55;
-        byte_ptr[509] =  0xAA;
+        byte_ptr[FX_SIG_OFFSET] = FX_SIG_BYTE_1;
+        byte_ptr[FX_SIG_OFFSET + 1] = FX_SIG_BYTE_2;
 
         /* Setup the total available clusters on the media. We need to subtract 1 for the FAT32 root directory.  */
         _fx_utility_32_unsigned_write(&byte_ptr[488], (total_clusters - 1));
