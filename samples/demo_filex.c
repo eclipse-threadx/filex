@@ -50,7 +50,7 @@ FX_FILE         my_file;
 #ifndef FX_STANDALONE_ENABLE
 CHAR            *ram_disk_memory;
 #else
-unsigned char   ram_disk_memory[256*512];
+unsigned char   ram_disk_memory[TOTAL_SECTORS*SECTOR_SIZE];
 #endif
 
 /* Define ThreadX global data structures.  */
