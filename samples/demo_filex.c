@@ -157,7 +157,7 @@ CHAR  local_buffer[30];
             printf("RAM disk open failed, error: %x\n", status);
             return; 
         }
-    }
+    
 
 #ifdef FX_ENABLE_FAULT_TOLERANT
         status = fx_fault_tolerant_enable(&ram_disk, fault_tolerant_memory, sizeof(fault_tolerant_memory));
