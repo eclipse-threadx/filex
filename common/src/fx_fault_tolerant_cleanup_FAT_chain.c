@@ -207,7 +207,7 @@ ULONG                        last_FAT_sector;
 
     /* At this point, the head_cluster points to the cluster chain that is to be removed. */
 
-    /* Tail cluster points to the back of the origianal FAT chain where the new chain is attached to.
+    /* Tail cluster points to the back of the original FAT chain where the new chain is attached to.
        The remove process terminates once this cluster is encountered. */
     tail_cluster = _fx_utility_32_unsigned_read((UCHAR *)&FAT_chain -> fx_fault_tolerant_FAT_chain_insertion_back);
 
@@ -262,7 +262,10 @@ ULONG                        last_FAT_sector;
             {
                 if (head_cluster == next_session || next_session == FX_FREE_CLUSTER)
                 {
-                    next_session = next_cluster;
+                    /* Do not start another session if this is the end of the chain.  */
+                    if(next_cluster != tail_cluster) {
+                        next_session = next_cluster;
+                    }
                 }
                 break;
             }
@@ -277,7 +280,10 @@ ULONG                        last_FAT_sector;
         /* Get next session. */
         if (cache_count == cache_max)
         {
-            next_session = next_cluster;
+            /* Do not start another session if this is the end of the chain.  */
+            if(next_cluster != tail_cluster) {
+                next_session = next_cluster;
+            }
         }
 
         /* Update head cluster and next session into log file. */
