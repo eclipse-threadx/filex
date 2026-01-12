@@ -138,9 +138,9 @@ extern   "C" {
 #define AZURE_RTOS_FILEX
 #define FILEX_MAJOR_VERSION     6
 #define FILEX_MINOR_VERSION     4
-#define FILEX_PATCH_VERSION     2
-#define FILEX_BUILD_VERSION     202503
-#define FILEX_HOTFIX_VERSION    ''
+#define FILEX_PATCH_VERSION     5
+#define FILEX_BUILD_VERSION     202504
+#define FILEX_HOTFIX_VERSION    ' '
 
 /* Define the following symbols for backward compatibility */
 #define EL_PRODUCT_FILEX
