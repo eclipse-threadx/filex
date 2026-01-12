@@ -261,9 +261,11 @@ FX_INT_SAVE_AREA
     FX_TRACE_IN_LINE_INSERT(FX_TRACE_MEDIA_OPEN, media_ptr, media_driver, memory_ptr, memory_size, FX_TRACE_MEDIA_EVENTS, 0, 0)
 
     /* Initialize the supplied media I/O driver.  First, build the
-       initialize driver request.  */
+       initialize driver request. Set the fx_media_driver_status to FX_MEDIA_NOT_OPEN
+       to let the driver understand that the request is issued from a fx_media_open() call.
+    */
     media_ptr -> fx_media_driver_request =              FX_DRIVER_INIT;
-    media_ptr -> fx_media_driver_status =               FX_IO_ERROR;
+    media_ptr -> fx_media_driver_status =               FX_MEDIA_NOT_OPEN;
     media_ptr -> fx_media_driver_info =                 driver_info_ptr;
     media_ptr -> fx_media_driver_write_protect =        FX_FALSE;
     media_ptr -> fx_media_driver_free_sector_update =   FX_FALSE;
