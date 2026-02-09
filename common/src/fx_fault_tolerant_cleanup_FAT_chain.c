@@ -263,7 +263,8 @@ ULONG                        last_FAT_sector;
                 if (head_cluster == next_session || next_session == FX_FREE_CLUSTER)
                 {
                     /* Do not start another session if this is the end of the chain.  */
-                    if(next_cluster != tail_cluster) {
+                    if (next_cluster != tail_cluster)
+                    {
                         next_session = next_cluster;
                     }
                 }
@@ -281,7 +282,8 @@ ULONG                        last_FAT_sector;
         if (cache_count == cache_max)
         {
             /* Do not start another session if this is the end of the chain.  */
-            if(next_cluster != tail_cluster) {
+            if (next_cluster != tail_cluster)
+            {
                 next_session = next_cluster;
             }
         }
