@@ -40,7 +40,7 @@ static UCHAR                    *thread_buffer;
 #else
 static UCHAR                    cache_buffer[CACHE_SIZE];
 static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE];
-#endif 
+#endif
 static CHAR                     write_buffer[2048];
 static UINT                     i;
 

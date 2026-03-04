@@ -1,10 +1,11 @@
 /***************************************************************************
- * Copyright (c) 2024 Microsoft Corporation 
- * 
+ * Copyright (c) 2024 Microsoft Corporation
+ * Copyright (C) 2026-present Eclipse ThreadX contributors
+ *
  * This program and the accompanying materials are made available under the
  * terms of the MIT License which is available at
  * https://opensource.org/licenses/MIT.
- * 
+ *
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
@@ -61,12 +62,6 @@
 /*  CALLED BY                                                             */
 /*                                                                        */
 /*    _fx_fault_tolerant_cleanup_FAT_chain                                */
-/*                                                                        */
-/*  RELEASE HISTORY                                                       */
-/*                                                                        */
-/*    DATE              NAME                      DESCRIPTION             */
-/*                                                                        */
-/*  10-31-2022     Tiejun Zhou              Initial Version 6.2.0         */
 /*                                                                        */
 /**************************************************************************/
 static UINT _fx_utility_FAT_entry_multiple_sectors_check(FX_MEDIA *media_ptr, ULONG cluster)
@@ -157,18 +152,6 @@ ULONG FAT_sector;
 /*                                                                        */
 /*    _fx_fault_tolerant_apply_logs                                       */
 /*    _fx_fault_tolerant_recover                                          */
-/*                                                                        */
-/*  RELEASE HISTORY                                                       */
-/*                                                                        */
-/*    DATE              NAME                      DESCRIPTION             */
-/*                                                                        */
-/*  05-19-2020     William E. Lamie         Initial Version 6.0           */
-/*  09-30-2020     William E. Lamie         Modified comment(s),          */
-/*                                            resulting in version 6.1    */
-/*  10-31-2022     Tiejun Zhou              Modified comment(s),          */
-/*                                            fixed FAT entry span two    */
-/*                                            sectors for FAT12,          */
-/*                                            resulting in version 6.2.0  */
 /*                                                                        */
 /**************************************************************************/
 UINT    _fx_fault_tolerant_cleanup_FAT_chain(FX_MEDIA *media_ptr, UINT operation)

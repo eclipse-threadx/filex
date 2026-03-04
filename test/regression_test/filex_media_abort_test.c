@@ -60,13 +60,13 @@ void    filex_media_abort_application_define(void *first_unused_memory)
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -75,7 +75,7 @@ UCHAR    *pointer;
     cache_buffer =  pointer;
     pointer =  pointer + CACHE_SIZE;
     cache_buffer2 =  pointer;
-    pointer =  pointer + CACHE_SIZE;   
+    pointer =  pointer + CACHE_SIZE;
     ram_disk_memory =  pointer;
     pointer =  pointer + (256 * 128);
     ram_disk_memory2 =  pointer;
@@ -106,20 +106,20 @@ UCHAR       local_buffer[32];
     printf("FileX Test:   Media abort test.......................................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            256,                    // Total sectors 
-                            128,                    // Sector size   
+                            256,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -128,7 +128,7 @@ UCHAR       local_buffer[32];
         printf("ERROR!\n");
         test_control_return(2);
     }
-    
+
     /* try to abort before the media has been opened */
     status =  fx_media_abort(&ram_disk);
     if (status != FX_MEDIA_NOT_OPEN)
@@ -230,7 +230,7 @@ UCHAR       local_buffer[32];
         printf("ERROR!\n");
         test_control_return(9);
     }
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
@@ -351,36 +351,36 @@ UCHAR       local_buffer[32];
     }
 
     /* Format the media. This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            256,                    // Total sectors 
-                            128,                    // Sector size   
+                            256,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
-    
+                            1);                     // Sectors per track
+
     /* Format the second media.  This needs to be done before opening it!  */
-    status +=  fx_media_format(&ram_disk2, 
+    status +=  fx_media_format(&ram_disk2,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory2,        // RAM disk memory pointer
                             cache_buffer2,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            256,                    // Total sectors 
-                            128,                    // Sector size   
+                            256,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -434,50 +434,50 @@ UCHAR       local_buffer[32];
         printf("ERROR!\n");
         test_control_return(15);
     }
-    
+
     /* Now abort the media with a file open and with another media instance open.  */
     status = fx_media_abort(&ram_disk);
     status += fx_media_abort(&ram_disk2);
-    
+
     /* Check the media abort status.  */
     if (status != FX_SUCCESS)
     {
 
         printf("ERROR!\n");
         test_control_return(16);
-    }    
+    }
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            256,                    // Total sectors 
-                            128,                    // Sector size   
+                            256,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
-    
+                            1);                     // Sectors per track
+
     /* Format the second media.  This needs to be done before opening it!  */
-    status +=  fx_media_format(&ram_disk2, 
+    status +=  fx_media_format(&ram_disk2,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory2,        // RAM disk memory pointer
                             cache_buffer2,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            256,                    // Total sectors 
-                            128,                    // Sector size   
+                            256,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -514,7 +514,7 @@ UCHAR       local_buffer[32];
     /* Abort both media pointers.  */
     status = fx_media_abort(&ram_disk2);
     status += fx_media_abort(&ram_disk);
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {

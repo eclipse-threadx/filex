@@ -1,10 +1,11 @@
 /***************************************************************************
- * Copyright (c) 2024 Microsoft Corporation 
- * 
+ * Copyright (c) 2024 Microsoft Corporation
+ * Copyright (C) 2026-present Eclipse ThreadX contributors
+ *
  * This program and the accompanying materials are made available under the
  * terms of the MIT License which is available at
  * https://opensource.org/licenses/MIT.
- * 
+ *
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
@@ -36,59 +37,6 @@
 /*    high-performance FileX FAT compatible embedded file system.         */
 /*    All service prototypes and data structure definitions are defined   */
 /*    in this file.                                                       */
-/*                                                                        */
-/*  RELEASE HISTORY                                                       */
-/*                                                                        */
-/*    DATE              NAME                      DESCRIPTION             */
-/*                                                                        */
-/*  05-19-2020     William E. Lamie         Initial Version 6.0           */
-/*  09-30-2020     William E. Lamie         Modified comment(s), and      */
-/*                                            updated product constants,  */
-/*                                            and added conditionals to   */
-/*                                            disable few declarations    */
-/*                                            for code size reduction,    */
-/*                                            resulting in version 6.1    */
-/*  11-09-2020     William E. Lamie         Modified comment(s),          */
-/*                                            resulting in version 6.1.2  */
-/*  12-31-2020     William E. Lamie         Modified comment(s), and      */
-/*                                            updated product constants,  */
-/*                                            resulting in version 6.1.3  */
-/*  03-02-2021     William E. Lamie         Modified comment(s), and      */
-/*                                            added standalone support,   */
-/*                                            resulting in version 6.1.5  */
-/*  04-02-2021     William E. Lamie         Modified comment(s), and      */
-/*                                            updated product constants,  */
-/*                                            resulting in version 6.1.6  */
-/*  06-02-2021     William E. Lamie         Modified comment(s), and      */
-/*                                            updated product constants,  */
-/*                                            resulting in version 6.1.7  */
-/*  08-02-2021     William E. Lamie         Modified comment(s), and      */
-/*                                            updated product constants,  */
-/*                                            resulting in version 6.1.8  */
-/*  01-31-2022     Bhupendra Naphade        Modified comment(s),  fixed   */
-/*                                            errors without cache,       */
-/*                                            resulting in version 6.1.10 */
-/*  04-25-2022     William E. Lamie         Modified comment(s), and      */
-/*                                            updated product constants,  */
-/*                                            resulting in version 6.1.11 */
-/*  07-29-2022     William E. Lamie         Modified comment(s), and      */
-/*                                            updated product constants,  */
-/*                                            resulting in version 6.1.12 */
-/*  10-31-2022     Xiuwen Cai               Modified comment(s), and      */
-/*                                            updated product constants,  */
-/*                                            resulting in version 6.2.0  */
-/*  03-08-2023     Xiuwen Cai               Modified comment(s), and      */
-/*                                            updated product constants,  */
-/*                                            resulting in version 6.2.1  */
-/*  10-31-2023     Xiuwen Cai               Modified comment(s), and      */
-/*                                            updated product constants,  */
-/*                                            resulting in version 6.3.0  */
-/*  12-31-2023     Xiuwen Cai               Modified comment(s), and      */
-/*                                            updated product constants,  */
-/*                                            resulting in version 6.4.0  */
-/*  03-01-2024      Tiejun Zhou             Modified comment(s),          */
-/*                                            update version number,      */
-/*                                            resulting in version 6.4.1  */
 /*                                                                        */
 /**************************************************************************/
 

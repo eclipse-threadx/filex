@@ -73,14 +73,14 @@ void    filex_unicode_application_define(void *first_unused_memory)
 {
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
 
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -117,20 +117,20 @@ UINT        i;
     printf("FileX Test:   Unicode test...........................................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             100,                    // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -139,10 +139,10 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(1);
     }
-    
+
     /* try to do all the unicode commands before the media is opened to generate an error */
     length = 1;
-    
+
     /* short name get */
     status = fx_unicode_short_name_get(&ram_disk, directory_name, length, (CHAR *) destination_name);
     if (status != FX_MEDIA_NOT_OPEN)
@@ -150,7 +150,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(2);
     }
-    
+
     /* Call extended version of short name get.  */
     status = fx_unicode_short_name_get_extended(&ram_disk, directory_name, length, (CHAR*)destination_name, sizeof(destination_name));
     if (status != FX_MEDIA_NOT_OPEN)
@@ -202,7 +202,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(6);
     }
-    
+
     /* try to create a directory while the media is write protected */
     ram_disk.fx_media_driver_write_protect = FX_TRUE;
     status = fx_unicode_directory_create(&ram_disk,  directory_name, length, (CHAR *) destination_name);
@@ -211,7 +211,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(7);
     }
-    
+
     /* try to create a file while the media is write protected */
     status =  fx_unicode_file_create(&ram_disk, short_unicode_name, length, (CHAR *) destination_name);
     if (status != FX_WRITE_PROTECT)
@@ -231,7 +231,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(9);
     }
-    
+
     /* name get */
     status = fx_unicode_name_get(FX_NULL, (CHAR *) destination_name, destination_name, &length);
     if (status != FX_PTR_ERROR)
@@ -248,7 +248,7 @@ UINT        i;
         test_control_return(11);
     }
 #endif /* FX_DISABLE_ERROR_CHECKING */
-    
+
     /* Create the a short and long unicode file name.  */
     length =  fx_unicode_length_get(short_unicode_name);
     status =  fx_unicode_file_create(&ram_disk, short_unicode_name, length, (CHAR *) destination_name);
@@ -270,7 +270,7 @@ UINT        i;
     /* Try to create the same name again - this should result in an error!  */
     length =  fx_unicode_length_get(long_unicode_name);
     status += fx_unicode_file_create(&ram_disk, long_unicode_name, length, (CHAR *) destination_name);
-    
+
     /* Check for expected error.  */
     if (status != FX_ALREADY_CREATED)
     {
@@ -280,7 +280,7 @@ UINT        i;
         test_control_return(14);
     }
 
-    /* Try creating a unicode name twice... this should result in an error as well.  */    
+    /* Try creating a unicode name twice... this should result in an error as well.  */
     length =  fx_unicode_length_get(short_unicode_name);
     status =  fx_unicode_file_create(&ram_disk, short_unicode_name, length, (CHAR *) destination_name);
 
@@ -308,7 +308,7 @@ UINT        i;
     length =  fx_unicode_length_get(directory_name);
     status =  fx_unicode_directory_create(&ram_disk,  directory_name, length, (CHAR *) destination_name);
     status += fx_file_create(&ram_disk, "qrstuvwxyz");
-    
+
     /* Check for erros.  */
     if (status != FX_SUCCESS)
     {
@@ -374,7 +374,7 @@ UINT        i;
     length =  fx_unicode_length_get(short_unicode_name);
     status += fx_unicode_short_name_get(&ram_disk, short_unicode_name, length, (CHAR *) destination_name);
     status += fx_unicode_name_get(&ram_disk, (CHAR *) destination_name, destination_name, &length);
-    
+
     /* Check for errors.  */
     if ((status) || (length != fx_unicode_length_get(short_unicode_name)))
     {
@@ -388,7 +388,7 @@ UINT        i;
     length =  fx_unicode_length_get(long_unicode_name);
     status += fx_unicode_short_name_get(&ram_disk, long_unicode_name, length, (CHAR *) destination_name);
     status += fx_unicode_name_get(&ram_disk, (CHAR *) destination_name, destination_name, &length);
-    
+
     /* Check for errors.  */
     if ((status) || (length != fx_unicode_length_get(long_unicode_name)))
     {
@@ -402,7 +402,7 @@ UINT        i;
     length =  fx_unicode_length_get(directory_name);
     status += fx_unicode_short_name_get(&ram_disk, directory_name, length, (CHAR *) destination_name);
     status += fx_unicode_name_get(&ram_disk, (CHAR *) destination_name, destination_name, &length);
-    
+
     /* Check for errors.  */
     if ((status) || (length != fx_unicode_length_get(directory_name)))
     {
@@ -419,11 +419,11 @@ UINT        i;
     status += fx_file_delete(&ram_disk, "abcdefghijklmnop");
     length =  fx_unicode_length_get(long_unicode_name);
     status += fx_unicode_short_name_get(&ram_disk, long_unicode_name, length, (CHAR *) destination_name);
-    status += fx_file_delete(&ram_disk, (CHAR *) destination_name);    
+    status += fx_file_delete(&ram_disk, (CHAR *) destination_name);
     length =  fx_unicode_length_get(short_unicode_name);
     status += fx_unicode_short_name_get(&ram_disk, short_unicode_name, length, (CHAR *) destination_name);
-    status += fx_file_delete(&ram_disk, (CHAR *) destination_name);             
-    
+    status += fx_file_delete(&ram_disk, (CHAR *) destination_name);
+
     /* Check for erros.  */
     if (status != FX_SUCCESS)
     {
@@ -434,14 +434,14 @@ UINT        i;
     }
 
 
-   /* Move the directory default back to the root.  */    
+   /* Move the directory default back to the root.  */
     status += fx_directory_default_set(&ram_disk, "/");
 
     /* Test the short/long name get routines with the short unicode name.  */
     length =  fx_unicode_length_get(short_unicode_name);
     status += fx_unicode_short_name_get(&ram_disk, short_unicode_name, length, (CHAR *) destination_name);
     status += fx_unicode_name_get(&ram_disk, (CHAR *) destination_name, destination_name, &length);
-    
+
     /* Check for errors.  */
     if ((status) || (length != fx_unicode_length_get(short_unicode_name)))
     {
@@ -455,7 +455,7 @@ UINT        i;
     length =  fx_unicode_length_get(long_unicode_name);
     status += fx_unicode_short_name_get(&ram_disk, long_unicode_name, length, (CHAR *) destination_name);
     status += fx_unicode_name_get(&ram_disk, (CHAR *) destination_name, destination_name, &length);
-    
+
     /* Check for errors.  */
     if ((status) || (length != fx_unicode_length_get(long_unicode_name)))
     {
@@ -469,7 +469,7 @@ UINT        i;
     length =  fx_unicode_length_get(directory_name);
     status += fx_unicode_short_name_get(&ram_disk, directory_name, length, (CHAR *) destination_name);
     status += fx_unicode_name_get(&ram_disk, (CHAR *) destination_name, destination_name, &length);
-    
+
     /* Check for errors.  */
     if ((status) || (length != fx_unicode_length_get(directory_name)))
     {
@@ -486,7 +486,7 @@ UINT        i;
     status += fx_file_delete(&ram_disk, "abcdefghijklmnop");
     length =  fx_unicode_length_get(long_unicode_name);
     status += fx_unicode_short_name_get(&ram_disk, long_unicode_name, length, (CHAR *) destination_name);
-    status += fx_file_delete(&ram_disk, (CHAR *) destination_name);    
+    status += fx_file_delete(&ram_disk, (CHAR *) destination_name);
     length =  fx_unicode_length_get(short_unicode_name);
     status += fx_unicode_short_name_get(&ram_disk, short_unicode_name, length, (CHAR *) destination_name);
     status += fx_file_delete(&ram_disk, (CHAR *) destination_name);

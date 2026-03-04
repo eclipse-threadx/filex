@@ -102,19 +102,19 @@ static void    ftest_0_entry(ULONG thread_input)
 
     /* Format the media.  This needs to be done before opening it!  */
     status = fx_media_format(&ram_disk,
-        _fx_ram_driver,         // Driver entry            
+        _fx_ram_driver,         // Driver entry
         ram_disk_memory_large,  // RAM disk memory pointer
         cache_buffer,           // Media buffer pointer
-        CACHE_SIZE,             // Media buffer size 
+        CACHE_SIZE,             // Media buffer size
         "MY_RAM_DISK",          // Volume Name
         1,                      // Number of FATs
         32,                     // Directory Entries
         0,                      // Hidden sectors
-        70000,                  // Total sectors 
-        128,                    // Sector size   
+        70000,                  // Total sectors
+        128,                    // Sector size
         1,                      // Sectors per cluster
         1,                      // Heads
-        1);                     // Sectors per track 
+        1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     status = fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
@@ -136,36 +136,36 @@ static void    ftest_0_entry(ULONG thread_input)
     return_if_fail( status == FX_SUCCESS);
 
     /* Test for creating direcoty with same name as volume" */
-    
+
     /* Format the media.  This needs to be done before opening it!  */
     status = fx_media_format(&ram_disk,
-        _fx_ram_driver,         // Driver entry            
+        _fx_ram_driver,         // Driver entry
         ram_disk_memory_large,  // RAM disk memory pointer
         cache_buffer,           // Media buffer pointer
-        CACHE_SIZE,             // Media buffer size 
+        CACHE_SIZE,             // Media buffer size
         "MY_RAM_DISK",          // Volume Name
         1,                      // Number of FATs
         32,                     // Directory Entries
         0,                      // Hidden sectors
-        70000,                  // Total sectors 
-        128,                    // Sector size   
+        70000,                  // Total sectors
+        128,                    // Sector size
         1,                      // Sectors per cluster
         1,                      // Heads
-        1);                     // Sectors per track 
+        1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     status = fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
-    
+
     status =  fx_media_volume_set(&ram_disk, VOLUME_LABEL);
     return_if_fail( status == FX_SUCCESS);
 
     status =  fx_media_flush(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     status =   fx_directory_create(&ram_disk, VOLUME_LABEL);
     return_if_fail( status == FX_SUCCESS);
-    
+
     status =  fx_media_flush(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 

@@ -47,13 +47,13 @@ void    filex_unicode_file_directory_rename_extra_2_test_application_define(void
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -73,8 +73,8 @@ UCHAR    *pointer;
 }
 
 static UCHAR                    new_file_name[] =  {'a', 0, 'b', 0, 'c', 0, 0, 0};
-static UCHAR                    long_unicode_name1[] =  {1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 9, 0, 10, 0, 11, 0, 12, 0, 13, 0, 14, 0, 0, 0}; 
-static UCHAR                    long_unicode_name2[] =  {2, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 9, 0, 10, 0, 11, 0, 12, 0, 13, 0, 14, 0, 0, 0}; 
+static UCHAR                    long_unicode_name1[] =  {1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 9, 0, 10, 0, 11, 0, 12, 0, 13, 0, 14, 0, 0, 0};
+static UCHAR                    long_unicode_name2[] =  {2, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 9, 0, 10, 0, 11, 0, 12, 0, 13, 0, 14, 0, 0, 0};
 static UCHAR                    destination_name[100];
 
 /* Define the test threads.  */
@@ -92,20 +92,20 @@ FX_LOCAL_PATH local_path;
     printf("FileX Test:   Unicode file directory rename extra 2 test.............");
 
     /* Format the media with FAT32.  This needs to be done before opening it!  */
-    status = fx_media_format(&ram_disk, 
-                              _fx_ram_driver,         // Driver entry            
+    status = fx_media_format(&ram_disk,
+                              _fx_ram_driver,         // Driver entry
                               ram_disk_memory_large,  // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              CACHE_SIZE,             // Media buffer size 
+                              CACHE_SIZE,             // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
-                              70000,                  // Total sectors 
-                              128,                    // Sector size   
+                              70000,                  // Total sectors
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
@@ -122,24 +122,24 @@ FX_LOCAL_PATH local_path;
 #endif
 
     /* Close the media. */
-    status = fx_media_close(&ram_disk); 
+    status = fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     /* Format the media with FAT32.  This needs to be done before opening it!  */
-    status = fx_media_format(&ram_disk, 
-                              _fx_ram_driver,         // Driver entry            
+    status = fx_media_format(&ram_disk,
+                              _fx_ram_driver,         // Driver entry
                               ram_disk_memory_large,  // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              CACHE_SIZE,             // Media buffer size 
+                              CACHE_SIZE,             // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
-                              70000,                  // Total sectors 
-                              128,                    // Sector size   
+                              70000,                  // Total sectors
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
@@ -156,27 +156,27 @@ FX_LOCAL_PATH local_path;
 #endif
 
     /* Close the media. */
-    status = fx_media_close(&ram_disk); 
+    status = fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     fx_media_abort( &ram_disk);
 
     /* Try fx_unicode_direcotry_create this time. */
     /* Format the media with FAT32.  This needs to be done before opening it!  */
-    status += fx_media_format(&ram_disk, 
-                              _fx_ram_driver,         // Driver entry            
+    status += fx_media_format(&ram_disk,
+                              _fx_ram_driver,         // Driver entry
                               ram_disk_memory_large,  // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              CACHE_SIZE,             // Media buffer size 
+                              CACHE_SIZE,             // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
-                              70000,                  // Total sectors 
-                              128,                    // Sector size   
+                              70000,                  // Total sectors
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
@@ -191,27 +191,27 @@ FX_LOCAL_PATH local_path;
     return_if_fail( status == FX_IO_ERROR);
 
     /* Close the media. */
-    status = fx_media_close(&ram_disk); 
+    status = fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     fx_media_abort( &ram_disk);
 
     /* Try fx_unicode_file_rename this time. */
     /* Format the media with FAT32.  This needs to be done before opening it!  */
-    status = fx_media_format(&ram_disk, 
-                              _fx_ram_driver,         // Driver entry            
+    status = fx_media_format(&ram_disk,
+                              _fx_ram_driver,         // Driver entry
                               ram_disk_memory_large,  // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              CACHE_SIZE,             // Media buffer size 
+                              CACHE_SIZE,             // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
-                              70000,                  // Total sectors 
-                              128,                    // Sector size   
+                              70000,                  // Total sectors
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
@@ -231,27 +231,27 @@ FX_LOCAL_PATH local_path;
     return_if_fail( status == FX_IO_ERROR);
 
     /* Close the media. */
-    status = fx_media_close(&ram_disk); 
+    status = fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     fx_media_abort( &ram_disk);
 
     /* Try fx_unicode_file_rename this time. */
     /* Format the media with FAT32.  This needs to be done before opening it!  */
-    status = fx_media_format(&ram_disk, 
-                              _fx_ram_driver,         // Driver entry            
+    status = fx_media_format(&ram_disk,
+                              _fx_ram_driver,         // Driver entry
                               ram_disk_memory_large,  // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              CACHE_SIZE,             // Media buffer size 
+                              CACHE_SIZE,             // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
-                              70000,                  // Total sectors 
-                              128,                    // Sector size   
+                              70000,                  // Total sectors
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
@@ -271,27 +271,27 @@ FX_LOCAL_PATH local_path;
     return_if_fail( status == FX_IO_ERROR);
 
     /* Close the media. */
-    status = fx_media_close(&ram_disk); 
+    status = fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     fx_media_abort( &ram_disk);
 
     /* Try fx_unicode_directory_rename this time. */
     /* Format the media with FAT32.  This needs to be done before opening it!  */
-    status = fx_media_format(&ram_disk, 
-                              _fx_ram_driver,         // Driver entry            
+    status = fx_media_format(&ram_disk,
+                              _fx_ram_driver,         // Driver entry
                               ram_disk_memory_large,  // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              CACHE_SIZE,             // Media buffer size 
+                              CACHE_SIZE,             // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
-                              70000,                  // Total sectors 
-                              128,                    // Sector size   
+                              70000,                  // Total sectors
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
@@ -318,20 +318,20 @@ FX_LOCAL_PATH local_path;
 
     /* Try fx_unicode_directory_rename this time. */
     /* Format the media with FAT32.  This needs to be done before opening it!  */
-    status = fx_media_format(&ram_disk, 
-                              _fx_ram_driver,         // Driver entry            
+    status = fx_media_format(&ram_disk,
+                              _fx_ram_driver,         // Driver entry
                               ram_disk_memory_large,  // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              CACHE_SIZE,             // Media buffer size 
+                              CACHE_SIZE,             // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
-                              70000,                  // Total sectors 
-                              128,                    // Sector size   
+                              70000,                  // Total sectors
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
@@ -357,20 +357,20 @@ FX_LOCAL_PATH local_path;
     fx_media_abort( &ram_disk);
 
     /* Format the media with FAT32.  This needs to be done before opening it!  */
-    status = fx_media_format(&ram_disk, 
-                              _fx_ram_driver,         // Driver entry            
+    status = fx_media_format(&ram_disk,
+                              _fx_ram_driver,         // Driver entry
                               ram_disk_memory_large,  // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              CACHE_SIZE,             // Media buffer size 
+                              CACHE_SIZE,             // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
-                              70000,                  // Total sectors 
-                              128,                    // Sector size   
+                              70000,                  // Total sectors
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
@@ -380,26 +380,26 @@ FX_LOCAL_PATH local_path;
     status = fx_unicode_directory_create( &ram_disk, new_file_name, length, (CHAR *)destination_name);
 
     /* Close the media. */
-    status = fx_media_close(&ram_disk); 
+    status = fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     fx_media_abort( &ram_disk);
 
     /* Format the media with FAT32.  This needs to be done before opening it!  */
-    status = fx_media_format(&ram_disk, 
-                              _fx_ram_driver,    // Driver entry            
+    status = fx_media_format(&ram_disk,
+                              _fx_ram_driver,    // Driver entry
                               ram_disk_memory_large,  // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              CACHE_SIZE,             // Media buffer size 
+                              CACHE_SIZE,             // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
-                              70000,                  // Total sectors 
-                              128,                    // Sector size   
+                              70000,                  // Total sectors
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
@@ -433,26 +433,26 @@ FX_LOCAL_PATH local_path;
 #endif /* FX_ENABLE_FAULT_TOLERANT */
 
     /* Close the media. */
-    status = fx_media_close(&ram_disk); 
+    status = fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     fx_media_abort( &ram_disk);
 
     /* Format the media with FAT32.  This needs to be done before opening it!  */
-    status = fx_media_format(&ram_disk, 
-                              _fx_ram_driver,         // Driver entry            
+    status = fx_media_format(&ram_disk,
+                              _fx_ram_driver,         // Driver entry
                               ram_disk_memory_large,  // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              0,                      // Media buffer size 
+                              0,                      // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
-                              70000,                  // Total sectors 
-                              128,                    // Sector size   
+                              70000,                  // Total sectors
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
@@ -471,26 +471,26 @@ FX_LOCAL_PATH local_path;
 #endif
 
     /* Close the media. */
-    status = fx_media_close(&ram_disk); 
+    status = fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     fx_media_abort( &ram_disk);
 
     /* Format the media with FAT32.  This needs to be done before opening it!  */
-    status = fx_media_format(&ram_disk, 
+    status = fx_media_format(&ram_disk,
                               _fx_ram_driver,         // Driver entry
                               ram_disk_memory_large,  // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              0,                      // Media buffer size 
+                              0,                      // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
                               70000,                  // Total sectors s
-                              128,                    // Sector size   
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
@@ -521,10 +521,10 @@ FX_LOCAL_PATH local_path;
     status = fx_unicode_directory_create( &ram_disk, long_unicode_name1, length, (CHAR *)destination_name);
     long_unicode_name1[0] = temp;
     return_if_fail( status == FX_SUCCESS);
-    
-    status = fx_media_close(&ram_disk); 
+
+    status = fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     printf("SUCCESS!\n");
     test_control_return(0);
 }

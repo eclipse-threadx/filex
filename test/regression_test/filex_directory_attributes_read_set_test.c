@@ -52,13 +52,13 @@ void    filex_directory_attributes_read_set_application_define(void *first_unuse
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -92,20 +92,20 @@ UINT        attributes;
     printf("FileX Test:   Directory attributes read/set test.....................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -114,10 +114,10 @@ UINT        attributes;
         printf("ERROR!\n");
         test_control_return(2);
     }
-    
+
 /* test error checking */
 #ifndef FX_DISABLE_ERROR_CHECKING
-    
+
     /* check directory attributes read null pointer error */
     status = fx_directory_attributes_read(FX_NULL, "TEST_DIR", &attributes);
     if (status != FX_PTR_ERROR)
@@ -125,7 +125,7 @@ UINT        attributes;
         printf("ERROR!\n");
         test_control_return(99);
     }
-    
+
     /* check directory attributes set null pointer error */
     status = fx_directory_attributes_set(FX_NULL, "TEST_DIR", attributes);
     if (status != FX_PTR_ERROR)
@@ -133,7 +133,7 @@ UINT        attributes;
         printf("ERROR!\n");
         test_control_return(99);
     }
-    
+
     /* check directory attributes set null pointer error */
     status = fx_directory_attributes_set(&ram_disk, "TEST_DIR", 0x1111);
     if (status != FX_INVALID_ATTR)
@@ -141,9 +141,9 @@ UINT        attributes;
         printf("ERROR!\n");
         test_control_return(99);
     }
-    
+
 #endif
-    
+
     /* check directory attributes read to make sure it throws an error when the media hasnt been opened */
     status = fx_directory_attributes_read(&ram_disk, "TEST_DIR", &attributes);
     if (status != FX_MEDIA_NOT_OPEN)
@@ -151,7 +151,7 @@ UINT        attributes;
         printf("ERROR!\n");
         test_control_return(99);
     }
-    
+
     /* check directory attributes set to make sure it throws an error when the media hasnt been opened */
     status = fx_directory_attributes_set(&ram_disk, "TEST_DIR", 0x0000);
     if (status != FX_MEDIA_NOT_OPEN)
@@ -207,7 +207,7 @@ UINT        attributes;
         printf("ERROR!\n");
         test_control_return(5);
     }
-    
+
     /* check directory attributes set to make sure it throws an error when the directory is write protected */
     ram_disk.fx_media_driver_write_protect = FX_TRUE;
     status = fx_directory_attributes_set(&ram_disk, "TEST_DIR", attributes);
@@ -217,7 +217,7 @@ UINT        attributes;
         test_control_return(99);
     }
     ram_disk.fx_media_driver_write_protect = FX_FALSE;
-    
+
     /* check directory attributes read to make sure it throws an error when it isnt a directory */
     status = fx_directory_attributes_read(&ram_disk, "NOT_A_DIR", &attributes);
     if (status != FX_NOT_DIRECTORY)
@@ -225,7 +225,7 @@ UINT        attributes;
         printf("ERROR!\n");
         test_control_return(99);
     }
-    
+
     /* check directory attributes read to make sure it throws an error when the directory isnt found */
     status = fx_directory_attributes_read(&ram_disk, "DOES_NOT_EXIST", &attributes);
     if (status == FX_SUCCESS)
@@ -233,7 +233,7 @@ UINT        attributes;
         printf("ERROR!\n");
         test_control_return(99);
     }
-    
+
     /* check directory attributes set to make sure it throws an error when it isnt a directory */
     status = fx_directory_attributes_set(&ram_disk, "NOT_A_DIR", attributes);
     if (status != FX_NOT_DIRECTORY)
@@ -241,7 +241,7 @@ UINT        attributes;
         printf("ERROR!\n");
         test_control_return(99);
     }
-    
+
     /* check directory attributes set to make sure it throws an error when the directory isnt found */
     status = fx_directory_attributes_set(&ram_disk, "DOES_NOT_EXIST", attributes);
     if (status == FX_SUCCESS)
@@ -257,7 +257,7 @@ UINT        attributes;
     status =  fx_directory_attributes_set(&ram_disk, "TEST_DIR", attributes | FX_ARCHIVE | FX_SYSTEM | FX_READ_ONLY | FX_HIDDEN);
 
     /* Check the attributes set status.  */
-    if (status != FX_SUCCESS) 
+    if (status != FX_SUCCESS)
     {
 
         printf("ERROR!\n");
@@ -279,7 +279,7 @@ UINT        attributes;
     }
 
     /* Close the media.  */
-    status =  fx_media_close(&ram_disk);   
+    status =  fx_media_close(&ram_disk);
 
     /* Determine if the test was successful.  */
     if (status != FX_SUCCESS)

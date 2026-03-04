@@ -97,10 +97,10 @@ static UCHAR my_unicode_name1[] =
 #ifndef FX_STANDALONE_ENABLE
 static UCHAR                    *ram_disk_memory;
 static UCHAR                    *cache_buffer;
-static UCHAR                    *fault_tolerant_buffer;   
+static UCHAR                    *fault_tolerant_buffer;
 #else
 static UCHAR                    cache_buffer[CACHE_SIZE];
-static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE]; 
+static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE];
 #endif
 
 
@@ -130,13 +130,13 @@ void    filex_directory_create_delete_application_define(void *first_unused_memo
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -168,7 +168,7 @@ UINT            status;
 ULONG           temp;
 UINT            attributes;
 UINT            i;
-#ifdef EXTENDED_NAME_MANGLE_TEST    
+#ifdef EXTENDED_NAME_MANGLE_TEST
 UINT            j, k, l;
 #endif
 CHAR            *name_ptr;
@@ -181,35 +181,35 @@ FX_DIR_ENTRY    search_directory;
     printf("FileX Test:   Directory create/delete test...........................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
 
-/* We need a larger disk to test the feature of fault tolerant. */                            
+/* We need a larger disk to test the feature of fault tolerant. */
 #ifdef FX_ENABLE_FAULT_TOLERANT
-                            512 * 8,                // Total sectors 
+                            512 * 8,                // Total sectors
                             256,                    // Sector size
                             8,                      // Sectors per cluster
 #else
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
 #endif
 
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Attempt to create a directory before the media is opened to generate an error */
     status = fx_directory_create(&ram_disk, "/A0");
     return_if_fail( status == FX_MEDIA_NOT_OPEN);
-    
+
     /* Attempt to delete a directory before the media is opened to generate an error */
     status = fx_directory_delete(&ram_disk, "/A0");
     return_if_fail( status == FX_MEDIA_NOT_OPEN);
@@ -217,8 +217,8 @@ FX_DIR_ENTRY    search_directory;
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
-    
-/* We need a larger disk to test the feature of fault tolerant. */                            
+
+/* We need a larger disk to test the feature of fault tolerant. */
 #ifdef FX_ENABLE_FAULT_TOLERANT
     /* Enable fault tolerant if FX_ENABLE_FAULT_TOLERANT is defined. */
     status = fx_fault_tolerant_enable(&ram_disk, fault_tolerant_buffer, FAULT_TOLERANT_SIZE);
@@ -231,31 +231,31 @@ FX_DIR_ENTRY    search_directory;
     /* send null pointer to directory create to generate an error */
     status = fx_directory_create(FX_NULL, "/A0");
     return_if_fail( status == FX_PTR_ERROR);
-    
+
     /* directory delete */
     status = fx_directory_delete(FX_NULL, "/A0");
     return_if_fail( status == FX_PTR_ERROR);
 
 #endif /* FX_DISABLE_ERROR_CHECKING */
-    
+
     /* Attempt to create a directory with an invalid name to generate an error */
     status = fx_directory_create(&ram_disk, "");
     return_if_fail( status == FX_INVALID_NAME);
-    
+
     /* Attempt to create a directory with an invalid name to generate an error */
     status = fx_directory_create(&ram_disk, "/A0/error\\error");
     return_if_fail( status == FX_INVALID_PATH);
-    
+
     /* Attempt to create a directory while the media is write protected to generate an error */
     ram_disk.fx_media_driver_write_protect = FX_TRUE;
     status = fx_directory_create(&ram_disk, "/A0");
     return_if_fail( status == FX_WRITE_PROTECT);
-    
+
     /* try to create a directory while the media is write protected to generate an error */
     status = fx_directory_delete(&ram_disk, "/A0");
     return_if_fail( status == FX_WRITE_PROTECT);
     ram_disk.fx_media_driver_write_protect = FX_FALSE;
-    
+
     /* Attempt to create a directory when there is no space to generate an error */
     temp = ram_disk.fx_media_available_clusters;
     ram_disk.fx_media_available_clusters = 0;
@@ -286,13 +286,13 @@ FX_DIR_ENTRY    search_directory;
     status +=  fx_directory_create(&ram_disk, "/A0/A3");
     status +=  fx_directory_create(&ram_disk, "/A0/A4");
     status +=  fx_directory_create(&ram_disk, "/A0/A5");
-    
+
     status +=  fx_directory_create(&ram_disk, "/B0/B1");
     status +=  fx_directory_create(&ram_disk, "/B0/B2");
     status +=  fx_directory_create(&ram_disk, "/B0/B3");
     status +=  fx_directory_create(&ram_disk, "/B0/B4");
     status +=  fx_directory_create(&ram_disk, "/B0/B5");
-    
+
     status +=  fx_directory_create(&ram_disk, "/C0/C1");
     status +=  fx_directory_create(&ram_disk, "/C0/C2");
     status +=  fx_directory_create(&ram_disk, "/C0/C3");
@@ -316,7 +316,7 @@ FX_DIR_ENTRY    search_directory;
     status +=  fx_directory_create(&ram_disk, "/F0/F3");
     status +=  fx_directory_create(&ram_disk, "/F0/F4");
     status +=  fx_directory_create(&ram_disk, "/F0/F5");
-    
+
     status +=  fx_directory_create(&ram_disk, "/G0/G1");
     status +=  fx_directory_create(&ram_disk, "/G0/G2");
     status +=  fx_directory_create(&ram_disk, "/G0/G3");
@@ -335,7 +335,7 @@ FX_DIR_ENTRY    search_directory;
     status +=  fx_directory_create(&ram_disk, "/I0/I4");
     status +=  fx_directory_create(&ram_disk, "/I0/I5");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Now create the third level of sub-directories... */
     status =   fx_directory_create(&ram_disk, "/A0/A1/A00");
     status +=  fx_directory_create(&ram_disk, "/B0/B2/B00");
@@ -347,15 +347,15 @@ FX_DIR_ENTRY    search_directory;
     status +=  fx_directory_create(&ram_disk, "/H0/H2/H00");
     status +=  fx_directory_create(&ram_disk, "/I0/I3/I00");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Attempt to delete something that is not a directory */
     status = fx_directory_delete(&ram_disk, "not_a_dir");
     return_if_fail( status == FX_NOT_DIRECTORY);
-    
+
     /* Attempt to delete a directory that is not empty */
     status = fx_directory_delete(&ram_disk, "/A0");
     return_if_fail( status == FX_DIR_NOT_EMPTY);
-    
+
     /* Attempt to delete a directory that is read only */
     status =  fx_directory_attributes_read(&ram_disk, "/A0/A1/A00", &attributes);
     status += fx_directory_attributes_set(&ram_disk, "/A0/A1/A00", FX_READ_ONLY);
@@ -381,13 +381,13 @@ FX_DIR_ENTRY    search_directory;
     status +=  fx_directory_delete(&ram_disk, "/A0/A3");
     status +=  fx_directory_delete(&ram_disk, "/A0/A4");
     status +=  fx_directory_delete(&ram_disk, "/A0/A5");
-    
+
     status +=  fx_directory_delete(&ram_disk, "/B0/B1");
     status +=  fx_directory_delete(&ram_disk, "/B0/B2");
     status +=  fx_directory_delete(&ram_disk, "/B0/B3");
     status +=  fx_directory_delete(&ram_disk, "/B0/B4");
     status +=  fx_directory_delete(&ram_disk, "/B0/B5");
-    
+
     status +=  fx_directory_delete(&ram_disk, "/C0/C1");
     status +=  fx_directory_delete(&ram_disk, "/C0/C2");
     status +=  fx_directory_delete(&ram_disk, "/C0/C3");
@@ -411,7 +411,7 @@ FX_DIR_ENTRY    search_directory;
     status +=  fx_directory_delete(&ram_disk, "/F0/F3");
     status +=  fx_directory_delete(&ram_disk, "/F0/F4");
     status +=  fx_directory_delete(&ram_disk, "/F0/F5");
-    
+
     status +=  fx_directory_delete(&ram_disk, "/G0/G1");
     status +=  fx_directory_delete(&ram_disk, "/G0/G2");
     status +=  fx_directory_delete(&ram_disk, "/G0/G3");
@@ -452,20 +452,20 @@ FX_DIR_ENTRY    search_directory;
     return_if_fail( status == FX_SUCCESS);
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            4096,                   // Total sectors 
-                            128,                    // Sector size   
+                            4096,                   // Total sectors
+                            128,                    // Sector size
                             2,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Open the ram_disk.  */
@@ -475,7 +475,7 @@ FX_DIR_ENTRY    search_directory;
     /* Create a directory name that is too large.  */
     for (i = 0; i < FX_MAX_LONG_NAME_LEN+1; i++)
     {
-    
+
         name[i] = 'a';
     }
     name[FX_MAX_LONG_NAME_LEN + 1] =  0;
@@ -483,14 +483,14 @@ FX_DIR_ENTRY    search_directory;
     /* Attempt to create a directory with too long of a name.  */
     status = fx_directory_create(&ram_disk, name);
     return_if_fail( status == FX_INVALID_NAME);
-    
+
     /* Attempt to create a directory with no more clusters.  */
     temp =  ram_disk.fx_media_total_clusters;
     ram_disk.fx_media_total_clusters =  0;
     status = fx_directory_create(&ram_disk, "sub1");
     ram_disk.fx_media_total_clusters =  temp;
     return_if_fail( status == FX_NO_MORE_SPACE);
-       
+
     /* Attempt to create a directory with a FAT read error.  */
     _fx_utility_fat_entry_read_error_request =  1;
     status = fx_directory_create(&ram_disk, "sub1");
@@ -553,28 +553,28 @@ FX_DIR_ENTRY    search_directory;
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            4096,                   // Total sectors 
-                            128,                    // Sector size   
+                            4096,                   // Total sectors
+                            128,                    // Sector size
                             2,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Create a series of sub-directories... in preparation for our directory delete checking.  */
     status =  fx_directory_create(&ram_disk, "SUB1");
     status += fx_directory_create(&ram_disk, "SUB2");
@@ -591,32 +591,32 @@ FX_DIR_ENTRY    search_directory;
     status =  fx_directory_delete(&ram_disk, "SUB8");
     _fx_utility_fat_entry_read_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Delete a directory but with a cluster error - bad small value.  */
     _fx_utility_fat_entry_read_error_request =  10001;
     status =  fx_directory_delete(&ram_disk, "SUB8");
     _fx_utility_fat_entry_read_error_request =  0;
     return_if_fail( status == FX_FAT_READ_ERROR);
-    
+
     /* Delete a directory but with a cluster error - bad total clusters.  */
     temp =  ram_disk.fx_media_total_clusters;
     ram_disk.fx_media_total_clusters =  0;
     status =  fx_directory_delete(&ram_disk, "SUB8");
     ram_disk.fx_media_total_clusters =  temp;
     return_if_fail( status == FX_FAT_READ_ERROR);
-    
+
     /* Delete a directory but with a cluster error - same value.  */
     _fx_utility_fat_entry_read_error_request =  30001;
     status =  fx_directory_delete(&ram_disk, "SUB8");
     _fx_utility_fat_entry_read_error_request =  0;
     return_if_fail( status == FX_FAT_READ_ERROR);
-    
+
     /* Delete a directory but with a directory entry read error.  */
     _fx_directory_entry_read_error_request =  1;
     status =  fx_directory_delete(&ram_disk, "SUB8");
     _fx_directory_entry_read_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Delete a directory but with a directory entry write error.  */
     _fx_directory_entry_write_error_request =  1;
     status =  fx_directory_delete(&ram_disk, "SUB8");
@@ -642,20 +642,20 @@ FX_DIR_ENTRY    search_directory;
     status =  fx_directory_delete(&ram_disk, "SUB6");
     _fx_utility_fat_entry_read_error_request =  0;
     return_if_fail( status == FX_FAT_READ_ERROR);
-    
+
     /* Delete a directory but with a cluster error in releasing cluster - bad total clusters.  */
     temp =  ram_disk.fx_media_total_clusters;
     _fx_utility_fat_entry_read_error_request = 40002;
     status =  fx_directory_delete(&ram_disk, "SUB5");
     ram_disk.fx_media_total_clusters =  temp;
     return_if_fail( status == FX_FAT_READ_ERROR);
-    
+
     /* Delete a directory but with a cluster error in releasing cluster - same value.  */
     _fx_utility_fat_entry_read_error_request =  30002;
     status =  fx_directory_delete(&ram_disk, "SUB4");
     _fx_utility_fat_entry_read_error_request =  0;
     return_if_fail( status == FX_FAT_READ_ERROR);
-    
+
     /* Delete a directory but with a FAT write error in releasing cluster.  */
     _fx_utility_fat_entry_write_error_request =  1;
     status =  fx_directory_delete(&ram_disk, "SUB3");
@@ -667,20 +667,20 @@ FX_DIR_ENTRY    search_directory;
     return_if_fail( status == FX_SUCCESS);
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             2,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Open the ram_disk.  */
@@ -689,7 +689,7 @@ FX_DIR_ENTRY    search_directory;
 
     /* Create a sub-directory to work from.  */
     status =  fx_directory_create(&ram_disk, "SUB1");
-    
+
     /* Set the default path here.  */
     status +=  fx_directory_default_set(&ram_disk, "SUB1");
 
@@ -708,16 +708,16 @@ FX_DIR_ENTRY    search_directory;
     name[7] =  '`';
     name[8] =  (CHAR) 128;
     name[9] =  0;
-    
+
     status =  fx_file_create(&ram_disk, name);
     status += fx_file_open(&ram_disk, &file_1, name, FX_OPEN_FOR_WRITE);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Create a name with a bunch of special characters.  */
     status =  fx_file_create(&ram_disk, "name-a_b}{()'!#$&@^%+,;=[]");
     status += fx_file_open(&ram_disk, &file_2, "name-a_b}{()'!#$&@^%+,;=[]", FX_OPEN_FOR_WRITE);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Create a name with an invalid character.  */
     name[0] =  'n';
     name[1] =  'a';
@@ -726,7 +726,7 @@ FX_DIR_ENTRY    search_directory;
     name[4] =  (CHAR) 5;
     name[5] =  '\'';
     name[6] =  0;
-    
+
     status =  fx_file_create(&ram_disk, name);
     return_if_fail( status == FX_INVALID_NAME);
 
@@ -736,7 +736,7 @@ FX_DIR_ENTRY    search_directory;
     status += fx_file_open(&ram_disk, &file_3, "MYLONGERN.AM", FX_OPEN_FOR_WRITE);
     status += fx_file_open(&ram_disk, &file_4, "MY.TXT", FX_OPEN_FOR_WRITE);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Create a set of very short long file name.  */
     status =  fx_file_create(&ram_disk, "n");
     status +=  fx_file_create(&ram_disk, "nW");
@@ -854,7 +854,7 @@ FX_DIR_ENTRY    search_directory;
     _fx_utility_fat_entry_read_error_request = 40064;
     ram_disk.fx_media_cluster_search_start =  ram_disk.fx_media_total_clusters + (FX_FAT_ENTRY_START-1);
     status =  fx_file_create(&ram_disk, name);
-    _fx_utility_fat_entry_read_error_request =  0;    
+    _fx_utility_fat_entry_read_error_request =  0;
     ram_disk.fx_media_total_clusters =  temp;
     return_if_fail( status == FX_NO_MORE_SPACE);
 
@@ -1042,7 +1042,7 @@ FX_DIR_ENTRY    search_directory;
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Set the flag to copy the default format to get NT file name, orphan long file name, and super long file names.  */
     _fx_ram_driver_copy_default_format =  1;
 
@@ -1059,14 +1059,14 @@ FX_DIR_ENTRY    search_directory;
     status += fx_directory_next_entry_find(&ram_disk, name);
     status += fx_file_open(&ram_disk, &file_2, name, FX_OPEN_FOR_WRITE);
     status += fx_directory_next_entry_find(&ram_disk, name);
-    
+
     /* Write to both files, write to them and close them!  */
     status += fx_file_write(&file_1, "abcd", 4);
     status += fx_file_write(&file_2, "abcd", 4);
     status += fx_file_close(&file_1);
     status += fx_file_close(&file_2);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Now look move to the first sub-directory.  */
     status =  fx_directory_default_set(&ram_disk, name);
     status +=  fx_directory_first_entry_find(&ram_disk, name);  /* .  */
@@ -1085,17 +1085,17 @@ FX_DIR_ENTRY    search_directory;
     status += fx_media_volume_get(&ram_disk, volume_name, FX_DIRECTORY_SECTOR);
     status += fx_directory_first_entry_find(&ram_disk, name);  /* ntfile  */
     status += fx_directory_next_entry_find(&ram_disk, name);   /* nt-file~.txt */
-    status += fx_directory_next_entry_find(&ram_disk, name);   
-    status += fx_directory_next_entry_find(&ram_disk, name);   
-    status += fx_directory_next_entry_find(&ram_disk, name);   
-    status += fx_directory_next_entry_find(&ram_disk, name);   
-    status += fx_directory_next_entry_find(&ram_disk, name);   
-    status += fx_directory_next_entry_find(&ram_disk, name);   
+    status += fx_directory_next_entry_find(&ram_disk, name);
+    status += fx_directory_next_entry_find(&ram_disk, name);
+    status += fx_directory_next_entry_find(&ram_disk, name);
+    status += fx_directory_next_entry_find(&ram_disk, name);
+    status += fx_directory_next_entry_find(&ram_disk, name);
+    status += fx_directory_next_entry_find(&ram_disk, name);
 
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Set the flag to copy the default format to get NT file name, orphan long file name, and super long file names.  */
     _fx_ram_driver_copy_default_format =  1;
 
@@ -1110,7 +1110,7 @@ FX_DIR_ENTRY    search_directory;
     status += fx_directory_next_entry_find(&ram_disk, name);
     status += fx_directory_next_entry_find(&ram_disk, name);
     status += fx_file_open(&ram_disk, &file_2, name, FX_OPEN_FOR_WRITE);
-    
+
     /* Write to the shorted file.  */
     status += fx_file_write(&file_2, "abcd", 4);
 
@@ -1119,7 +1119,7 @@ FX_DIR_ENTRY    search_directory;
     status += fx_file_close(&file_2);
     _fx_utility_logical_sector_write_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -1138,7 +1138,7 @@ FX_DIR_ENTRY    search_directory;
     status += fx_directory_next_entry_find(&ram_disk, name);
     status += fx_directory_next_entry_find(&ram_disk, name);
     status += fx_file_open(&ram_disk, &file_2, name, FX_OPEN_FOR_WRITE);
-    
+
     /* Write to the shorted file.  */
     status += fx_file_write(&file_2, "abcd", 4);
 
@@ -1148,7 +1148,7 @@ FX_DIR_ENTRY    search_directory;
     status += fx_file_close(&file_2);
     ram_disk.fx_media_data_sector_start =  temp;
     return_if_fail( status == FX_FILE_CORRUPT);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -1177,7 +1177,7 @@ FX_DIR_ENTRY    search_directory;
     status += fx_file_close(&file_2);
     _fx_utility_logical_sector_read_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -1208,7 +1208,7 @@ FX_DIR_ENTRY    search_directory;
     /* Now close the file, which will write the shorted file entry out.... not that the shorted flag is not in the actual directory entry.  */
     status += fx_file_close(&file_2);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -1251,7 +1251,7 @@ FX_DIR_ENTRY    search_directory;
         printf("ERROR!\n");
         test_control_return(97);
     }
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
 
@@ -1261,7 +1261,7 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(98);
-    }       
+    }
 
 
     /* Set the flag to copy the default format to get NT file name, orphan long file name, and super long file names.  */
@@ -1310,7 +1310,7 @@ FX_DIR_ENTRY    search_directory;
         printf("ERROR!\n");
         test_control_return(100);
     }
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
 
@@ -1320,7 +1320,7 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(101);
-    }       
+    }
 
     /* Set the flag to copy the default format to get NT file name, orphan long file name, and super long file names.  */
     _fx_ram_driver_copy_default_format =  1;
@@ -1368,7 +1368,7 @@ FX_DIR_ENTRY    search_directory;
         printf("ERROR!\n");
         test_control_return(103);
     }
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
 
@@ -1378,24 +1378,24 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(104);
-    }       
+    }
 
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             2,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -1403,8 +1403,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(105);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -1420,41 +1420,41 @@ FX_DIR_ENTRY    search_directory;
     /* Build a sub-directory structure to further test diretory entry read.  */
     status =  fx_directory_create(&ram_disk, "SUB1");
     status += fx_directory_default_set(&ram_disk, "SUB1");
-    status += fx_file_create(&ram_disk, "S1_FL1.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL2.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL3.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL4.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL5.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL6.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL7.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL8.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL9.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL10.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL11.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL12.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL13.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL14.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL15.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL16.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL17.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL18.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL19.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL20.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL21.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL22.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL23.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL24.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL25.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL26.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL27.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL28.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL29.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL30.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL31.TXT");    
-    status += fx_file_create(&ram_disk, "S1_FL32.TXT");    
-    
+    status += fx_file_create(&ram_disk, "S1_FL1.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL2.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL3.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL4.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL5.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL6.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL7.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL8.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL9.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL10.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL11.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL12.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL13.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL14.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL15.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL16.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL17.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL18.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL19.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL20.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL21.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL22.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL23.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL24.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL25.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL26.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL27.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL28.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL29.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL30.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL31.TXT");
+    status += fx_file_create(&ram_disk, "S1_FL32.TXT");
+
     /* Now taverse the directory tree and open files.  */
-    status += fx_directory_first_entry_find(&ram_disk, name);  
+    status += fx_directory_first_entry_find(&ram_disk, name);
     status += fx_directory_next_entry_find(&ram_disk, name);
     status += fx_directory_next_entry_find(&ram_disk, name);
     status += fx_directory_next_entry_find(&ram_disk, name);
@@ -1496,10 +1496,10 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(107);
-    }       
+    }
 
     /* Now go back to the beginning of the directory.  */
-    status += fx_directory_first_entry_find(&ram_disk, name);  
+    status += fx_directory_first_entry_find(&ram_disk, name);
     status += fx_directory_next_entry_find(&ram_disk, name);
     status += fx_directory_next_entry_find(&ram_disk, name);
     status += fx_directory_next_entry_find(&ram_disk, name);
@@ -1520,48 +1520,48 @@ FX_DIR_ENTRY    search_directory;
     status += fx_directory_next_entry_find(&ram_disk, name);
     status += fx_directory_next_entry_find(&ram_disk, name);
     status += fx_directory_next_entry_find(&ram_disk, name);
-    
+
     /* Search with I/O read error.  */
     ram_disk.fx_media_default_path.fx_path_directory.fx_dir_entry_last_search_cluster =  0;  /* Cause cluster traversal.  */
     _fx_utility_fat_entry_read_error_request =  1;
     status += fx_directory_next_entry_find(&ram_disk, name);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* Determine if the expected I/O error is present.  */
     if (status != FX_IO_ERROR)
     {
 
         printf("ERROR!\n");
         test_control_return(108);
-    }       
-    
+    }
+
     /* Search with bad FAT error  - too small.  */
     ram_disk.fx_media_default_path.fx_path_directory.fx_dir_entry_last_search_cluster =  0;  /* Cause cluster traversal.  */
     _fx_utility_fat_entry_read_error_request =  10001;
     status = fx_directory_next_entry_find(&ram_disk, name);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* Determine if the expected I/O error is present.  */
     if (status != FX_FILE_CORRUPT)
     {
 
         printf("ERROR!\n");
         test_control_return(109);
-    }       
-    
+    }
+
     /* Search with bad FAT error  - too small.  */
     ram_disk.fx_media_default_path.fx_path_directory.fx_dir_entry_last_search_cluster =  0;  /* Cause cluster traversal.  */
     _fx_utility_fat_entry_read_error_request =  20001;
     status = fx_directory_next_entry_find(&ram_disk, name);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* Determine if the expected I/O error is present.  */
     if (status != FX_FILE_CORRUPT)
     {
 
         printf("ERROR!\n");
         test_control_return(110);
-    }         
+    }
 
     /* Corrupt the media to test zero divisor checking.  */
     ram_disk.fx_media_bytes_per_sector = 0;
@@ -1588,7 +1588,7 @@ FX_DIR_ENTRY    search_directory;
     status += fx_unicode_file_create(&ram_disk, my_unicode_name, 15, (CHAR *)buffer);
     status += fx_unicode_file_create(&ram_disk, my_unicode_name1, 15, (CHAR *)buffer);
     status += fx_file_create(&ram_disk, name);
-    
+
     /* Set the search to the beginning of the root directory.  */
     status += fx_directory_first_entry_find(&ram_disk, name);
     status += fx_directory_next_entry_find(&ram_disk, name);
@@ -1600,34 +1600,34 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(111);
-    }       
-    
+    }
+
     /* Now generate an error on the root directory size.  */
     temp =  ram_disk.fx_media_root_sectors;
     ram_disk.fx_media_root_sectors  =  1;
     status = fx_directory_next_entry_find(&ram_disk, name);
     ram_disk.fx_media_root_sectors =  temp;
-    
+
     /* Determine if the expected I/O error is present.  */
     if (status != FX_FILE_CORRUPT)
     {
 
         printf("ERROR!\n");
         test_control_return(112);
-    }         
+    }
 
     /* Now generate an error with a logical sector read error.  */
     _fx_utility_logical_sector_read_error_request =  5;
     status = fx_directory_next_entry_find(&ram_disk, name);
     _fx_utility_logical_sector_read_error_request =  0;
-      
+
     /* Determine if the expected I/O error is present.  */
     if (status != FX_IO_ERROR)
     {
 
         printf("ERROR!\n");
         test_control_return(113);
-    }         
+    }
 
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
@@ -1638,23 +1638,23 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(114);
-    }       
-    
+    }
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -1662,8 +1662,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(115);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -1689,7 +1689,7 @@ FX_DIR_ENTRY    search_directory;
     status += fx_file_create(&ram_disk, name);
     status += fx_directory_first_entry_find(&ram_disk, (CHAR *)buffer);
     status += fx_directory_next_entry_find(&ram_disk, (CHAR *)buffer);
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -1698,45 +1698,45 @@ FX_DIR_ENTRY    search_directory;
         printf("ERROR!\n");
         test_control_return(117);
     }
-    
+
     /* Read the first entry, but with a FAT entry error.  */
     _fx_utility_fat_entry_read_error_request =  1;
     status = fx_directory_next_entry_find(&ram_disk, (CHAR *)buffer);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* Determine if the expected I/O error is present.  */
     if (status != FX_IO_ERROR)
     {
 
         printf("ERROR!\n");
         test_control_return(118);
-    }         
+    }
 
     /* Read the first entry, but with a FAT entry error - too small.  */
     _fx_utility_fat_entry_read_error_request =  10001;
     status =  fx_directory_next_entry_find(&ram_disk, (CHAR *)buffer);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* Determine if the expected I/O error is present.  */
     if (status != FX_FILE_CORRUPT)
     {
 
         printf("ERROR!\n");
         test_control_return(119);
-    }         
-    
+    }
+
     /* Read the first entry, but with a FAT entry error - too big.  */
     _fx_utility_fat_entry_read_error_request =  20001;
     status =  fx_directory_next_entry_find(&ram_disk, (CHAR *)buffer);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* Determine if the expected I/O error is present.  */
     if (status != FX_FILE_CORRUPT)
     {
 
         printf("ERROR!\n");
         test_control_return(120);
-    }         
+    }
 
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
@@ -1747,23 +1747,23 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(121);
-    }       
+    }
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             512,                    // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -1771,8 +1771,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(122);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -1796,17 +1796,17 @@ FX_DIR_ENTRY    search_directory;
     _fx_utility_logical_sector_write_error_request =  22;
     status =  fx_file_create(&ram_disk, name);
     _fx_utility_logical_sector_write_error_request =  0;
-    
+
     /* Setup an I/O error on the first logical sectory write of the directory entry.  */
     status += fx_media_flush(&ram_disk);
-    
+
     /* Determine if have the expected I/O error.  */
     if (status != FX_IO_ERROR)
     {
 
         printf("ERROR!\n");
         test_control_return(124);
-    }       
+    }
 
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
@@ -1817,24 +1817,24 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(125);
-    }       
+    }
 
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             512,                    // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -1842,8 +1842,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(126);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -1867,17 +1867,17 @@ FX_DIR_ENTRY    search_directory;
     _fx_utility_logical_sector_read_error_request =  45;
     status =  fx_file_create(&ram_disk, name);
     _fx_utility_logical_sector_read_error_request =  0;
-    
+
     /* Setup an I/O error on the first logical sectory write of the directory entry.  */
     status += fx_media_flush(&ram_disk);
-    
+
     /* Determine if have the expected I/O error.  */
     if (status != FX_IO_ERROR)
     {
 
         printf("ERROR!\n");
         test_control_return(128);
-    }       
+    }
 
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
@@ -1888,23 +1888,23 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(129);
-    }       
+    }
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             512,                    // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -1912,8 +1912,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(130);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -1938,17 +1938,17 @@ FX_DIR_ENTRY    search_directory;
     ram_disk.fx_media_data_sector_start =  ram_disk.fx_media_root_sector_start+1;
     status =  fx_file_create(&ram_disk, name);
     ram_disk.fx_media_data_sector_start =  temp;
-    
+
     /* Setup an I/O error on the first logical sectory write of the directory entry.  */
     status += fx_media_flush(&ram_disk);
-    
+
     /* Determine if have the expected error.  */
     if (status != FX_FILE_CORRUPT)
     {
 
         printf("ERROR!\n");
         test_control_return(132);
-    }       
+    }
 
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
@@ -1959,23 +1959,23 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(133);
-    }       
+    }
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             512,                    // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -1983,8 +1983,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(134);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -2024,17 +2024,17 @@ FX_DIR_ENTRY    search_directory;
     _fx_utility_fat_entry_read_error_request =  14;
     status =  fx_file_create(&ram_disk, name);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* Setup an I/O error on the first logical sectory write of the directory entry.  */
     status += fx_media_flush(&ram_disk);
-    
+
     /* Determine if have the expected error.  */
     if (status != FX_IO_ERROR)
     {
 
         printf("ERROR!\n");
         test_control_return(137);
-    }       
+    }
 
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
@@ -2045,23 +2045,23 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(138);
-    }       
+    }
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             512,                    // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -2069,8 +2069,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(139);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -2110,17 +2110,17 @@ FX_DIR_ENTRY    search_directory;
     _fx_utility_fat_entry_read_error_request =  10014;
     status =  fx_file_create(&ram_disk, name);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* Setup an I/O error on the first logical sectory write of the directory entry.  */
     status += fx_media_flush(&ram_disk);
-    
+
     /* Determine if have the expected error.  */
     if (status != FX_FILE_CORRUPT)
     {
 
         printf("ERROR!\n");
         test_control_return(142);
-    }       
+    }
 
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
@@ -2131,23 +2131,23 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(143);
-    }       
+    }
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             512,                    // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -2155,8 +2155,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(144);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -2196,17 +2196,17 @@ FX_DIR_ENTRY    search_directory;
     _fx_utility_fat_entry_read_error_request =  20014;
     status =  fx_file_create(&ram_disk, name);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* Setup an I/O error on the first logical sectory write of the directory entry.  */
     status += fx_media_flush(&ram_disk);
-    
+
     /* Determine if have the expected error.  */
     if (status != FX_FILE_CORRUPT)
     {
 
         printf("ERROR!\n");
         test_control_return(147);
-    }       
+    }
 
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
@@ -2217,23 +2217,23 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(148);
-    }       
+    }
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             10000,                  // Directory Entries
                             0,                      // Hidden sectors
-                            64000,                  // Total sectors 
-                            128,                    // Sector size   
+                            64000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -2241,8 +2241,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(149);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -2254,7 +2254,7 @@ FX_DIR_ENTRY    search_directory;
         printf("ERROR!\n");
         test_control_return(150);
     }
-    
+
     /* Create a file name that execises the short name with a 0xE5 and a dot less than the eighth character.  */
     status =  fx_file_create(&ram_disk, "a.a");
     status += fx_media_flush(&ram_disk);
@@ -2280,7 +2280,7 @@ FX_DIR_ENTRY    search_directory;
         /* Error, return error code.  */
         printf("ERROR!\n");
         test_control_return(151);
-    }  
+    }
 
     /* Create some files to test the logic in fx_directory_entry_read  */
     status =   fx_file_create(&ram_disk, "a");
@@ -2324,7 +2324,7 @@ FX_DIR_ENTRY    search_directory;
     status +=  fx_file_delete(&ram_disk, "aaaaaa.");
     status +=  fx_file_delete(&ram_disk, "aaaaaaa.");
     status +=  fx_file_delete(&ram_disk, "aaaaaaaa.");
-    
+
     /* Create a name with an 0xe5 in the front.  */
     name[0] =  (CHAR)0xE5;
     name[1] =  'a';
@@ -2346,7 +2346,7 @@ FX_DIR_ENTRY    search_directory;
     status += fx_file_write(&file_1, "1", 1);
     status += fx_file_close(&file_1);
 
-#if EXTENDED_NAME_MANGLE_TEST    
+#if EXTENDED_NAME_MANGLE_TEST
     name[0] = 'a';
     name[1] = 'B';
     name[2] = 'C';
@@ -2366,14 +2366,14 @@ FX_DIR_ENTRY    search_directory;
 
         for (j = 0; j < 10; j++)
         {
-    
+
             name[8] =  '0' + j;
-    
+
             for (k = 0; k < 10; k++)
             {
 
                 name[9] =  '0' + k;
-        
+
                 for (l = 0; l < 10; l++)
                 {
                     if (status)
@@ -2408,26 +2408,26 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(153);
-    }       
-    
-    
+    }
+
+
     /* Test corner cases on fx_directory_search.  */
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             256,                    // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -2435,8 +2435,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(154);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -2448,7 +2448,7 @@ FX_DIR_ENTRY    search_directory;
         printf("ERROR!\n");
         test_control_return(155);
     }
-    
+
     /* Build a long directory structure.  */
     status =  fx_directory_create(&ram_disk, "/sub-directory_depth_00001");
     status += fx_directory_create(&ram_disk, "sub-directory_depth_00001/sub-directory_depth_00002");
@@ -2473,8 +2473,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(156);
-    }       
-    
+    }
+
     status = fx_file_create(&ram_disk, "/sub-directory_depth_00001/sub-directory_depth_00002/sub-directory_depth_00003/sub-directory_depth_00004/sub-directory_depth_00005/sub-directory_depth_00006/sub-directory_depth_00007/sub-directory_depth_00008/sub-directory_depth_00009/sub-directory_depth_00010/sub-directory_depth_00011/file2.txt");
     status += fx_file_open(&ram_disk, &file_2, "/sub-directory_depth_00001/sub-directory_depth_00002/sub-directory_depth_00003/sub-directory_depth_00004/sub-directory_depth_00005/sub-directory_depth_00006/sub-directory_depth_00007/sub-directory_depth_00008/sub-directory_depth_00009/sub-directory_depth_00010/sub-directory_depth_00011/file2.txt", FX_OPEN_FOR_WRITE);
     status += fx_directory_default_set(&ram_disk, "sub-directory_depth_00001/sub-directory_depth_00002/sub-directory_depth_00003/sub-directory_depth_00004/sub-directory_depth_00005/sub-directory_depth_00006/sub-directory_depth_00007/sub-directory_depth_00008/sub-directory_depth_00009/sub-directory_depth_00010/sub-directory_depth_00011");
@@ -2492,23 +2492,23 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(157);
-    }       
+    }
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             256,                    // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -2516,8 +2516,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(158);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -2537,17 +2537,17 @@ FX_DIR_ENTRY    search_directory;
     }
     name[0] =  '/';
     name[256] = 0;
-    
+
     status =  fx_directory_create(&ram_disk, name);
-    
+
     name[256] = '/';
     name[257] = 'f';
     name[258] = 'i';
     name[259] = 'l';
     name[260] = 'e';
     name[261] = 0;
-   
-    status += fx_file_create(&ram_disk, name);   
+
+    status += fx_file_create(&ram_disk, name);
     status += fx_file_open(&ram_disk, &file_1, name, FX_OPEN_FOR_WRITE);
     status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
     status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
@@ -2561,7 +2561,7 @@ FX_DIR_ENTRY    search_directory;
     status += fx_file_close(&file_1);
     status += fx_file_open(&ram_disk, &file_1, &name[1], FX_OPEN_FOR_WRITE);
     status += fx_file_close(&file_1);
-    status += fx_file_delete(&ram_disk, name);   
+    status += fx_file_delete(&ram_disk, name);
 
     /* Build a perfect fit long sub-directory name and file name...  This name will fit exactly into the fx_directory_search cache.  */
     for (i = 0; i < FX_MAX_LONG_NAME_LEN; i++)
@@ -2570,33 +2570,33 @@ FX_DIR_ENTRY    search_directory;
     }
     name[0] =  '/';
     name[250] = 0;
-    
+
     status += fx_directory_create(&ram_disk, name);
-    
+
     name[250] = '/';
     name[251] = 'f';
     name[252] = 'i';
     name[253] = 'l';
     name[254] = 'e';
     name[255] = 0;
-   
-    status =  fx_file_create(&ram_disk, name);   
-    status += fx_file_open(&ram_disk, &file_1, name, FX_OPEN_FOR_WRITE);
-    status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
-    status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
-    status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
-    status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
-    status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
-    status += fx_file_close(&file_1);
-    status += fx_file_open(&ram_disk, &file_1, &name[1], FX_OPEN_FOR_WRITE);
-    status += fx_file_close(&file_1);
-    status += fx_file_open(&ram_disk, &file_1, name, FX_OPEN_FOR_WRITE);
-    status += fx_file_close(&file_1);
-    status += fx_file_open(&ram_disk, &file_1, &name[1], FX_OPEN_FOR_WRITE);
-    status += fx_file_close(&file_1);
-    status =  fx_file_delete(&ram_disk, name);   
 
-    
+    status =  fx_file_create(&ram_disk, name);
+    status += fx_file_open(&ram_disk, &file_1, name, FX_OPEN_FOR_WRITE);
+    status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
+    status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
+    status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
+    status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
+    status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
+    status += fx_file_close(&file_1);
+    status += fx_file_open(&ram_disk, &file_1, &name[1], FX_OPEN_FOR_WRITE);
+    status += fx_file_close(&file_1);
+    status += fx_file_open(&ram_disk, &file_1, name, FX_OPEN_FOR_WRITE);
+    status += fx_file_close(&file_1);
+    status += fx_file_open(&ram_disk, &file_1, &name[1], FX_OPEN_FOR_WRITE);
+    status += fx_file_close(&file_1);
+    status =  fx_file_delete(&ram_disk, name);
+
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
 
@@ -2606,24 +2606,24 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(160);
-    }       
+    }
 
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             256,                    // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -2631,8 +2631,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(161);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -2654,17 +2654,17 @@ FX_DIR_ENTRY    search_directory;
     name[0] =  '/';
     name[255] =  0;
     status += fx_directory_create(&ram_disk, name);
-   
-    
+
+
     name[253] = 0;
-    
+
     status += fx_directory_create(&ram_disk, name);
-    
+
     name[253] = '/';
     name[254] = 'a';
     name[255] = 0;
-   
-    status =  fx_file_create(&ram_disk, name);   
+
+    status =  fx_file_create(&ram_disk, name);
     status += fx_file_open(&ram_disk, &file_1, name, FX_OPEN_FOR_WRITE);
     status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
     status += fx_file_close(&file_1);
@@ -2682,8 +2682,8 @@ FX_DIR_ENTRY    search_directory;
     name[258] = 'a';
     name[259] = 0;
     _fx_directory_search(&ram_disk, name, &dir_entry, &search_directory, &name_ptr);
-    
-    
+
+
     /* Set the name back to the original size.  */
     name[255] =  0;
     status += fx_file_open(&ram_disk, &file_1, name, FX_OPEN_FOR_WRITE);
@@ -2692,26 +2692,26 @@ FX_DIR_ENTRY    search_directory;
 
     /* Now make the name long again to test relative, no path.  */
     name[255] =  'a';
-    
+
     /* Now let's perform a maximum relative search.  */
     _fx_directory_search(&ram_disk, &name[1], &dir_entry, &search_directory, &name_ptr);
-        
+
 
     /* Now lets set a path and test that out.  */
     name[253] =  0;
     status += fx_directory_default_set(&ram_disk, name);
-    
+
     /* Now set the name back to the original size.  */
     name[253] =  '/';
     name[255] =  0;
-    
+
     status += fx_file_open(&ram_disk, &file_1, name, FX_OPEN_FOR_WRITE);
     status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
     status += fx_file_close(&file_1);
 
     /* Now make the name long again to test relative, with path.  */
     name[255] =  'a';
-    
+
     /* Now let's perform a maximum relative search.  */
     _fx_directory_search(&ram_disk, &name[1], &dir_entry, &search_directory, &name_ptr);
 
@@ -2720,11 +2720,11 @@ FX_DIR_ENTRY    search_directory;
     name[254] =  'a';
     name[255] =  0;
     status += fx_directory_default_set(&ram_disk, name);
-    
+
     /* Now set the name back to the original size.  */
     name[253] =  '/';
     name[255] =  0;
-    
+
     status += fx_file_open(&ram_disk, &file_1, name, FX_OPEN_FOR_WRITE);
     status += fx_directory_short_name_get(&ram_disk, name, (CHAR *)buffer);
     status += fx_file_close(&file_1);
@@ -2736,11 +2736,11 @@ FX_DIR_ENTRY    search_directory;
     }
     ram_disk.fx_media_last_found_name[0] =  '/';
     name[255] =  'a';
-    name[256] =  0;  
+    name[256] =  0;
 
     /* Now let's perform a maximum relative search.  */
     _fx_directory_search(&ram_disk, &name[1], &dir_entry, &search_directory, &name_ptr);
-                
+
     /* Now let's setup a directory search with a NULL path, a maximum found file name, and alternate directory separators.  */
     ram_disk.fx_media_default_path.fx_path_name_buffer[0] =  0;
     strcpy(&ram_disk.fx_media_last_found_name[0], "\\abc\\def\\ghi\\abc");
@@ -2749,7 +2749,7 @@ FX_DIR_ENTRY    search_directory;
         ram_disk.fx_media_last_found_file_name[i] =  'a';
         ram_disk.fx_media_last_found_directory.fx_dir_entry_name[i] = 'a';
     }
-    ram_disk.fx_media_last_found_file_name[255] =  0;    
+    ram_disk.fx_media_last_found_file_name[255] =  0;
     ram_disk.fx_media_last_found_directory.fx_dir_entry_name[255] = 0;
     ram_disk.fx_media_last_found_directory_valid =  FX_TRUE;
     _fx_directory_search(&ram_disk, "abc\\def\\ghi\\abc", &dir_entry, &search_directory, &name_ptr);
@@ -2762,12 +2762,12 @@ FX_DIR_ENTRY    search_directory;
         ram_disk.fx_media_last_found_file_name[i] =  'a';
         ram_disk.fx_media_last_found_directory.fx_dir_entry_name[i] = 'a';
     }
-    ram_disk.fx_media_last_found_file_name[255] =  0;    
+    ram_disk.fx_media_last_found_file_name[255] =  0;
     ram_disk.fx_media_last_found_directory.fx_dir_entry_name[25] = 0;
     ram_disk.fx_media_last_found_directory_valid =  FX_TRUE;
     _fx_directory_search(&ram_disk, "abc\\def\\ghi\\abc", &dir_entry, &search_directory, &name_ptr);
-                
-                
+
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
 
@@ -2777,24 +2777,24 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(163);
-    }       
+    }
 
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             256,                    // Directory Entries
                             0,                      // Hidden sectors
-                            14000,                  // Total sectors 
-                            128,                    // Sector size   
+                            14000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -2802,8 +2802,8 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(164);
-    }   
-    
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -2821,20 +2821,20 @@ FX_DIR_ENTRY    search_directory;
     status += fx_directory_create(&ram_disk, "/abc/def");
     status += fx_directory_create(&ram_disk, "/abc/def/ghi");
     status += fx_directory_create(&ram_disk, "/abc/def/ghi/jkl");
-    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file.txt");   
-    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file2.txt");   
-    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file3.txt");   
-    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file4.txt");   
-    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file5.txt");   
-    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file6.txt");   
-    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file7.txt");   
-    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file8.txt");   
-    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file9.txt");   
-    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file10.txt");   
-    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file11.txt");   
+    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file.txt");
+    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file2.txt");
+    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file3.txt");
+    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file4.txt");
+    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file5.txt");
+    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file6.txt");
+    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file7.txt");
+    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file8.txt");
+    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file9.txt");
+    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file10.txt");
+    status += fx_file_create(&ram_disk, "/abc/def/ghi/jkl/file11.txt");
     status += fx_directory_default_set(&ram_disk, "/abc");
     status += fx_directory_first_entry_find(&ram_disk, name);
-    
+
     /* Now open the file to get it into the search cache.  */
     status += fx_file_open(&ram_disk, &file_1, "/abc/def/ghi/jkl/file.txt", FX_OPEN_FOR_WRITE);
     status += fx_file_close(&file_1);
@@ -2844,14 +2844,14 @@ FX_DIR_ENTRY    search_directory;
     status += fx_file_close(&file_1);
     status += fx_directory_default_set(&ram_disk, "/");
     status += fx_file_open(&ram_disk, &file_1, "abc/def/ghi/jkl/file.txt", FX_OPEN_FOR_WRITE);
-    status += fx_file_close(&file_1);  
+    status += fx_file_close(&file_1);
     status += fx_directory_next_entry_find(&ram_disk, name);
 
     /* Now test for FAT read errors.  */
     _fx_utility_fat_entry_read_error_request =  1;
     status += fx_file_open(&ram_disk, &file_2, "abc/def/ghi/jkl/file2.txt", FX_OPEN_FOR_WRITE);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* Check the status... should be an I/O error at this point.  */
     if (status != FX_IO_ERROR)
     {
@@ -2860,12 +2860,12 @@ FX_DIR_ENTRY    search_directory;
         printf("ERROR!\n");
         test_control_return(166);
     }
-    
+
     /* Now test a FAT entry value that is too small.  */
     _fx_utility_fat_entry_read_error_request =  10001;
     status = fx_file_open(&ram_disk, &file_2, "abc/def/ghi/jkl/file2.txt", FX_OPEN_FOR_WRITE);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* Check the status... should be a FAT read error.  */
     if (status != FX_FAT_READ_ERROR)
     {
@@ -2874,14 +2874,14 @@ FX_DIR_ENTRY    search_directory;
         printf("ERROR!\n");
         test_control_return(167);
     }
-    
+
     /* Now test a FAT entry value that is too large.  */
     temp =  ram_disk.fx_media_total_clusters;
     _fx_utility_fat_entry_read_error_request =  40001;
     status = fx_file_open(&ram_disk, &file_2, "abc/def/ghi/jkl/file2.txt", FX_OPEN_FOR_WRITE);
     _fx_utility_fat_entry_read_error_request =  0;
     ram_disk.fx_media_total_clusters =  temp;
-    
+
     /* Check the status... should be a FAT read error.  */
     if (status != FX_FAT_READ_ERROR)
     {
@@ -2890,12 +2890,12 @@ FX_DIR_ENTRY    search_directory;
         printf("ERROR!\n");
         test_control_return(168);
     }
-    
+
     /* Now test a FAT entry value that is the same as the cluster itself.  */
     _fx_utility_fat_entry_read_error_request =  30001;
     status = fx_file_open(&ram_disk, &file_2, "abc/def/ghi/jkl/file2.txt", FX_OPEN_FOR_WRITE);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* Check the status... should be a FAT read error.  */
     if (status != FX_FAT_READ_ERROR)
     {
@@ -2904,11 +2904,11 @@ FX_DIR_ENTRY    search_directory;
         printf("ERROR!\n");
         test_control_return(169);
     }
-    
+
     /* Now perform a good open.  */
     status = fx_file_open(&ram_disk, &file_2, "abc/def/ghi/jkl/file2.txt", FX_OPEN_FOR_WRITE);
-    status += fx_file_close(&file_2);  
-    
+    status += fx_file_close(&file_2);
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -2917,7 +2917,7 @@ FX_DIR_ENTRY    search_directory;
         printf("ERROR!\n");
         test_control_return(166);
     }
-    
+
     /* Setup info for direct call to directory search.  */
     dir_entry.fx_dir_entry_name =  ram_disk.fx_media_name_buffer + FX_MAX_LONG_NAME_LEN;
     search_directory.fx_dir_entry_name =  ram_disk.fx_media_name_buffer + FX_MAX_LONG_NAME_LEN * 2;
@@ -2926,34 +2926,34 @@ FX_DIR_ENTRY    search_directory;
 
     /* Lets perform a search that from the root directory.  */
     _fx_directory_search(&ram_disk, "/abc/..", &dir_entry, &search_directory, &name_ptr);
-    
+
     /* Now setup a maximum default path.  */
     for (i = 0; i < FX_MAX_LAST_NAME_LEN; i++)
     {
         name[i] =  'a';
     }
     name[255] =  0;
-    
+
     /* Create a sub-directory of maximum lenght.  */
     status =  fx_directory_create(&ram_disk, name);
-    
+
     /* Set the default path to this name.  */
     status += fx_directory_default_set(&ram_disk, name);
-    
+
     /* Create a file in the sub-directory path.  */
     status += fx_file_create(&ram_disk, "file1.txt");
-   
+
     /* Open the file to test the directory search cache name build.  */
     status += fx_file_open(&ram_disk, &file_1, "file1.txt", FX_OPEN_FOR_WRITE);
-    
+
     /* Determine if the test was successful.  */
     if (status != FX_SUCCESS)
     {
 
         printf("ERROR!\n");
         test_control_return(167);
-    }       
-    
+    }
+
 
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
@@ -2966,20 +2966,20 @@ FX_DIR_ENTRY    search_directory;
 
     /* Test for https://github.com/azure-rtos/filex/issues/26 */
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             4,                      // Directory Entries
                             0,                      // Hidden sectors
-                            128,                    // Total sectors 
-                            128,                    // Sector size   
+                            128,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Open the ram_disk.  */
@@ -2999,8 +2999,8 @@ FX_DIR_ENTRY    search_directory;
     status +=  fx_directory_create(&ram_disk, "MYDIR/MYDIR1/MYDIR2");
     status +=  fx_directory_create(&ram_disk, "MYDIR/MYDIR1/MYDIR2/MYDIR3");
     return_if_fail( status == FX_SUCCESS);
-    
-    status =  fx_file_create(&ram_disk, "MYDIR/MYDIR1/MYDIR2/MYDIR3/TEST.TXT");  
+
+    status =  fx_file_create(&ram_disk, "MYDIR/MYDIR1/MYDIR2/MYDIR3/TEST.TXT");
     return_if_fail( status == FX_SUCCESS);
 
     available_clusters = ram_disk.fx_media_available_clusters;
@@ -3045,7 +3045,7 @@ FX_DIR_ENTRY    search_directory;
 
         printf("ERROR!\n");
         test_control_return(169);
-    }       
+    }
     else
     {
 

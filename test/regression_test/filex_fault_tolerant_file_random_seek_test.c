@@ -12,7 +12,7 @@
 #ifndef FX_STANDALONE_ENABLE
 #include   "tx_api.h"
 #else
-#include <time.h> 
+#include <time.h>
 #endif
 #include   "fx_api.h"
 #include   "fx_system.h"

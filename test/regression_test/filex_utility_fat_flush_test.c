@@ -53,13 +53,13 @@ void    filex_utility_fat_flush_application_define(void *first_unused_memory)
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
     pointer =  pointer + DEMO_STACK_SIZE;
 
@@ -97,20 +97,20 @@ ULONG       i;
     printf("FileX Test:   Utility FAT flush test.......................................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            511,                    // Total sectors 
-                            128,                    // Sector size   
+                            511,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -133,8 +133,8 @@ ULONG       i;
     }
 
     /* Create a file called TEST.TXT in the root directory.  */
-    status =  fx_file_create(&ram_disk, "TEST.TXT");    
-        
+    status =  fx_file_create(&ram_disk, "TEST.TXT");
+
     /* Check the create status.  */
     if (status != FX_SUCCESS)
     {
@@ -155,7 +155,7 @@ ULONG       i;
 
     /* Pickup the available bytes in the media.  */
     status =  fx_media_space_available(&ram_disk, &available_bytes);
-    
+
     /* Check for available bytes error.  */
     if ((status != FX_SUCCESS) || (available_bytes < sizeof(ULONG)))
     {
@@ -169,7 +169,7 @@ ULONG       i;
     write_value =  0;
     while (i < available_bytes)
     {
-    
+
         /* Write 4 bytes to the file.  */
         status =  fx_file_write(&my_file, (void *) &write_value, sizeof(ULONG));
 
@@ -180,17 +180,17 @@ ULONG       i;
             printf("ERROR!\n");
             test_control_return(6);
         }
-        
+
         /* Increment byte count.  */
         i =  i + sizeof(ULONG);
-        
+
         /* Increment write value.  */
         write_value++;
     }
-    
+
     /* Pickup the available bytes in the media again.  */
     status =  fx_media_space_available(&ram_disk, &i);
-    
+
     /* Check for available bytes error.  */
     if ((status != FX_SUCCESS) || (i != 0))
     {
@@ -198,41 +198,41 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(7);
     }
-    
+
     for (i = 0; i < FX_MAX_FAT_CACHE; i++)
     {
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_cluster = 496;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_value =  1;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_dirty =  1;
     }
-    	
-    _fx_utility_FAT_flush(&ram_disk); 
-    
-    /* Note: If definition of FX_FAT_MAP_SIZE is changed in future, the value checked in 
+
+    _fx_utility_FAT_flush(&ram_disk);
+
+    /* Note: If definition of FX_FAT_MAP_SIZE is changed in future, the value checked in
        return_value_if_fail will change for individual array element */
     for(i=0;i<FX_FAT_MAP_SIZE;i++)
     {
     	return_value_if_fail((ram_disk.fx_media_fat_secondary_update_map[i]==63),8)
-    }   
+    }
 
     fx_media_close(&ram_disk);
-    
+
     /* Test with FAT 16 */
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             14000,                   // Total sectors - FAT16
-                            64,                    // Sector size   
+                            64,                    // Sector size
                             2,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -277,7 +277,7 @@ ULONG       i;
 
     /* Pickup the available bytes in the media.  */
     status =  fx_media_space_available(&ram_disk, &available_bytes);
-    
+
     /* Check for available bytes error.  */
     if ((status != FX_SUCCESS) || (available_bytes < sizeof(ULONG)))
     {
@@ -291,7 +291,7 @@ ULONG       i;
     write_value =  0;
     while (i < available_bytes)
     {
-    
+
         /* Write 4 bytes to the file.  */
         status =  fx_file_write(&my_file, (void *) &write_value, sizeof(ULONG));
 
@@ -302,17 +302,17 @@ ULONG       i;
             printf("ERROR!\n");
             test_control_return(6);
         }
-        
+
         /* Increment byte count.  */
         i =  i + sizeof(ULONG);
-        
+
         /* Increment write value.  */
         write_value++;
     }
-    
+
     /* Pickup the available bytes in the media again.  */
     status =  fx_media_space_available(&ram_disk, &i);
-    
+
     /* Check for available bytes error.  */
     if ((status != FX_SUCCESS) || (i != 0))
     {
@@ -320,41 +320,41 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(7);
     }
-    
+
     for (i = 0; i < FX_MAX_FAT_CACHE; i++)
     {
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_cluster = 0xA6;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_value =  1;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_dirty =  1;
     }
-    	
-    _fx_utility_FAT_flush(&ram_disk); 
-    
-    /* Note: If definition of FX_FAT_MAP_SIZE is changed in future, the value checked in 
+
+    _fx_utility_FAT_flush(&ram_disk);
+
+    /* Note: If definition of FX_FAT_MAP_SIZE is changed in future, the value checked in
        return_value_if_fail will change for individual array element */
     for(i=0;i<FX_FAT_MAP_SIZE;i++)
     {
     	return_value_if_fail((ram_disk.fx_media_fat_secondary_update_map[i]==255),8)
-    }   
+    }
 
     fx_media_close(&ram_disk);
 
 
     /* Test with FAT32. */
-    status = fx_media_format(&ram_disk, 
+    status = fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             70000,                  // Total sectors - FAT32
-                            512,                    // Sector size   
+                            512,                    // Sector size
                             1,                     // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_file_create(&ram_disk, "TEST.TXT");
     return_if_fail(FX_SUCCESS == status);
@@ -372,7 +372,7 @@ ULONG       i;
 
     /* Pickup the available bytes in the media.  */
     status =  fx_media_space_available(&ram_disk, &available_bytes);
-    
+
     /* Check for available bytes error.  */
     if ((status != FX_SUCCESS) || (available_bytes < sizeof(ULONG)))
     {
@@ -386,7 +386,7 @@ ULONG       i;
     write_value =  0;
     while (i < available_bytes/128)
     {
-    
+
         /* Write 4 bytes to the file.  */
         status =  fx_file_write(&my_file, (void *) &write_value, sizeof(ULONG));
 
@@ -397,34 +397,34 @@ ULONG       i;
             printf("ERROR!\n");
             test_control_return(6);
         }
-        
+
         /* Increment byte count.  */
         i =  i + sizeof(ULONG);
-        
+
         /* Increment write value.  */
         write_value++;
     }
-      
+
     for (i = 0; i < FX_MAX_FAT_CACHE; i++)
     {
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_cluster = 0xF160;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_value =  1;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_dirty =  1;
     }
-    	
-    _fx_utility_FAT_flush(&ram_disk); 
-    
-    /* Note: If definition of FX_FAT_MAP_SIZE is changed in future, the value checked in 
+
+    _fx_utility_FAT_flush(&ram_disk);
+
+    /* Note: If definition of FX_FAT_MAP_SIZE is changed in future, the value checked in
        return_value_if_fail will change for individual array element */
     for(i=0;i<FX_FAT_MAP_SIZE;i++)
     {
     	return_value_if_fail((ram_disk.fx_media_fat_secondary_update_map[i]==65),8)
-    }   
-    
-    fx_media_close(&ram_disk);  
-    
+    }
+
+    fx_media_close(&ram_disk);
+
     printf("SUCCESS!\n");
-    
+
     test_control_return(0);
 
 }

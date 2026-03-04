@@ -301,13 +301,13 @@ void    filex_directory_local_path_application_define(void *first_unused_memory)
 
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
     pointer =  pointer + DEMO_STACK_SIZE;
 
@@ -340,20 +340,20 @@ CHAR        path_name_buffer[32];
     printf("FileX Test:   Directory local path test..............................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -362,7 +362,7 @@ CHAR        path_name_buffer[32];
         printf("ERROR!\n");
         test_control_return(1);
     }
-    
+
     /* Attempt to clear the local path before the media has been opened to generate an error */
     status = fx_directory_local_path_clear(&ram_disk);
     if (status != FX_MEDIA_NOT_OPEN)
@@ -370,7 +370,7 @@ CHAR        path_name_buffer[32];
         printf("ERROR!\n");
         test_control_return(2);
     }
-    
+
     /* Attempt to restore the local path before the media has been opened to generate an error */
     status = fx_directory_local_path_restore(&ram_disk, &local_path);
     if (status != FX_MEDIA_NOT_OPEN)
@@ -378,7 +378,7 @@ CHAR        path_name_buffer[32];
         printf("ERROR!\n");
         test_control_return(3);
     }
-    
+
     /* Attempt to set the local path before the media has been opened to generate an error */
     status = fx_directory_local_path_set(&ram_disk, &local_path, "/A0");
     if (status != FX_MEDIA_NOT_OPEN)
@@ -386,7 +386,7 @@ CHAR        path_name_buffer[32];
         printf("ERROR!\n");
         test_control_return(4);
     }
-    
+
 
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
@@ -399,7 +399,7 @@ CHAR        path_name_buffer[32];
         printf("ERROR!\n");
         test_control_return(5);
     }
-    
+
     /* Attempt to set the local path to somewhere that does not exist to generate an error */
     status = fx_directory_local_path_set(&ram_disk, &local_path, "/DOES_NOT_EXIST");
     if (status != FX_INVALID_PATH)
@@ -424,7 +424,7 @@ CHAR        path_name_buffer[32];
     status +=  fx_directory_create(&ram_disk, "RootDir13");
     status +=  fx_directory_create(&ram_disk, "RootDir14");
     status +=  fx_file_create(&ram_disk,      "RootFile15");
-    
+
     /* Create the sub-directories for RootDir03.  */
     status +=  fx_directory_create(&ram_disk, "/RootDir03/RootDir03_SubDir01");
     status +=  fx_file_create(&ram_disk,      "/RootDir03/RootDir03_File02");
@@ -538,7 +538,7 @@ CHAR        path_name_buffer[32];
     status +=  fx_directory_create(&ram_disk, "/RootDir04/RootDir04_SubDir08/RootDir04_SubDir08_SubSubDir02");
     status +=  fx_directory_create(&ram_disk, "/RootDir04/RootDir04_SubDir08/RootDir04_SubDir08_SubSubDir03");
     status +=  fx_file_create(&ram_disk,      "/RootDir04/RootDir04_SubDir05/RootDir04_SubDir08_SubSubFile04");
-    
+
     /* Create the sub-sub-sub directories under RootDir04.  */
     status +=  fx_directory_create(&ram_disk, "/RootDir04/RootDir04_SubDir04/RootDir04_SubDir04_SubSubDir01/RootDir04_SubDir04_SubSubDir01_SubSubSubDir01");
     status +=  fx_directory_create(&ram_disk, "/RootDir04/RootDir04_SubDir04/RootDir04_SubDir04_SubSubDir01/RootDir04_SubDir04_SubSubDir01_SubSubSubDir02");
@@ -571,12 +571,12 @@ CHAR        path_name_buffer[32];
     /* Determine if the traversal matched what was expected.  */
     if (error_counter)
     {
-    
+
         /* Nope, error traversing the directory structure!  */
         printf("ERROR!\n");
         test_control_return(8);
     }
-    
+
     status  = fx_directory_local_path_clear(&ram_disk);
     status += fx_directory_local_path_set(&ram_disk, &local_path, "RootDir04");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "../RootDir03");
@@ -585,7 +585,7 @@ CHAR        path_name_buffer[32];
         printf("ERROR!\n");
         test_control_return(9);
     }
-    
+
     fx_directory_local_path_get_copy(&ram_disk, path_name_buffer, sizeof(path_name_buffer));
     if (strcmp(path_name_buffer, "/RootDir03"))
     {
@@ -598,20 +598,20 @@ CHAR        path_name_buffer[32];
     return_if_fail(status == FX_SUCCESS);
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail(status == FX_SUCCESS);
 
     /* Try getting directory local path before media open. */
@@ -674,7 +674,7 @@ UINT            skip;
         /* Compare with what is expected.  */
         if (strcmp(name, expected_name[expected_index++]))
             error_counter++;
-       
+
         /* Determine if this name is a directory or a file.  */
         status =  fx_directory_name_test(&ram_disk, name);
 
@@ -689,7 +689,7 @@ UINT            skip;
             status =  fx_file_close(&file);
             if (status != FX_SUCCESS)
                 error_counter++;
-        
+
             /* Pickup the next directory entry.  */
             status =  fx_directory_next_entry_find(&ram_disk, name);
         }
@@ -703,17 +703,17 @@ UINT            skip;
             {
                 /* Recursive call to traverse directory.  */
                 traverse_directory(name);
-            
+
                 /* Restore path.  */
-                status =  fx_directory_local_path_restore(&ram_disk, &local_path);        
+                status =  fx_directory_local_path_restore(&ram_disk, &local_path);
             }
 
             status =  fx_directory_next_entry_find(&ram_disk, name);
-        } 
-    } 
+        }
+    }
 
     fx_directory_local_path_clear(&ram_disk);
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
@@ -723,7 +723,7 @@ UINT            skip;
         printf("ERROR!\n");
         test_control_return(11);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_directory_local_path_restore(FX_NULL, FX_NULL);
     if (status != FX_PTR_ERROR)
@@ -731,7 +731,7 @@ UINT            skip;
         printf("ERROR!\n");
         test_control_return(12);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_directory_local_path_set(FX_NULL, FX_NULL, "\\");
     if (status != FX_PTR_ERROR)
@@ -739,7 +739,7 @@ UINT            skip;
         printf("ERROR!\n");
         test_control_return(13);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_directory_name_test(FX_NULL, name);
     if (status != FX_PTR_ERROR)

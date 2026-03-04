@@ -54,13 +54,13 @@ void    filex_directory_default_get_set_application_define(void *first_unused_me
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -101,20 +101,20 @@ UINT            i;
     printf("FileX Test:   Directory default get/set test.........................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -123,7 +123,7 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(1);
     }
-    
+
     /* Attempt to set the default directory before the media has been opened to generate an error */
     status = fx_directory_default_set(&ram_disk, "/A0");
     if (status != FX_MEDIA_NOT_OPEN)
@@ -131,7 +131,7 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(2);
     }
-    
+
     /* Attempt to get the default directory before the media has been opened to generate an error */
     status = fx_directory_default_get(&ram_disk, &path_ptr);
     if (status != FX_MEDIA_NOT_OPEN)
@@ -142,7 +142,7 @@ UINT            i;
 
     /* Attempt to get copy of the default directory before the media has been opened to generate an error */
     status =  fx_directory_default_get_copy(&ram_disk, test_path_name_buffer, sizeof(test_path_name_buffer));
-    
+
     /* Determine if the test was successful.  */
     if (status != FX_MEDIA_NOT_OPEN)
     {
@@ -154,7 +154,7 @@ UINT            i;
 #ifndef FX_NO_LOCAL_PATH
     /* Attempt to get copy of the directory local path before the media has been opened to generate an error */
     status =  _fx_directory_local_path_get_copy(&ram_disk, test_path_name_buffer, sizeof(test_path_name_buffer));
-    
+
     /* Determine if the test was successful.  */
     if (status != FX_MEDIA_NOT_OPEN)
     {
@@ -187,24 +187,24 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(5);
     }
-    
+
     temp = ram_disk.fx_media_id;
     ram_disk.fx_media_id = 0;
-    
+
     /* Give a media pointer with bad data to cause an error */
     status = fx_directory_default_get(&ram_disk, &path_ptr);
-    
+
     /* Check the status */
     if (status != FX_MEDIA_NOT_OPEN)
     {
-      
+
       /* Error opening the media */
       printf("ERROR!\n");
       test_control_return(6);
     }
-    
+
     ram_disk.fx_media_id = temp;
-    
+
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* Give a bad ram pointer to cause an error   */
     status =  fx_directory_default_get(NULL, &path_ptr);
@@ -217,7 +217,7 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(7);
     }
-    
+
     /* Give a bad path pointer to cause an error   */
     status =  fx_directory_default_get(&ram_disk, NULL);
 
@@ -251,7 +251,7 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(9);
     }
-    
+
     /* Attempt to set the default directory to something that is not a directory to generate an error */
     status = fx_directory_default_set(&ram_disk, "NOT_A_DIR");
     if (status != FX_INVALID_PATH)
@@ -277,7 +277,7 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(12);
     }
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to default directory set to generate an error */
@@ -298,7 +298,7 @@ UINT            i;
     status +=  fx_directory_create(&ram_disk, "A5");
     status +=  fx_directory_default_get(&ram_disk, &path_ptr);
 
-    
+
     status +=  fx_directory_default_set(&ram_disk, "/B0");
     status +=  fx_directory_create(&ram_disk, "B1");
     status +=  fx_directory_create(&ram_disk, "B2");
@@ -306,7 +306,7 @@ UINT            i;
     status +=  fx_directory_create(&ram_disk, "B4");
     status +=  fx_directory_create(&ram_disk, "B5");
     status +=  fx_directory_default_get(&ram_disk, &path_ptr);
-    
+
     status +=  fx_directory_default_set(&ram_disk, "/C0");
     status +=  fx_directory_create(&ram_disk, "C1");
     status +=  fx_directory_create(&ram_disk, "C2");
@@ -338,7 +338,7 @@ UINT            i;
     status +=  fx_directory_create(&ram_disk, "F4");
     status +=  fx_directory_create(&ram_disk, "F5");
     status +=  fx_directory_default_get(&ram_disk, &path_ptr);
-    
+
     status +=  fx_directory_default_set(&ram_disk, "/G0");
     status +=  fx_directory_create(&ram_disk, "G1");
     status +=  fx_directory_create(&ram_disk, "G2");
@@ -372,7 +372,7 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(14);
     }
-    
+
     if (strcmp(path_name_buffer, "/I0"))
     {
         printf("ERROR!\n");
@@ -391,7 +391,7 @@ UINT            i;
     status +=  fx_directory_create(&ram_disk, "test");
     status +=  fx_directory_delete(&ram_disk, "test");
     status +=  fx_directory_local_path_clear(&ram_disk);
-    
+
     /* Check for errors...  */
     if (status != FX_SUCCESS)
     {
@@ -401,7 +401,7 @@ UINT            i;
         test_control_return(15);
     }
 #endif
-    
+
     /* create the rest as normal */
     status  =  fx_directory_default_set(&ram_disk, "/A0/A1");
     status +=  fx_directory_create(&ram_disk, "A00");
@@ -419,7 +419,7 @@ UINT            i;
     status +=  fx_directory_create(&ram_disk, "H2/H00");
     status +=  fx_directory_create(&ram_disk, "/I0/I3/I00");
     status +=  fx_directory_default_get(&ram_disk, &path_ptr);
-    
+
     /* Check for errors...  */
     if (status != FX_SUCCESS)
     {
@@ -455,13 +455,13 @@ UINT            i;
     status +=  fx_directory_delete(&ram_disk, "/A0/A3");
     status +=  fx_directory_delete(&ram_disk, "/A0/A4");
     status +=  fx_directory_delete(&ram_disk, "/A0/A5");
-    
+
     status +=  fx_directory_delete(&ram_disk, "/B0/B1");
     status +=  fx_directory_delete(&ram_disk, "/B0/B2");
     status +=  fx_directory_delete(&ram_disk, "/B0/B3");
     status +=  fx_directory_delete(&ram_disk, "/B0/B4");
     status +=  fx_directory_delete(&ram_disk, "/B0/B5");
-    
+
     status +=  fx_directory_delete(&ram_disk, "/C0/C1");
     status +=  fx_directory_delete(&ram_disk, "/C0/C2");
     status +=  fx_directory_delete(&ram_disk, "/C0/C3");
@@ -485,7 +485,7 @@ UINT            i;
     status +=  fx_directory_delete(&ram_disk, "/F0/F3");
     status +=  fx_directory_delete(&ram_disk, "/F0/F4");
     status +=  fx_directory_delete(&ram_disk, "/F0/F5");
-    
+
     status +=  fx_directory_delete(&ram_disk, "/G0/G1");
     status +=  fx_directory_delete(&ram_disk, "/G0/G2");
     status +=  fx_directory_delete(&ram_disk, "/G0/G3");
@@ -503,7 +503,7 @@ UINT            i;
     status +=  fx_directory_delete(&ram_disk, "/I0/I3");
     status +=  fx_directory_delete(&ram_disk, "/I0/I4");
     status +=  fx_directory_delete(&ram_disk, "/I0/I5");
-    
+
     /* Check for errors...  */
     if (status != FX_SUCCESS)
     {
@@ -544,7 +544,7 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(20);
     }
-                                          
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
 
@@ -555,23 +555,23 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(21);
     }
-    
-    
+
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            4096,                   // Total sectors 
-                            128,                    // Sector size   
+                            4096,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -580,7 +580,7 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(22);
     }
-    
+
     /* Open the ram_disk - with one logical sector cache!  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -595,7 +595,7 @@ UINT            i;
 
     /* Create a sub-directory.  */
     status =  fx_directory_create(&ram_disk, "sub-directory-level_001");
-    
+
     /* Attempt to set a path with a NULL path name.  */
     status +=  _fx_directory_default_set(&ram_disk, FX_NULL);
 
@@ -617,12 +617,12 @@ UINT            i;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_cluster =  0;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_value =  0;
     }
-    
+
     /* Try to set the current path but with an I/O error coming from the directory search.  */
     _fx_utility_logical_sector_read_error_request =  1;
     status =  fx_directory_default_set(&ram_disk, "sub-directory-level_001");
     _fx_utility_logical_sector_read_error_request =  0;
-    
+
     /* Check the status - should be an I/O error!  */
     if (status != FX_INVALID_PATH)
     {
@@ -634,7 +634,7 @@ UINT            i;
 
     /* Try to set the current path to the first sub-directory.  */
     status =  fx_directory_default_set(&ram_disk, "sub-directory-level_001");
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -643,10 +643,10 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(26);
     }
-    
+
     /* Try to set the current path to the same relative sub-directory.  */
     status =  fx_directory_default_set(&ram_disk, ".");
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -658,7 +658,7 @@ UINT            i;
 
     /* Try to set the current path back to root directory relative to the current directory.  */
     status =  fx_directory_default_set(&ram_disk, "..");
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -670,33 +670,33 @@ UINT            i;
 
     /* Create a set of sub-directories that exceeds the maximum path size.  */
     status =  fx_directory_default_set(&ram_disk, "sub-directory-level_001");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_002");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_002");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_002");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_003");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_003");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_003");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_004");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_004");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_004");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_005");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_005");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_005");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_006");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_006");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_006");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_007");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_007");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_007");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_008");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_008");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_008");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_009");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_009");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_009");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_010");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_010");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_010");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_011");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_011");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_011");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_012");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_012");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_012");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_013");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_013");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_013");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_014");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_014");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_014");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_015");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_015");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_015");
 
     /* Now backup to the root directory.  */
@@ -745,7 +745,7 @@ UINT            i;
     status += fx_directory_default_set(&ram_disk, "..");
     status += fx_directory_default_set(&ram_disk, "..");
     status += fx_directory_default_set(&ram_disk, "..");
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -774,7 +774,7 @@ UINT            i;
 
     /* Now backup to the root directory - one sub-directory at a time.  */
     status += fx_directory_default_set(&ram_disk, "..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..");
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -805,7 +805,7 @@ UINT            i;
     status += fx_directory_first_entry_find(&ram_disk, name);
     status += fx_directory_first_entry_find(&ram_disk, name);
     status += fx_directory_first_entry_find(&ram_disk, name);
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -814,7 +814,7 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(32);
     }
-    
+
     /* Now try to have a new path relative back to the root directory, and then back to itself.  */
     status =  fx_directory_default_set(&ram_disk, "sub-directory-level_001");
 
@@ -826,7 +826,7 @@ UINT            i;
     ram_disk.fx_media_default_path.fx_path_string[0] =  ' ';
     status += fx_directory_default_set(&ram_disk, "../sub-directory-level_001");
 
-    status += fx_directory_default_set(&ram_disk, "..");   
+    status += fx_directory_default_set(&ram_disk, "..");
     status += fx_directory_first_entry_find(&ram_disk, name);
 
     /* Check the status.  */
@@ -840,7 +840,7 @@ UINT            i;
 
     /* Test to return FX_BUFFER_ERROR from _fx_directory_default_get_copy() */
     status =  fx_directory_default_get_copy(&ram_disk, test_path_name_buffer, sizeof(test_path_name_buffer));
-    
+
     /* Determine if the test was successful.  */
     if (status != FX_BUFFER_ERROR)
     {
@@ -848,7 +848,7 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(52);
     }
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
 
@@ -863,20 +863,20 @@ UINT            i;
     /* Now perform the same corner case testing with the local path set.  */
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            4096,                   // Total sectors 
-                            128,                    // Sector size   
+                            4096,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -885,7 +885,7 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(22);
     }
-    
+
     /* Open the ram_disk - with one logical sector cache!  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -900,9 +900,9 @@ UINT            i;
 
     /* Create a sub-directory.  */
     status =  fx_directory_create(&ram_disk, "sub-directory-level_001");
-   
+
     /* Skip local_path test */
-#ifndef FX_NO_LOCAL_PATH 
+#ifndef FX_NO_LOCAL_PATH
     /* Attempt to set a path with a NULL path name.  */
     status +=  _fx_directory_local_path_set(&ram_disk, &local_path, FX_NULL);
 
@@ -924,12 +924,12 @@ UINT            i;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_cluster =  0;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_value =  0;
     }
-    
+
     /* Try to set the current path but with an I/O error coming from the directory search.  */
     _fx_utility_logical_sector_read_error_request =  1;
     status =  fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_001");
     _fx_utility_logical_sector_read_error_request =  0;
-    
+
     /* Check the status - should be an I/O error!  */
     if (status != FX_INVALID_PATH)
     {
@@ -941,7 +941,7 @@ UINT            i;
 
     /* Try to set the current path to the first sub-directory.  */
     status =  fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_001");
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -950,10 +950,10 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(38);
     }
-    
+
     /* Try to set the current path to the same relative sub-directory.  */
     status =  fx_directory_local_path_set(&ram_disk, &local_path, ".");
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -965,7 +965,7 @@ UINT            i;
 
     /* Try to set the current path back to root directory relative to the current directory.  */
     status =  fx_directory_local_path_set(&ram_disk, &local_path, "..");
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -977,33 +977,33 @@ UINT            i;
 
     /* Create a set of sub-directories that exceeds the maximum path size.  */
     status =  fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_001");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_002");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_002");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_002");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_003");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_003");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_003");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_004");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_004");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_004");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_005");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_005");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_005");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_006");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_006");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_006");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_007");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_007");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_007");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_008");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_008");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_008");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_009");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_009");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_009");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_010");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_010");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_010");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_011");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_011");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_011");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_012");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_012");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_012");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_013");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_013");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_013");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_014");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_014");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_014");
-    status += fx_directory_create(&ram_disk, "sub-directory-level_015");     
+    status += fx_directory_create(&ram_disk, "sub-directory-level_015");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_015");
 
     /* Now backup to the root directory.  */
@@ -1052,7 +1052,7 @@ UINT            i;
     status += fx_directory_local_path_set(&ram_disk, &local_path, "..");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "..");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "..");
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -1081,7 +1081,7 @@ UINT            i;
 
     /* Now backup to the root directory - one sub-directory at a time.  */
     status += fx_directory_local_path_set(&ram_disk, &local_path, "..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..");
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -1112,7 +1112,7 @@ UINT            i;
     status += fx_directory_first_entry_find(&ram_disk, name);
     status += fx_directory_first_entry_find(&ram_disk, name);
     status += fx_directory_first_entry_find(&ram_disk, name);
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -1121,7 +1121,7 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(44);
     }
-    
+
     /* Now try to have a new path relative back to the root directory, and then back to itself.  */
     status =  fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_001");
 
@@ -1133,7 +1133,7 @@ UINT            i;
     local_path.fx_path_string[0] =  ' ';
     status += fx_directory_local_path_set(&ram_disk, &local_path, "../sub-directory-level_001");
 
-    status += fx_directory_local_path_set(&ram_disk, &local_path, "..");   
+    status += fx_directory_local_path_set(&ram_disk, &local_path, "..");
     status += fx_directory_first_entry_find(&ram_disk, name);
 
     /* Check the status.  */
@@ -1147,7 +1147,7 @@ UINT            i;
 
     /* Create a file at the root directory.  */
     status +=  fx_file_create(&ram_disk, "TEST.TXT");
-    
+
     /* Attempt to set the default to a file name.  */
     status +=  fx_directory_local_path_set(&ram_disk, &local_path, "TEST.TXT");
 
@@ -1160,7 +1160,7 @@ UINT            i;
         test_control_return(46);
     }
 
-    /* Build a maximum local path.  */   
+    /* Build a maximum local path.  */
     status =  fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_001");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_002");
     status += fx_directory_local_path_set(&ram_disk, &local_path, "sub-directory-level_003");
@@ -1179,11 +1179,11 @@ UINT            i;
 
     /* Now set a new local path that will inherit this local path.  */
     status += fx_directory_local_path_set(&ram_disk, &local_path1, "..\\sub-directory-level_015");
-    
+
     /* Now set an absolute path.  */
     status += fx_directory_local_path_set(&ram_disk, &local_path1, "\\sub-directory-level_001");
     status += fx_directory_local_path_set(&ram_disk, &local_path1, "..");
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -1192,10 +1192,10 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(47);
     }
-    
+
     /* Clear the local path.  */
     status += fx_directory_local_path_clear(&ram_disk);
-    
+
     /* Build a maximum path default (global) path.  */
     status =  fx_directory_default_set(&ram_disk, "\\");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_001");
@@ -1213,7 +1213,7 @@ UINT            i;
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_013");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_014");
     status += fx_directory_default_set(&ram_disk, "sub-directory-level_015");
-    
+
     /* Now set the local path again, which will inherit the global path.  */
     status += fx_directory_local_path_set(&ram_disk, &local_path, "../sub-directory-level_015");
 
@@ -1228,7 +1228,7 @@ UINT            i;
 
     /* Test to return FX_BUFFER_ERROR from _fx_directory_local_path_get_copy() */
     status =  _fx_directory_local_path_get_copy(&ram_disk, test_path_name_buffer, sizeof(test_path_name_buffer));
-    
+
     /* Determine if the test was successful.  */
     if (status != FX_BUFFER_ERROR)
     {
@@ -1236,13 +1236,13 @@ UINT            i;
         printf("ERROR!\n");
         test_control_return(49);
     }
-    
+
     /* Test to each (return_path_name_buffer[0] = '\0') line in _fx_directory_local_path_get_copy() */
     fx_directory_local_path_clear(&ram_disk);
     path_name_buffer[0] = 'A';
     status =  _fx_directory_local_path_get_copy(&ram_disk, path_name_buffer, sizeof(path_name_buffer));
     status += strcmp(&path_name_buffer[0], "\0");
-    
+
     /* Determine if the test was successful.  */
     if (status != FX_SUCCESS)
     {

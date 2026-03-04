@@ -40,10 +40,10 @@ static FX_FILE                  file_7;
 #ifndef FX_STANDALONE_ENABLE
 static UCHAR                    *ram_disk_memory;
 static UCHAR                    *cache_buffer;
-static UCHAR                    *fault_tolerant_buffer;   
+static UCHAR                    *fault_tolerant_buffer;
 #else
 static UCHAR                    cache_buffer[CACHE_SIZE];
-static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE]; 
+static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE];
 #endif
 static UCHAR                    fat_buffer[128];
 static UCHAR                    name_buffer[FX_MAX_LONG_NAME_LEN+1];
@@ -71,13 +71,13 @@ void    filex_file_create_delete_application_define(void *first_unused_memory)
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -118,50 +118,50 @@ UINT        temp_attr;
     printf("FileX Test:   File create/delete test................................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            256,                    // Sector size   
+                            512,                    // Total sectors
+                            256,                    // Sector size
                             8,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Attempt to invalidate the media cache before the media is opened to generate an error */
     status = fx_media_cache_invalidate(&ram_disk);
     return_if_fail( status == FX_MEDIA_NOT_OPEN);
-    
+
     /* Attempt to get space available information before the media is opened to generate an error */
     status = fx_media_extended_space_available(&ram_disk, &temp);
     return_if_fail( status == FX_MEDIA_NOT_OPEN);
-    
+
     /* Attempt to allocate space before the media is opened to generate an error */
     status = fx_file_extended_allocate(&file_1, 0);
     return_if_fail( status == FX_NOT_OPEN);
-    
+
     /* Attempt to allocate space before the media is opened to generate an error */
     status = fx_file_extended_best_effort_allocate(&file_1, 0, &temp);
     return_if_fail( status == FX_NOT_OPEN);
-    
+
     /* try to create a file before the media has been opened to generate an error */
     status = fx_file_create(&ram_disk, "asdf");
     return_if_fail( status == FX_MEDIA_NOT_OPEN);
-    
+
     /* try to close a file before the file has been opened to generate an error */
     status = fx_file_close(&file_1);
     return_if_fail( status == FX_NOT_OPEN);
-    
+
     /* try to delete a file before the media has been opened to generate an error */
     status = fx_file_delete(&ram_disk, "asdf");
     return_if_fail( status == FX_MEDIA_NOT_OPEN);
-    
+
     /* this will be caught by _fxe_file_open instead of _fx_file_open if DISABLE_ERROR_CHECKING is not defined */
     /* Attempt to open a file before the media has been opened to generate an error */
     status = fx_file_open(&ram_disk, &file_5, "rootname2", FX_OPEN_FOR_WRITE);
@@ -170,7 +170,7 @@ UINT        temp_attr;
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
-    
+
 #ifdef FX_ENABLE_FAULT_TOLERANT
     /* Enable fault tolerant if FX_ENABLE_FAULT_TOLERANT is defined. */
     status = fx_fault_tolerant_enable(&ram_disk, fault_tolerant_buffer, FAULT_TOLERANT_SIZE);
@@ -180,7 +180,7 @@ UINT        temp_attr;
     /* try to create a file with an illegal name to generate an error */
     status = fx_file_create(&ram_disk, "");
     return_if_fail( status == FX_INVALID_NAME);
-    
+
     /* try to create a file with an illegal path to generate an error */
     status = fx_file_create(&ram_disk, "/subdir/root");
     return_if_fail( status == FX_INVALID_PATH);
@@ -193,11 +193,11 @@ UINT        temp_attr;
     status += fx_file_create(&ram_disk, "/subdir/rootname");
     status += fx_file_create(&ram_disk, "/subdir/rootname1");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Attempt to open a file that is not a file to generate an error */
     status = fx_file_open(&ram_disk, &file_5, "subdir", FX_OPEN_FOR_WRITE);
     return_if_fail( status == FX_NOT_A_FILE);
-    
+
     /* try to create and delete a file when the media is write protected to generate an error */
     ram_disk.fx_media_driver_write_protect = FX_TRUE;
     status = fx_file_create(&ram_disk, "asdf");
@@ -205,7 +205,7 @@ UINT        temp_attr;
 
     status = fx_file_delete(&ram_disk, "rootname");
     return_if_fail( status == FX_WRITE_PROTECT);
-    
+
     /* Attempt to open a file while the media is write protected to generate an error */
     status = fx_file_open(&ram_disk, &file_5, "rootname2", FX_OPEN_FOR_WRITE);
     return_if_fail( status == FX_WRITE_PROTECT);
@@ -214,20 +214,20 @@ UINT        temp_attr;
     /* Attempt to create the same file again. This should cause an error!  */
     status =  fx_file_create(&ram_disk, "rootname");
     return_if_fail( status == FX_ALREADY_CREATED);
-    
+
     /* attempt to open a file with an invalid open type to generate an error */
     /* This code is executing differently on local vs server. Disabled until cause is explored
     status =  fx_file_open(&ram_disk, &file_5, "rootname2", 3);
     return_if_fail( status == FX_ACCESS_ERROR);
     */
-    
+
     /* try to delete a file in a directory that is read only */
     status  = fx_file_attributes_read(&ram_disk, "rootname2", &temp_attr);
     status += fx_file_attributes_set(&ram_disk, "rootname2", FX_READ_ONLY);
     status += fx_file_delete(&ram_disk, "rootname2");
     status += fx_file_attributes_set(&ram_disk, "rootname2", temp_attr);
     return_if_fail( status == FX_WRITE_PROTECT);
-    
+
     /* Open all the files.  */
     status =   fx_file_open(&ram_disk, &file_1, "rootname", FX_OPEN_FOR_WRITE);
     status +=  fx_file_open(&ram_disk, &file_2, "rootname1", FX_OPEN_FOR_WRITE);
@@ -235,64 +235,64 @@ UINT        temp_attr;
     status +=  fx_file_open(&ram_disk, &file_4, "/subdir/rootname1", FX_OPEN_FOR_WRITE);
     status +=  fx_file_open(&ram_disk, &file_5, "rootname2", FX_OPEN_FOR_READ);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* attempt to open a file that is already open */
     status =  fx_file_open(&ram_disk, &file_6, "rootname", FX_OPEN_FOR_WRITE);
     return_if_fail( status == FX_ACCESS_ERROR);
-    
+
     /* try to create and delete a file when the media is write protected to generate an error */
     ram_disk.fx_media_driver_write_protect = FX_TRUE;
     status = fx_file_create(&ram_disk, "asdf");
     return_if_fail( status == FX_WRITE_PROTECT);
     status = fx_file_delete(&ram_disk, "asdf");
     return_if_fail( status == FX_WRITE_PROTECT);
-    
+
     /* Attempt to allocate space while the media is write protected to generate an error */
     status = fx_file_extended_allocate(&file_1, 1);
     return_if_fail( status == FX_WRITE_PROTECT);
     status = fx_file_extended_best_effort_allocate(&file_1, 1, &temp);
     return_if_fail( status == FX_WRITE_PROTECT);
     ram_disk.fx_media_driver_write_protect = FX_FALSE;
-    
+
 /* test the error checking */
 #ifndef FX_DISABLE_ERROR_CHECKING
-    
+
     /* send a null pointer to generate an error */
     status =  fx_media_extended_space_available(FX_NULL, FX_NULL);
     return_if_fail( status == FX_PTR_ERROR);
-    
+
     /* send a null pointer to generate an error */
     status = fx_file_extended_best_effort_allocate(FX_NULL, 0, FX_NULL);
-    
+
     /* send null pointer to generate an error */
     status = fx_file_create(FX_NULL, "rootname");
     return_if_fail( status == FX_PTR_ERROR);
-    
+
     /* send null pointer to generate an error */
     status = fx_file_open(FX_NULL, FX_NULL, "rootname", 0);
     return_if_fail( status == FX_PTR_ERROR);
-    
+
     /* attempt to open an already open file to generate an error */
     status = fx_file_open(&ram_disk, &file_1, "rootname", FX_OPEN_FOR_WRITE);
     return_if_fail( status == FX_PTR_ERROR);
-    
+
     /* Attempt to allocate space for a file that is not open to write to generate an error */
     status = fx_file_open(&ram_disk, &file_5, "rootname2", FX_OPEN_FOR_READ);
     status = fx_file_extended_allocate(&file_5, 1);
     return_if_fail( status == FX_ACCESS_ERROR);
-    
+
     /* Attempt to allocate space for a file that is not open to write to generate an error */
     status = fx_file_extended_best_effort_allocate(&file_5, 0, &temp);
     return_if_fail( status == FX_ACCESS_ERROR);
-    
+
     /* Allocate 0 space for a file */
     status = fx_file_extended_allocate(&file_1, 0);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Allocate 0 space for a file */
     status = fx_file_extended_best_effort_allocate(&file_1, 0, &temp);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Attempt to allocate too much space for a file */
     status = fx_file_extended_allocate(&file_1, 0xFFFFFFFFFFFFFFFF);
     return_if_fail( status == FX_NO_MORE_SPACE);
@@ -306,13 +306,13 @@ UINT        temp_attr;
     return_if_fail(status == FX_MEDIA_INVALID);
 
     ram_disk.fx_media_bytes_per_sector = 256;
-    
+
 #endif /* FX_DISABLE_ERROR_CHECKING */
-    
+
     /* try to delete an open file to generate an error */
     status = fx_file_delete(&ram_disk, "rootname");
     return_if_fail( status == FX_ACCESS_ERROR);
-    
+
     /* try to delete something that is not a file to generate an error */
     status = fx_file_delete(&ram_disk, "subdir");
     return_if_fail( status == FX_NOT_A_FILE);
@@ -334,7 +334,7 @@ UINT        temp_attr;
     /* Now read the buffer.  */
     status =  fx_file_read(&file_1, buffer, 30, &actual);
     return_if_fail( (status == FX_SUCCESS) && (actual == 26));
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
@@ -361,13 +361,13 @@ UINT        temp_attr;
     status +=  fx_file_close(&file_4);
     status +=  fx_file_close(&file_5);
     return_if_fail( status == FX_SUCCESS);
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
     status = fx_file_close(FX_NULL);
     return_if_fail(status == FX_PTR_ERROR);
-    
+
     /* send null pointer to generate an error */
     status = fx_file_delete(FX_NULL, "rootname");
     return_if_fail(status == FX_PTR_ERROR);
@@ -389,37 +389,37 @@ UINT        temp_attr;
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Test corner cases in extended best effort allocate.  */
-        
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             7000,                   // Total sectors - FAT 16
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Create a file.  */
     status = fx_file_create(&ram_disk, "TEST.TXT");
-    
+
     /* Create a secondary file.  */
     status += fx_file_create(&ram_disk, "TEST1.TXT");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Open the file. */
     status =  fx_file_open(&ram_disk, &file_6, "TEST.TXT", FX_OPEN_FOR_WRITE);
     status +=  fx_file_open(&ram_disk, &file_5, "TEST1.TXT", FX_OPEN_FOR_WRITE);
@@ -427,7 +427,7 @@ UINT        temp_attr;
 
     /* Write one cluster of information to the TEST1.TXT file.  */
     status =  fx_file_write(&file_5, buffer, 128);
-    
+
     /* Close the secondary file.  */
     status += fx_file_close(&file_5);
 
@@ -438,14 +438,14 @@ UINT        temp_attr;
         status += fx_file_write(&file_6, buffer, 128);
     }
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Attempt to allocate when there is nothing available.  */
     status =  fx_file_extended_best_effort_allocate(&file_6, 128, &actual64);
     return_if_fail( status == FX_NO_MORE_SPACE);
-    
+
     /* Now release the first cluster to create a hole at the front.  */
     status =  fx_file_delete(&ram_disk, "TEST1.TXT");
-    
+
     /* Now flush everything out.  */
     fx_media_flush(&ram_disk);
     _fx_utility_FAT_flush(&ram_disk);
@@ -457,7 +457,7 @@ UINT        temp_attr;
     }
 
     /* Read the first FAT sector.  */
-    status += fx_media_read(&ram_disk, 1, (VOID *) fat_buffer);  
+    status += fx_media_read(&ram_disk, 1, (VOID *) fat_buffer);
 
     /* Add a FAT entry randomly in the FAT table.  */
     fat_buffer[4] =  0x03;
@@ -466,7 +466,7 @@ UINT        temp_attr;
     /* Write the FAT corruption out.  */
     status += fx_media_write(&ram_disk, 1, (VOID *) fat_buffer);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Attempt to allocate when there is nothing available - with a lost cluster.  */
     status =  fx_file_extended_best_effort_allocate(&file_6, 128, &actual64);
     return_if_fail( status == FX_NO_MORE_SPACE);
@@ -488,7 +488,7 @@ UINT        temp_attr;
     }
 
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 1, (VOID *) fat_buffer);  
+    status = fx_media_read(&ram_disk, 1, (VOID *) fat_buffer);
 
     /* Make the first entry available.  */
     fat_buffer[4] =  0x00;
@@ -507,15 +507,15 @@ UINT        temp_attr;
     status +=  fx_file_write(&file_6, fat_buffer, 128);
     status +=  fx_file_write(&file_6, fat_buffer, 128);
     status +=  fx_file_write(&file_6, fat_buffer, 128);
-    status +=  fx_file_write(&file_6, fat_buffer, 128);   
-    
+    status +=  fx_file_write(&file_6, fat_buffer, 128);
+
     /* Allocate 4 clusters.  */
     status +=  fx_file_extended_best_effort_allocate(&file_6, 512, &actual64);
     return_if_fail( status == FX_SUCCESS);
 
     /* Release all the clusters for this file.  */
     status =  fx_file_extended_truncate_release(&file_6, 0);
-  
+
     /* Allocate 4 clusters with no clusters in the file.  */
     status +=  fx_file_extended_best_effort_allocate(&file_6, 512, &actual64);
     return_if_fail( status == FX_SUCCESS);
@@ -524,26 +524,26 @@ UINT        temp_attr;
     status +=  fx_file_write(&file_6, fat_buffer, 128);
     status +=  fx_file_write(&file_6, fat_buffer, 128);
     status +=  fx_file_write(&file_6, fat_buffer, 128);
-    status +=  fx_file_write(&file_6, fat_buffer, 128);   
+    status +=  fx_file_write(&file_6, fat_buffer, 128);
 
     /* Now allocate perform allocations with I/O errors on building the new FAT chain.  */
     _fx_utility_fat_entry_write_error_request =  1;
     status +=  fx_file_extended_best_effort_allocate(&file_6, 512, &actual64);
     _fx_utility_fat_entry_write_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Now allocate perform allocations with I/O error on writing the EOF.  */
     _fx_utility_fat_entry_write_error_request =  4;
     status =  fx_file_extended_best_effort_allocate(&file_6, 512, &actual64);
     _fx_utility_fat_entry_write_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Now allocate perform allocations with I/O error on linking to last cluster.  */
     _fx_utility_fat_entry_write_error_request =  5;
     status =  fx_file_extended_best_effort_allocate(&file_6, 512, &actual64);
     _fx_utility_fat_entry_write_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Release all the clusters for this file.  */
     status =  fx_file_extended_truncate_release(&file_6, 0);
 
@@ -564,37 +564,37 @@ UINT        temp_attr;
     _fx_utility_logical_sector_write_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
 #endif
-    
+
     /* Close the file and the media.  */
     status =  fx_file_close(&file_6);
     status += fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             21000,                  // Total sectors - FAT 16
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             3,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Create a file.  */
     status = fx_file_create(&ram_disk, "TEST.TXT");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Open the file. */
     status =  fx_file_open(&ram_disk, &file_6, "TEST.TXT", FX_OPEN_FOR_WRITE);
     return_if_fail( status == FX_SUCCESS);
@@ -624,35 +624,35 @@ UINT        temp_attr;
     return_if_fail( status == FX_SUCCESS);
 
     /* Test corner cases in extended allocate.  */
-        
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             7000,                   // Total sectors - FAT 16
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Create a file.  */
     status = fx_file_create(&ram_disk, "TEST.TXT");
-    
+
     /* Create a secondary file.  */
     status += fx_file_create(&ram_disk, "TEST1.TXT");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Open the file. */
     status =  fx_file_open(&ram_disk, &file_6, "TEST.TXT", FX_OPEN_FOR_WRITE);
     status =  fx_file_open(&ram_disk, &file_5, "TEST1.TXT", FX_OPEN_FOR_WRITE);
@@ -660,26 +660,26 @@ UINT        temp_attr;
 
     /* Write one cluster of information to the TEST1.TXT file.  */
     status =  fx_file_write(&file_5, buffer, 128);
-    
+
     /* Close the secondary file.  */
     status += fx_file_close(&file_5);
 
     /* Loop to take up the entire ram disk by writing to this file.  */
     while (ram_disk.fx_media_available_clusters)
     {
-    
+
         /* Write a one cluster block.  */
         status += fx_file_write(&file_6, buffer, 128);
     }
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Attempt to allocate when there is nothing available.  */
     status =  fx_file_extended_allocate(&file_6, 128);
     return_if_fail( status == FX_NO_MORE_SPACE);
-    
+
     /* Now release the first cluster to create a hole at the front.  */
     status =  fx_file_delete(&ram_disk, "TEST1.TXT");
-    
+
     /* Now flush everything out.  */
     fx_media_flush(&ram_disk);
     _fx_utility_FAT_flush(&ram_disk);
@@ -691,7 +691,7 @@ UINT        temp_attr;
     }
 
     /* Read the first FAT sector.  */
-    status += fx_media_read(&ram_disk, 1, (VOID *) fat_buffer);  
+    status += fx_media_read(&ram_disk, 1, (VOID *) fat_buffer);
 
     /* Add a FAT entry randomly in the FAT table.  */
     fat_buffer[4] =  0x03;
@@ -700,7 +700,7 @@ UINT        temp_attr;
     /* Write the FAT corruption out.  */
     status += fx_media_write(&ram_disk, 1, (VOID *) fat_buffer);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Attempt to allocate when there is nothing available - with a lost cluster.  */
     status =  fx_file_extended_allocate(&file_6, 128);
     return_if_fail( status == FX_NO_MORE_SPACE);
@@ -722,7 +722,7 @@ UINT        temp_attr;
     }
 
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 1, (VOID *) fat_buffer);  
+    status = fx_media_read(&ram_disk, 1, (VOID *) fat_buffer);
 
     /* Make the first entry available.  */
     fat_buffer[4] =  0x00;
@@ -741,15 +741,15 @@ UINT        temp_attr;
     status +=  fx_file_write(&file_6, fat_buffer, 128);
     status +=  fx_file_write(&file_6, fat_buffer, 128);
     status +=  fx_file_write(&file_6, fat_buffer, 128);
-    status +=  fx_file_write(&file_6, fat_buffer, 128);   
-    
+    status +=  fx_file_write(&file_6, fat_buffer, 128);
+
     /* Allocate 4 clusters.  */
     status +=  fx_file_extended_allocate(&file_6, 512);
     return_if_fail( status == FX_SUCCESS);
 
     /* Release all the clusters for this file.  */
     status =  fx_file_extended_truncate_release(&file_6, 0);
-  
+
     /* Allocate 4 clusters with no clusters in the file.  */
     status +=  fx_file_extended_allocate(&file_6, 512);
     return_if_fail( status == FX_SUCCESS);
@@ -758,26 +758,26 @@ UINT        temp_attr;
     status +=  fx_file_write(&file_6, fat_buffer, 128);
     status +=  fx_file_write(&file_6, fat_buffer, 128);
     status +=  fx_file_write(&file_6, fat_buffer, 128);
-    status +=  fx_file_write(&file_6, fat_buffer, 128);   
+    status +=  fx_file_write(&file_6, fat_buffer, 128);
 
     /* Now allocate perform allocations with I/O errors on building the new FAT chain.  */
     _fx_utility_fat_entry_write_error_request =  1;
     status +=  fx_file_extended_allocate(&file_6, 512);
     _fx_utility_fat_entry_write_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Now allocate perform allocations with I/O error on writing the EOF.  */
     _fx_utility_fat_entry_write_error_request =  4;
     status =  fx_file_extended_allocate(&file_6, 512);
     _fx_utility_fat_entry_write_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Now allocate perform allocations with I/O error on linking to last cluster.  */
     _fx_utility_fat_entry_write_error_request =  5;
     status =  fx_file_extended_allocate(&file_6, 512);
     _fx_utility_fat_entry_write_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Release all the clusters for this file.  */
     status =  fx_file_extended_truncate_release(&file_6, 0);
 
@@ -799,37 +799,37 @@ UINT        temp_attr;
     _fx_utility_logical_sector_write_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
 #endif
-    
+
     /* Close the file and the media.  */
     status =  fx_file_close(&file_6);
     status += fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             21000,                  // Total sectors - FAT 16
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             3,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Create a file.  */
     status = fx_file_create(&ram_disk, "TEST.TXT");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Open the file. */
     status =  fx_file_open(&ram_disk, &file_6, "TEST.TXT", FX_OPEN_FOR_WRITE);
     return_if_fail( status == FX_SUCCESS);
@@ -856,7 +856,7 @@ UINT        temp_attr;
     /* Now test the maximum allocate size.  */
     actual64 =  file_6.fx_file_current_available_size;
     file_6.fx_file_current_available_size =  0xFFFFFFF8;
-    
+
     /* Allocate more clusters but with the file near maximum size to test the maximum size logic.  */
     status  =  fx_file_extended_allocate(&file_6, 512);
     file_6.fx_file_current_available_size =  actual64;
@@ -865,7 +865,7 @@ UINT        temp_attr;
     /* Now test the maximum allocate size.  */
     actual64 =  file_6.fx_file_current_available_size;
     file_6.fx_file_current_available_size =  0xFFFFFFFFFFFFFFF8;
-    
+
     /* Allocate more clusters but with the file near maximum size to test the maximum size logic.  */
     status  =  fx_file_extended_allocate(&file_6, 512);
     file_6.fx_file_current_available_size =  actual64;
@@ -874,7 +874,7 @@ UINT        temp_attr;
     /* Now test the maximum allocate size.  */
     actual64 =  file_6.fx_file_current_available_size;
     file_6.fx_file_current_available_size =  0xFFFFFFF8;
-    
+
     /* Allocate more clusters but with the file near maximum size to test the maximum size logic.  */
     status  =  fx_file_extended_best_effort_allocate(&file_6, 512, &actual64);
     file_6.fx_file_current_available_size =  actual64;
@@ -883,7 +883,7 @@ UINT        temp_attr;
     /* Now test the maximum allocate size.  */
     actual64 =  file_6.fx_file_current_available_size;
     file_6.fx_file_current_available_size =  0xFFFFFFFFFFFFFFF8;
-    
+
     /* Allocate more clusters but with the file near maximum size to test the maximum size logic.  */
     status  =  fx_file_extended_best_effort_allocate(&file_6, 512, &actual64);
     file_6.fx_file_current_available_size =  actual64;
@@ -892,35 +892,35 @@ UINT        temp_attr;
     /* Now test a maximium size allocation.  */
     status  =  fx_file_extended_best_effort_allocate(&file_6, 0xFFFFFFFFFFFFFFF8ULL, &actual64);
     return_if_fail( status == FX_NO_MORE_SPACE);
-    
+
     /* Close the file and the media.  */
     status =  fx_file_close(&file_6);
     status += fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Check the corner cases of file delete.  */
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             7000,                   // Total sectors - FAT 16
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Create a set of files.  */
     status =  fx_file_create(&ram_disk, "TEST.TXT");
     status += fx_file_create(&ram_disk, "TEST1.TXT");
@@ -954,7 +954,7 @@ UINT        temp_attr;
     status += fx_file_create(&ram_disk, "TEST29.TXT");
     status += fx_file_create(&ram_disk, "TEST30.TXT");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Open a couple files.... */
     status =   fx_file_open(&ram_disk, &file_4, "TEST.TXT", FX_OPEN_FOR_WRITE);
     status =   fx_file_open(&ram_disk, &file_5, "TEST1.TXT", FX_OPEN_FOR_WRITE);
@@ -977,7 +977,7 @@ UINT        temp_attr;
     status +=  fx_file_write(&file_7, fat_buffer, 128);
     status +=  fx_file_write(&file_7, fat_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Now flush everything out.  */
     fx_media_flush(&ram_disk);
     _fx_utility_FAT_flush(&ram_disk);
@@ -987,10 +987,10 @@ UINT        temp_attr;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_cluster =  0;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_value =  0;
     }
-    
+
     /* Close TEST.TXT.  */
     status =  fx_file_close(&file_4);
-    
+
     /* Attempt to delete the file, but with open files on a different offset/sector and a write I/O error.  */
     _fx_utility_logical_sector_read_error_request =  2;
     status +=  fx_file_delete(&ram_disk, "TEST.TXT");
@@ -1011,13 +1011,13 @@ UINT        temp_attr;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_cluster =  0;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_value =  0;
     }
-    
+
     /* Attempt to delete the file, but with a FAT read error.  */
     _fx_utility_fat_entry_read_error_request =  1;
     status += fx_file_delete(&ram_disk, "TEST1.TXT");
     _fx_utility_fat_entry_read_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-        
+
     /* Now flush everything out.  */
     fx_media_flush(&ram_disk);
     _fx_utility_FAT_flush(&ram_disk);
@@ -1027,13 +1027,13 @@ UINT        temp_attr;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_cluster =  0;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_value =  0;
     }
-    
+
     /* Attempt to delete the file, but with a FAT write error.  */
     _fx_utility_fat_entry_write_error_request =  1;
     status = fx_file_delete(&ram_disk, "TEST30.TXT");
     _fx_utility_fat_entry_write_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Now flush everything out.  */
     fx_media_flush(&ram_disk);
     _fx_utility_FAT_flush(&ram_disk);
@@ -1043,9 +1043,9 @@ UINT        temp_attr;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_cluster =  0;
         ram_disk.fx_media_fat_cache[i].fx_fat_cache_entry_value =  0;
     }
-    
+
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 1, (VOID *) fat_buffer);  
+    status = fx_media_read(&ram_disk, 1, (VOID *) fat_buffer);
 
     /* Make the first entry available.  */
     fat_buffer[4] =  0x02;
@@ -1058,25 +1058,25 @@ UINT        temp_attr;
     /* Attempt to delete the file, but with a bad FAT chain.  */
     status = fx_file_delete(&ram_disk, "TEST.TXT");
     return_if_fail( status == FX_FAT_READ_ERROR);
-    
+
     /* Attempt to delete the file that exceeds the cluster clount (that we modify to be small).  */
     actual =  ram_disk.fx_media_total_clusters;
     ram_disk.fx_media_total_clusters =  1;
-    status =  fx_file_delete(&ram_disk, "TEST29.TXT");   
+    status =  fx_file_delete(&ram_disk, "TEST29.TXT");
     ram_disk.fx_media_total_clusters =  actual;
     return_if_fail( status == FX_FAT_READ_ERROR);
-    
+
     /* Build a long file name, exceeding FX_MAX_LONG_NAME_LEN.  */
     for (i = 0; i < (FX_MAX_LONG_NAME_LEN+1); i++)
     {
         name_buffer[i] =  'a';
     }
     name_buffer[FX_MAX_LONG_NAME_LEN] =  0;
-    
+
     /* Attempt to create a file with this extra long name... this is expected to fail.  */
     status =  fx_file_create(&ram_disk, (CHAR *)name_buffer);
     return_if_fail( status == FX_INVALID_NAME);
-    
+
     /* Now open and write to a file so we can test file close I/O error condition.  */
     status =  fx_file_open(&ram_disk, &file_7, "TEST20.TXT", FX_OPEN_FOR_WRITE);
     status +=  fx_file_write(&file_7, fat_buffer, 128);
@@ -1086,11 +1086,11 @@ UINT        temp_attr;
     status += fx_file_close(&file_7);
     _fx_utility_logical_sector_read_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Now call the best effort allocate with a closed file handle.  */
     status =  fx_file_best_effort_allocate(&file_7, 1, &actual);
     return_if_fail( status == FX_NOT_OPEN);
-    
+
     /* Close the media.  */
     status = fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);

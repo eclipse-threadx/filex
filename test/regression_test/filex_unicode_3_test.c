@@ -41,7 +41,7 @@ static void _fx_terrible_driver(FX_MEDIA *media_ptr)
 {
     driver_called_counter++;
 //    printf("\n_fx_terrible_driver has been called %d times.", driver_called_counter);
-    if ( 
+    if (
         // Make IO ERROR to reach the Line 202 in fx_unicode_directory_search.c
         (driver_called_counter == 1)
         )
@@ -64,13 +64,13 @@ void    filex_unicode_3_application_define(void *first_unused_memory)
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -89,8 +89,8 @@ UCHAR    *pointer;
 #endif
 }
 
-static UCHAR long_unicode_name1[] =      {1, 0, 0, 0}; 
-static UCHAR long_unicode_name2[] =      {1, 0, 2, 0, 0, 0}; 
+static UCHAR long_unicode_name1[] =      {1, 0, 0, 0};
+static UCHAR long_unicode_name2[] =      {1, 0, 2, 0, 0, 0};
 
 /* Define the test threads.  */
 
@@ -106,20 +106,20 @@ FX_LOCAL_PATH local_path;
     /* Print out some test information banners.  */
     printf("FileX Test:   Unicode 3 test.........................................");
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
-                              _fx_ram_driver,         // Driver entry            
+    status =  fx_media_format(&ram_disk,
+                              _fx_ram_driver,         // Driver entry
                               ram_disk_memory_large,  // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              128,                    // Media buffer size 
+                              128,                    // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
-                              70000,                  // Total sectors 
-                              128,                    // Sector size   
+                              70000,                  // Total sectors
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
 
     return_value_if_fail( status == FX_SUCCESS, 1);
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);

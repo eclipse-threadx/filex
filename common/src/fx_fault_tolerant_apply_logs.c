@@ -1,10 +1,11 @@
 /***************************************************************************
- * Copyright (c) 2024 Microsoft Corporation 
- * 
+ * Copyright (c) 2024 Microsoft Corporation
+ * Copyright (C) 2026-present Eclipse ThreadX contributors
+ *
  * This program and the accompanying materials are made available under the
  * terms of the MIT License which is available at
  * https://opensource.org/licenses/MIT.
- * 
+ *
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
@@ -69,18 +70,6 @@
 /*                                                                        */
 /*    _fx_fault_tolerant_enable                                           */
 /*    _fx_fault_tolerant_transaction_end                                  */
-/*                                                                        */
-/*  RELEASE HISTORY                                                       */
-/*                                                                        */
-/*    DATE              NAME                      DESCRIPTION             */
-/*                                                                        */
-/*  05-19-2020     William E. Lamie         Initial Version 6.0           */
-/*  09-30-2020     William E. Lamie         Modified comment(s), verified */
-/*                                            memcpy usage,               */
-/*                                            resulting in version 6.1    */
-/*  10-31-2022     Tiejun Zhou              Modified comment(s), fixed    */
-/*                                            overflow in log size check, */
-/*                                            resulting in version 6.2.0  */
 /*                                                                        */
 /**************************************************************************/
 UINT _fx_fault_tolerant_apply_logs(FX_MEDIA *media_ptr)

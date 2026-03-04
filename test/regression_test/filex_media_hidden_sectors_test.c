@@ -52,13 +52,13 @@ void    filex_media_hidden_sectors_test_application_define(void *first_unused_me
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -92,20 +92,20 @@ UINT        status;
     printf("FileX Test:   Media Hidden Sectors Test..............................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             hidden_sectors_driver,  // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             HIDDEN_SECTORS,         // Hidden sectors
-                            256,                    // Total sectors 
-                            SECTOR_SIZE,            // Sector size   
+                            256,                    // Total sectors
+                            SECTOR_SIZE,            // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -141,7 +141,7 @@ UINT        status;
     }
 
     /* Close the media.  */
-    status =  fx_media_close(&ram_disk);   
+    status =  fx_media_close(&ram_disk);
 
     /* Check the file open status.  */
     if (status != FX_SUCCESS)
@@ -188,7 +188,7 @@ UINT        status;
     }
 
     /* Close the media.  */
-    status =  fx_media_close(&ram_disk);   
+    status =  fx_media_close(&ram_disk);
 
     /* Check the file open status.  */
     if (status != FX_SUCCESS)
@@ -217,7 +217,7 @@ static VOID  hidden_sectors_driver(FX_MEDIA *media_ptr)
 {
 UCHAR       *source_buffer;
 UCHAR       *destination_buffer;
-UINT        bytes_per_sector;   
+UINT        bytes_per_sector;
 
     if (media_ptr -> fx_media_driver_request == FX_DRIVER_BOOT_READ)
     {
@@ -225,7 +225,7 @@ UINT        bytes_per_sector;
         /* Read the boot record and return to the caller.  */
 
         /* Calculate the RAM disk boot sector offset, which is at the very beginning of the
-           RAM disk. Note the RAM disk memory is pointed to by the fx_media_driver_info pointer, 
+           RAM disk. Note the RAM disk memory is pointed to by the fx_media_driver_info pointer,
            which is supplied by the application in the call to fx_media_open.  */
         source_buffer =  (UCHAR *) media_ptr -> fx_media_driver_info;
         source_buffer += SECTOR_SIZE * HIDDEN_SECTORS;
@@ -260,7 +260,7 @@ UINT        bytes_per_sector;
         /* Write the boot record and return to the caller.  */
 
         /* Calculate the RAM disk boot sector offset, which is at the very beginning of the
-           RAM disk. Note the RAM disk memory is pointed to by the fx_media_driver_info pointer, 
+           RAM disk. Note the RAM disk memory is pointed to by the fx_media_driver_info pointer,
            which is supplied by the application in the call to fx_media_open.  */
         destination_buffer =  (UCHAR *) media_ptr -> fx_media_driver_info;
         destination_buffer += SECTOR_SIZE * HIDDEN_SECTORS;

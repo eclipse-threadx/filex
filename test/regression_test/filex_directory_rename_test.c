@@ -33,10 +33,10 @@ static CHAR                     max_newname[FX_MAX_LONG_NAME_LEN + 1];
 #ifndef FX_STANDALONE_ENABLE
 static UCHAR                    *ram_disk_memory;
 static UCHAR                    *cache_buffer;
-static UCHAR                    *fault_tolerant_buffer;   
+static UCHAR                    *fault_tolerant_buffer;
 #else
 static UCHAR                    cache_buffer[CACHE_SIZE];
-static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE]; 
+static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE];
 #endif
 
 
@@ -62,13 +62,13 @@ void    filex_directory_rename_application_define(void *first_unused_memory)
 #ifndef FX_STANDALONE_ENABLE
     UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -105,11 +105,11 @@ static void    ftest_0_entry(ULONG thread_input)
     printf("FileX Test:   Directory rename test..................................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             128,                    // Directory Entries
@@ -117,23 +117,23 @@ static void    ftest_0_entry(ULONG thread_input)
 
 /* We need a larger disk to test fault tolerant feature. */
 #ifdef FX_ENABLE_FAULT_TOLERANT
-                            4096 * 8,               // Total sectors 
-                            256,                    // Sector size   
+                            4096 * 8,               // Total sectors
+                            256,                    // Sector size
                             8,                      // Sectors per cluster
 #else
-                            4096,                   // Total sectors 
-                            128,                    // Sector size   
+                            4096,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
 #endif
 
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Test a directory name before the media is opened to generate an error */
     status = fx_directory_name_test(&ram_disk, "/A0");
     return_if_fail( status == FX_MEDIA_NOT_OPEN);
-    
+
     /* Try to rename a directory to an invalid name */
     status = fx_directory_rename(&ram_disk, "/A0", "");
     return_if_fail( status == FX_INVALID_NAME);
@@ -141,7 +141,7 @@ static void    ftest_0_entry(ULONG thread_input)
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
-    
+
 #ifdef FX_ENABLE_FAULT_TOLERANT
     /* Enable fault tolerant if FX_ENABLE_FAULT_TOLERANT is defined. */
     status = fx_fault_tolerant_enable(&ram_disk, fault_tolerant_buffer, FAULT_TOLERANT_SIZE);
@@ -153,17 +153,17 @@ static void    ftest_0_entry(ULONG thread_input)
     status = fx_directory_rename(&ram_disk, "/A0", "/A1");
     ram_disk.fx_media_driver_write_protect = FX_FALSE;
     return_if_fail( status == FX_WRITE_PROTECT);
-    
+
     /* Attempt to rename a directory that does not exist */
     status = fx_directory_rename(&ram_disk, "/DOES_NOT_EXIST", "/VALID");
     return_if_fail( status != FX_SUCCESS);
-    
+
     /* Attempt to rename something that is not a directory */
     status = fx_file_create(&ram_disk, "NOT_A_DIR");
     status += fx_directory_rename(&ram_disk, "NOT_A_DIR", "/VALID");
     status += fx_file_delete(&ram_disk, "NOT_A_DIR");
     return_if_fail( status == FX_NOT_DIRECTORY);
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
 
@@ -184,37 +184,37 @@ static void    ftest_0_entry(ULONG thread_input)
     status += fx_directory_rename(&ram_disk, "newnewdir", "OURTEST/newdir");
     status += fx_directory_create(&ram_disk, "/OURTEST/newdir/finaltest");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Attempt to rename a directory to a name that is taken */
     status = fx_directory_rename(&ram_disk, "/OURTEST/newdir/finaltest", "/OURTEST/newdir");
     return_if_fail( status == FX_ALREADY_CREATED);
-    
+
     /* Attempt to rename a directory to a subdirectory with an invalid name */
     status = fx_directory_rename(&ram_disk, "OURTEST/newdir/finaltest", "OURTEST/newdir/does_not_exist/this_wont_work");
     return_if_fail( status == FX_INVALID_NAME);
-    
+
     /* Rename a directory and make it hidden */
     status = fx_directory_rename(&ram_disk, "OURTEST/newdir/finaltest", "/.hidden");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Create a root directory so we can rename it.  */
     status =  fx_directory_create(&ram_disk, "newroot");
-    
+
     /* Now try to rename the root directory, but with leading and trailing spaces.  */
     status += fx_directory_rename(&ram_disk, "newroot", "     newnewroot    ");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Now test the maximum size of the new directory name.  */
     for (i = 0; i < FX_MAX_LONG_NAME_LEN; i++)
     {
         max_name[i] =     'a';
     }
     max_name[i] =  0;
-    
+
     /* Now try to test the maximum new name length.  */
     status =  fx_directory_rename(&ram_disk, "newnewroot", max_name);
     return_if_fail( status == FX_INVALID_NAME);
-    
+
     max_name[i] = 'a';
     max_name[i + 1] = 'a';
 
@@ -229,15 +229,15 @@ static void    ftest_0_entry(ULONG thread_input)
     /* Rename the directory to a valid maximum name.  */
     status =  fx_directory_rename(&ram_disk, "newnewroot", max_name);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Now build a new long file name with only one cap character different.  */
     for (i = 0; i <  FX_MAX_LONG_NAME_LEN+1; i++)
     {
         max_newname[i] =  max_name[i];
-    }   
+    }
     /* Change just the first character to upper case.  */
     max_newname[0] =  'A';
-    
+
     /* Rename the directory to a valid maximum name with just an upper case change.  */
     status =  fx_directory_rename(&ram_disk, max_name, max_newname);
 
@@ -265,7 +265,7 @@ static void    ftest_0_entry(ULONG thread_input)
     status =  fx_directory_rename(&ram_disk, max_newname, "newroot");
     _fx_utility_logical_sector_read_error_request =  0;
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Now try to get an I/O error on the directory write call.  */
     _fx_utility_logical_sector_write_error_request =  1;
     status =  fx_directory_rename(&ram_disk, max_newname, "newroot");
@@ -275,12 +275,12 @@ static void    ftest_0_entry(ULONG thread_input)
     /* Now rename the direction with a root directory path.  */
     status =  fx_directory_rename(&ram_disk, max_newname, "\\newroot");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Fail to update old directory entry. */
     _fx_directory_entry_write_error_request = 2;
     status =  fx_directory_rename(&ram_disk, "\\newroot", "aaa");
     return_if_fail( status == FX_IO_ERROR);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
