@@ -89,13 +89,13 @@ void    filex_media_multiple_format_open_close_application_define(void *first_un
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -142,36 +142,36 @@ ULONG       temp3;
     printf("FileX Test:   Multiple Media format, open and close test.............");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            256,                    // Total sectors 
-                            128,                    // Sector size   
+                            256,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Format the second media. This needs to be done before opening it!  */
-    status +=  fx_media_format(&ram_disk, 
+    status +=  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory1,        // RAM disk memory pointer
                             cache_buffer1,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            256,                    // Total sectors 
-                            128,                    // Sector size   
+                            256,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
 
     /* Determine if the format had an error.  */
@@ -319,7 +319,7 @@ ULONG       temp3;
     status =  fx_file_create(&ram_disk, "TEST.TXT");
     status1=  fx_file_create(&ram_disk1, "TEST.TXT");
 
-    /* Check for an already created status.  This is not fatal, just 
+    /* Check for an already created status.  This is not fatal, just
        let the user know.  */
     if (status != FX_ALREADY_CREATED)
     {
@@ -328,7 +328,7 @@ ULONG       temp3;
         test_control_return(3);
     }
 
-    /* Check for an already created status.  This is not fatal, just 
+    /* Check for an already created status.  This is not fatal, just
        let the user know.  */
     if (status1 != FX_ALREADY_CREATED)
     {
@@ -440,7 +440,7 @@ ULONG       temp3;
     status =  fx_file_create(&ram_disk, "TEST.TXT");
     status1=  fx_file_create(&ram_disk1, "TEST.TXT");
 
-    /* Check for an already created status.  This is not fatal, just 
+    /* Check for an already created status.  This is not fatal, just
        let the user know.  */
     if (status != FX_ALREADY_CREATED)
     {
@@ -449,7 +449,7 @@ ULONG       temp3;
         test_control_return(11);
     }
 
-    /* Check for an already created status.  This is not fatal, just 
+    /* Check for an already created status.  This is not fatal, just
        let the user know.  */
     if (status1 != FX_ALREADY_CREATED)
     {
@@ -532,20 +532,20 @@ ULONG       temp3;
     /* FAT32 Test for sixteen files and multiple open/close calls.  */
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
             _fx_ram_driver,         // Driver entry
             ram_disk_memory,        // RAM disk memory pointer
             cache_buffer,           // Media buffer pointer
-            CACHE_SIZE,             // Media buffer size 
+            CACHE_SIZE,             // Media buffer size
             "MY_RAM_DISK",          // Volume Name
             1,                      // Number of FATs
             32,                     // Directory Entries
             0,                      // Hidden sectors
             70000,                  // Total sectors  - FAT32
-            128,                    // Sector size   
+            128,                    // Sector size
             1,                      // Sectors per cluster
             1,                      // Heads
-            1);                     // Sectors per track 
+            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -619,7 +619,7 @@ ULONG       temp3;
     /* Open the media again.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
 
-    /* And close it again.  */    
+    /* And close it again.  */
     status +=  fx_media_close(&ram_disk);
 
     /* Determine if the test was successful.  */
@@ -628,11 +628,11 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(21);
-    }   
+    }
 
     /* Test the notify registration functions.  */
 
-    /* Setup notify routines for open and close.  */    
+    /* Setup notify routines for open and close.  */
     status =  fx_media_open_notify_set(&ram_disk, ram_disk_open);
     status += fx_media_close_notify_set(&ram_disk,ram_disk_close);
 
@@ -666,25 +666,25 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(24);
-    }   
+    }
 
     /* FAT32 Test for the additional information sector.  */
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
             _fx_ram_driver,         // Driver entry
             ram_disk_memory,        // RAM disk memory pointer
             cache_buffer,           // Media buffer pointer
-            CACHE_SIZE,             // Media buffer size 
+            CACHE_SIZE,             // Media buffer size
             "MY_RAM_DISK",          // Volume Name
             1,                      // Number of FATs
             32,                     // Directory Entries
             0,                      // Hidden sectors
             6000,                   // Total sectors  - FAT16
-            512,                    // Sector size   
+            512,                    // Sector size
             1,                      // Sectors per cluster
             1,                      // Heads
-            1);                     // Sectors per track 
+            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status != FX_SUCCESS)
@@ -716,7 +716,7 @@ ULONG       temp3;
     }
 
     /* Now setup the media's additional information sector.  */
-    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;    
+    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;
 
     /* Now set the last available clusters to the current available clusters.  */
     ram_disk.fx_media_FAT32_additional_info_last_available =  ram_disk.fx_media_available_clusters;
@@ -725,7 +725,7 @@ ULONG       temp3;
     status +=  fx_media_flush(&ram_disk);
 
     /* Now setup the media's additional information sector.  */
-    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;    
+    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;
 
     /* Now set the last available clusters to the current available clusters.  */
     ram_disk.fx_media_FAT32_additional_info_last_available =  ram_disk.fx_media_available_clusters;
@@ -739,7 +739,7 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(26);
-    }   
+    }
 
     /* Open the media again.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
@@ -751,10 +751,10 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(27);
-    }   
+    }
 
     /* Now setup the media's additional information sector.  */
-    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;    
+    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;
 
     /* Now clear the last available clusters to the current available clusters.  */
     ram_disk.fx_media_FAT32_additional_info_last_available =  0;
@@ -766,7 +766,7 @@ ULONG       temp3;
     status +=  fx_media_flush(&ram_disk);
 
     /* Now setup the media's additional information sector.  */
-    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;    
+    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;
 
     /* Now clear the last available clusters to the current available clusters.  */
     ram_disk.fx_media_FAT32_additional_info_last_available =  0;
@@ -783,7 +783,7 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(28);
-    }   
+    }
 
     /* Open the media again.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
@@ -795,10 +795,10 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(27);
-    }   
+    }
 
     /* Now setup the media's additional information sector.  */
-    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;    
+    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;
 
     /* Now clear the last available clusters to the current available clusters.  */
     ram_disk.fx_media_FAT32_additional_info_last_available =  0;
@@ -810,7 +810,7 @@ ULONG       temp3;
     status +=  fx_media_flush(&ram_disk);
 
     /* Now setup the media's additional information sector.  */
-    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;    
+    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;
 
     /* Now clear the last available clusters to the current available clusters.  */
     ram_disk.fx_media_FAT32_additional_info_last_available =  0;
@@ -827,7 +827,7 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(29);
-    }   
+    }
 
     /* Open the media again.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
@@ -840,10 +840,10 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(30);
-    }   
+    }
 
     /* Now setup the media's additional information sector.  */
-    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;    
+    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;
 
     /* Now clear the last available clusters to the current available clusters.  */
     ram_disk.fx_media_FAT32_additional_info_last_available =  0;
@@ -865,7 +865,7 @@ ULONG       temp3;
     status +=  fx_media_flush(&ram_disk);
 
     /* Now setup the media's additional information sector.  */
-    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;    
+    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;
 
     /* Now clear the last available clusters to the current available clusters.  */
     ram_disk.fx_media_FAT32_additional_info_last_available =  0;
@@ -882,7 +882,7 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(31);
-    }   
+    }
 
     /* Open the media again.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
@@ -895,10 +895,10 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(32);
-    }   
+    }
 
     /* Now setup the media's additional information sector.  */
-    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;    
+    ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;
 
     /* Now clear the last available clusters to the current available clusters.  */
     ram_disk.fx_media_FAT32_additional_info_last_available =  0;
@@ -935,7 +935,7 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(33);
-    }   
+    }
 
     /* Create some additional files.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
@@ -950,7 +950,7 @@ ULONG       temp3;
     status += fx_file_create(&ram_disk, "TEXT9.TXT");
     status += fx_file_create(&ram_disk, "TEXT10.TXT");
     status += fx_file_create(&ram_disk, "TEXT11.TXT");
-    status += fx_media_close(&ram_disk);    
+    status += fx_media_close(&ram_disk);
 
     /* Determine if the test was successful.  */
     if (status != FX_SUCCESS)
@@ -958,7 +958,7 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(34);
-    }   
+    }
 
     /* Loop to create the environment for I/O errors...  */
     for (i = 0; i < 1000; i++)
@@ -997,7 +997,7 @@ ULONG       temp3;
 
             printf("ERROR!\n");
             test_control_return(34);
-        }   
+        }
 
         /* Now temporarily set the write protect flag.  */
         ram_disk.fx_media_driver_write_protect =  FX_FALSE;
@@ -1010,10 +1010,10 @@ ULONG       temp3;
 
             printf("ERROR!\n");
             test_control_return(34);
-        }   
+        }
 
         /* Now setup the media's additional information sector.  */
-        ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;    
+        ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;
 
         /* Now clear the last available clusters to the current available clusters.  */
         ram_disk.fx_media_FAT32_additional_info_last_available =  0;
@@ -1021,13 +1021,13 @@ ULONG       temp3;
         /* Create I/O errors via the RAM driver interface.  */
         j = (UINT)(rand() % 10);
         if (j == 0)
-            j =  1;        
+            j =  1;
         _fx_ram_driver_io_error_request =  j;
 
         fx_media_flush(&ram_disk);
 
         /* Now setup the media's additional information sector.  */
-        ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;    
+        ram_disk.fx_media_FAT32_additional_info_sector =  (my_file.fx_file_first_physical_cluster - 2) + ram_disk.fx_media_data_sector_start;
 
         /* Now clear the last available clusters to the current available clusters.  */
         ram_disk.fx_media_FAT32_additional_info_last_available =  0;
@@ -1035,16 +1035,16 @@ ULONG       temp3;
         /* Create I/O errors via the RAM driver interface.  */
         j = (UINT)(rand() % 10);
         if (j == 0)
-            j =  1;        
+            j =  1;
         _fx_ram_driver_io_error_request =  j;
 
-        /* Close the media... This will attempt to look for the additional information sector and succeed in updating the additional sector. */        
-        fx_media_close(&ram_disk);       
+        /* Close the media... This will attempt to look for the additional information sector and succeed in updating the additional sector. */
+        fx_media_close(&ram_disk);
 
         /* Create I/O errors via the RAM driver interface.  */
         j = (UINT)(rand() % 10);
         if (j == 0)
-            j =  1;        
+            j =  1;
         _fx_ram_driver_io_error_request =  j;
 
         /* Set the volume.  */
@@ -1053,7 +1053,7 @@ ULONG       temp3;
         /* Create I/O errors via the RAM driver interface.  */
         j = (UINT)(rand() % 10);
         if (j == 0)
-            j =  1;        
+            j =  1;
         _fx_ram_driver_io_error_request =  j;
 
         /* Get the volume.  */
@@ -1071,26 +1071,26 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(33);
-    }   
+    }
 
 
     /* Additional media open/close corner case tests... including I/O errors.  */
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
             _fx_ram_driver,         // Driver entry
             ram_disk_memory,        // RAM disk memory pointer
             cache_buffer,           // Media buffer pointer
-            CACHE_SIZE,             // Media buffer size 
+            CACHE_SIZE,             // Media buffer size
             "MY_RAM_DISK",          // Volume Name
             1,                      // Number of FATs
             32,                     // Directory Entries
             0,                      // Hidden sectors
             6000,                   // Total sectors  - FAT16
-            128,                    // Sector size   
+            128,                    // Sector size
             1,                      // Sectors per cluster
             1,                      // Heads
-            1);                     // Sectors per track 
+            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status != FX_SUCCESS)
@@ -1177,20 +1177,20 @@ ULONG       temp3;
     fx_media_abort(&ram_disk);
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
             _fx_ram_driver,         // Driver entry
             ram_disk_memory,        // RAM disk memory pointer
             cache_buffer,           // Media buffer pointer
-            CACHE_SIZE,             // Media buffer size 
+            CACHE_SIZE,             // Media buffer size
             "MY_RAM_DISK",          // Volume Name
             1,                      // Number of FATs
             32,                     // Directory Entries
             0,                      // Hidden sectors
             70000,                  // Total sectors  - FAT32
-            512,                    // Sector size   
+            512,                    // Sector size
             1,                      // Sectors per cluster
             1,                      // Heads
-            1);                     // Sectors per track 
+            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status != FX_SUCCESS)
@@ -1216,7 +1216,7 @@ ULONG       temp3;
     {
         /* Write a FAT chain link that exceeds the FAT area. */
         status += _fx_utility_FAT_entry_write(&ram_disk, i, i+1);
-    }   
+    }
 
     /* Now close the media.  */
     status =  fx_media_close(&ram_disk);
@@ -1245,20 +1245,20 @@ ULONG       temp3;
 
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
             _fx_ram_driver,         // Driver entry
             ram_disk_memory,        // RAM disk memory pointer
             cache_buffer,           // Media buffer pointer
-            CACHE_SIZE,             // Media buffer size 
+            CACHE_SIZE,             // Media buffer size
             "MY_RAM_DISK",          // Volume Name
             1,                      // Number of FATs
             32,                     // Directory Entries
             0,                      // Hidden sectors
             70000,                  // Total sectors  - FAT32
-            512,                    // Sector size   
+            512,                    // Sector size
             1,                      // Sectors per cluster
             1,                      // Heads
-            1);                     // Sectors per track 
+            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status != FX_SUCCESS)
@@ -1281,7 +1281,7 @@ ULONG       temp3;
 
      /* Write a FAT chain link to check (cluster_number == FAT_entry). */
     status = _fx_utility_FAT_entry_write(&ram_disk, 2, 2+1);
-    
+
     /* Check for error.  */
     if (status != FX_SUCCESS)
     {
@@ -1311,25 +1311,25 @@ ULONG       temp3;
         printf("ERROR!\n");
         test_control_return(41);
     }
-    
+
     /* Abort the media.  */
     fx_media_abort(&ram_disk);
- 
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
             _fx_ram_driver,         // Driver entry
             ram_disk_memory,        // RAM disk memory pointer
             cache_buffer,           // Media buffer pointer
-            CACHE_SIZE,             // Media buffer size 
+            CACHE_SIZE,             // Media buffer size
             "MY_RAM_DISK",          // Volume Name
             1,                      // Number of FATs
             32,                     // Directory Entries
             0,                      // Hidden sectors
             70000,                  // Total sectors  - FAT32
-            512,                    // Sector size   
+            512,                    // Sector size
             1,                      // Sectors per cluster
             1,                      // Heads
-            1);                     // Sectors per track 
+            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status != FX_SUCCESS)
@@ -1501,20 +1501,20 @@ ULONG       temp3;
     }
 
     /* Format the media in FAT12 for testing I/O error on available clusters in media open.  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
             _fx_ram_driver,         // Driver entry
             ram_disk_memory,        // RAM disk memory pointer
             cache_buffer,           // Media buffer pointer
-            CACHE_SIZE,             // Media buffer size 
+            CACHE_SIZE,             // Media buffer size
             "MY_RAM_DISK",          // Volume Name
             1,                      // Number of FATs
             32,                     // Directory Entries
             0,                      // Hidden sectors
             2000,                   // Total sectors  - FAT12
-            128,                    // Sector size   
+            128,                    // Sector size
             1,                      // Sectors per cluster
             1,                      // Heads
-            1);                     // Sectors per track 
+            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status != FX_SUCCESS)
@@ -1538,23 +1538,23 @@ ULONG       temp3;
     }
 
     /* Abort the media.  */
-    fx_media_abort(&ram_disk);   
+    fx_media_abort(&ram_disk);
 
     /* Format the media in FAT16 for testing I/O error on available clusters in media open.  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
             _fx_ram_driver,         // Driver entry
             ram_disk_memory,        // RAM disk memory pointer
             cache_buffer,           // Media buffer pointer
-            CACHE_SIZE,             // Media buffer size 
+            CACHE_SIZE,             // Media buffer size
             "MY_RAM_DISK",          // Volume Name
             1,                      // Number of FATs
             32,                     // Directory Entries
             0,                      // Hidden sectors
             7000,                   // Total sectors  - FAT16
-            128,                    // Sector size   
+            128,                    // Sector size
             1,                      // Sectors per cluster
             1,                      // Heads
-            1);                     // Sectors per track 
+            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status != FX_SUCCESS)
@@ -1580,7 +1580,7 @@ ULONG       temp3;
     /* Abort the media.  */
     fx_media_abort(&ram_disk);
 
-    /* Open the media again to setup for a media close I/O error.  */    
+    /* Open the media again to setup for a media close I/O error.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
     /* Check for error.  */
@@ -1591,7 +1591,7 @@ ULONG       temp3;
         test_control_return(57);
     }
 
-    /* Create a file.  */    
+    /* Create a file.  */
     status =  fx_file_create(&ram_disk, "TEST.TXT");
 
     /* Check for error.  */
@@ -1641,20 +1641,20 @@ ULONG       temp3;
     fx_media_abort(&ram_disk);
 
     /* Format the media in FAT16 for testing I/O error in media close.  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
             _fx_ram_driver,         // Driver entry
             ram_disk_memory,        // RAM disk memory pointer
             cache_buffer,           // Media buffer pointer
-            CACHE_SIZE,             // Media buffer size 
+            CACHE_SIZE,             // Media buffer size
             "MY_RAM_DISK",          // Volume Name
             1,                      // Number of FATs
             32,                     // Directory Entries
             0,                      // Hidden sectors
             7000,                   // Total sectors  - FAT16
-            128,                    // Sector size   
+            128,                    // Sector size
             1,                      // Sectors per cluster
             1,                      // Heads
-            1);                     // Sectors per track 
+            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status != FX_SUCCESS)
@@ -1664,7 +1664,7 @@ ULONG       temp3;
         test_control_return(62);
     }
 
-    /* Open the media again to setup for a media close I/O error.  */    
+    /* Open the media again to setup for a media close I/O error.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
 
     /* Check for error.  */
@@ -1675,7 +1675,7 @@ ULONG       temp3;
         test_control_return(63);
     }
 
-    /* Create a file.  */    
+    /* Create a file.  */
     status =  fx_file_create(&ram_disk, "TEST.TXT");
 
     /* Check for error.  */
@@ -1731,13 +1731,13 @@ ULONG       temp3;
 
         printf("ERROR!\n");
         test_control_return(66);
-    }    
+    }
 
 #ifndef FX_DISABLE_CACHE
 #ifdef FX_FAULT_TOLERANT
     /* While FX__FAULT_TOLERANT is defined, non data sector will flush directly in _fx_utility_logical_sector_write rather than set dirty flag. */
     /* For this reason, driver won't be called in _fx_utility_logical_sector_flush which is different from non FAULT_TOLERANT code. */
-    _fx_utility_logical_sector_flush_error_request = 1;    
+    _fx_utility_logical_sector_flush_error_request = 1;
     status =  fx_media_close(&ram_disk);
 #else
     /* Now attemp to close the media, but with an I/O error introduced so the close will fail trying to write out the directory entry of the open file.  */
@@ -1757,22 +1757,22 @@ ULONG       temp3;
 
     /* Finallay, abort the media.  */
     fx_media_abort(&ram_disk);
-    
+
     /* Format the media in FAT16 for testing I/O error in media flush.  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             7000,                   // Total sectors  - FAT16
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status != FX_SUCCESS)
@@ -1782,18 +1782,18 @@ ULONG       temp3;
         test_control_return(68);
     }
 
-    /* Open the media again to setup for a media close I/O error.  */    
+    /* Open the media again to setup for a media close I/O error.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
     /* Check for error.  */
     if (status != FX_SUCCESS)
     {
-   
+
         printf("ERROR!\n");
         test_control_return(69);
     }
 
-    /* Create a file.  */    
+    /* Create a file.  */
     status =  fx_file_create(&ram_disk, "TEST.TXT");
 
     /* Check for error.  */
@@ -1806,7 +1806,7 @@ ULONG       temp3;
 
     /* Open the test files.  */
     status =  fx_file_open(&ram_disk, &my_file, "TEST.TXT", FX_OPEN_FOR_WRITE);
-    
+
     /* Check for error.  */
     if (status != FX_SUCCESS)
     {
@@ -1814,7 +1814,7 @@ ULONG       temp3;
         printf("ERROR!\n");
         test_control_return(71);
     }
-    
+
     /* Write to the file.  */
     status +=  fx_file_write(&my_file, "1234567890", 10);
     status +=  fx_file_write(&my_file, "1234567890", 10);
@@ -1842,21 +1842,21 @@ ULONG       temp3;
     status +=  fx_file_write(&my_file, "1234567890", 10);
     status +=  fx_media_read(&ram_disk, 2000, raw_sector_buffer);
     status +=  fx_media_write(&ram_disk, 2000, raw_sector_buffer);
-    
+
     /* Check for error.  */
     if (status != FX_SUCCESS)
     {
 
         printf("ERROR!\n");
         test_control_return(72);
-    }    
-    
+    }
+
 #if defined(FX_FAULT_TOLERANT) && !defined(FX_DISABLE_CACHE)
     /* While FX__FAULT_TOLERANT is defined, non data sector will flush directly in _fx_utility_logical_sector_write rather than set dirty flag. */
     /* For this reason, driver won't be called in _fx_utility_logical_sector_flush which is different from non FAULT_TOLERANT code. */
-    _fx_utility_logical_sector_flush_error_request = 1;    
+    _fx_utility_logical_sector_flush_error_request = 1;
     status =  fx_media_close(&ram_disk);
-#else 
+#else
     /* Now attemp to flush the media, but with an I/O error introduced so the close will fail trying to write out the directory entry of the open file.  */
     _fx_ram_driver_io_error_request =  1;
     status =  fx_media_flush(&ram_disk);
@@ -1875,20 +1875,20 @@ ULONG       temp3;
 
 
     /* Format the media in FAT16 for testing I/O error in media flush.  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             7000,                   // Total sectors  - FAT16
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status != FX_SUCCESS)
@@ -1898,18 +1898,18 @@ ULONG       temp3;
         test_control_return(68);
     }
 
-    /* Open the media again to setup for a media close I/O error.  */    
+    /* Open the media again to setup for a media close I/O error.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
 
     /* Check for error.  */
     if (status != FX_SUCCESS)
     {
-   
+
         printf("ERROR!\n");
         test_control_return(69);
     }
 
-    /* Create a file.  */    
+    /* Create a file.  */
     status =  fx_file_create(&ram_disk, "TEST.TXT");
 
     /* Check for error.  */
@@ -1922,7 +1922,7 @@ ULONG       temp3;
 
     /* Open the test files.  */
     status =  fx_file_open(&ram_disk, &my_file, "TEST.TXT", FX_OPEN_FOR_WRITE);
-    
+
     /* Check for error.  */
     if (status != FX_SUCCESS)
     {
@@ -1930,7 +1930,7 @@ ULONG       temp3;
         printf("ERROR!\n");
         test_control_return(71);
     }
-    
+
     /* Write to the file.  */
     status +=  fx_file_write(&my_file, "1234567890", 10);
     status +=  fx_file_write(&my_file, "1234567890", 10);
@@ -1958,20 +1958,20 @@ ULONG       temp3;
     status +=  fx_file_write(&my_file, "1234567890", 10);
     status +=  fx_media_read(&ram_disk, 2000, raw_sector_buffer);
     status +=  fx_media_write(&ram_disk, 2000, raw_sector_buffer);
-    
+
     /* Check for error.  */
     if (status != FX_SUCCESS)
     {
 
         printf("ERROR!\n");
         test_control_return(72);
-    }    
-    
+    }
+
 #ifndef FX_DISABLE_CACHE
 #ifdef FX_FAULT_TOLERANT
     /* While FX__FAULT_TOLERANT is defined, non data sector will flush directly in _fx_utility_logical_sector_write rather than set dirty flag. */
     /* For this reason, driver won't be called in _fx_utility_logical_sector_flush which is different from non FAULT_TOLERANT code. */
-    _fx_utility_logical_sector_flush_error_request = 1;    
+    _fx_utility_logical_sector_flush_error_request = 1;
     status =  fx_media_close(&ram_disk);
 #else
     /* Now attemp to flush the media, but with an I/O error introduced so the close will fail trying to flush logical sectors out.  */
@@ -1979,7 +1979,7 @@ ULONG       temp3;
     status =  fx_media_flush(&ram_disk);
     _fx_ram_driver_io_error_request =  0;
 #endif
-    
+
     /* Check for the I/O error.  */
     if (status != FX_IO_ERROR)
     {
@@ -1991,23 +1991,23 @@ ULONG       temp3;
 
     /* Finallay, abort the media.  */
     fx_media_abort(&ram_disk);
-    
+
     /* Now see if we can test the FAT32 format with I/O corner cases.  */
     _fx_ram_driver_io_error_request =  2211;
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             70657,                  // Total sectors  - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     _fx_ram_driver_io_error_request =  0;
 

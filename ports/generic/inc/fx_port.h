@@ -1,17 +1,18 @@
 /***************************************************************************
- * Copyright (c) 2024 Microsoft Corporation 
- * 
+ * Copyright (c) 2024 Microsoft Corporation
+ * Copyright (c) 2026-present Eclipse ThreadX contributors
+ *
  * This program and the accompanying materials are made available under the
  * terms of the MIT License which is available at
  * https://opensource.org/licenses/MIT.
- * 
+ *
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
 
 /**************************************************************************/
 /**************************************************************************/
-/**                                                                       */ 
+/**                                                                       */
 /** FileX Component                                                       */
 /**                                                                       */
 /**   Port Specific                                                       */
@@ -20,36 +21,24 @@
 /**************************************************************************/
 
 
-/**************************************************************************/ 
-/*                                                                        */ 
-/*  PORT SPECIFIC C INFORMATION                            RELEASE        */ 
-/*                                                                        */ 
-/*    fx_port.h                                            Generic        */ 
+/**************************************************************************/
+/*                                                                        */
+/*  PORT SPECIFIC C INFORMATION                            RELEASE        */
+/*                                                                        */
+/*    fx_port.h                                            Generic        */
 /*                                                           6.3.0        */
 /*                                                                        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    William E. Lamie, Microsoft Corporation                             */
 /*                                                                        */
-/*  DESCRIPTION                                                           */ 
-/*                                                                        */ 
-/*    This file contains data type definitions that make the FileX FAT    */ 
-/*    compatible file system function identically on a variety of         */ 
-/*    different processor architectures.  For example, the byte offset of */ 
-/*    various entries in the boot record, and directory entries are       */ 
-/*    defined in this file.                                               */ 
-/*                                                                        */ 
-/*  RELEASE HISTORY                                                       */ 
-/*                                                                        */ 
-/*    DATE              NAME                      DESCRIPTION             */
+/*  DESCRIPTION                                                           */
 /*                                                                        */
-/*  11-09-2020     William E. Lamie         Initial Version 6.1.2         */
-/*  03-02-2021     William E. Lamie         Modified comment(s), and      */
-/*                                            added standalone support,   */
-/*                                            resulting in version 6.1.5  */
-/*  10-31-2023     Xiuwen Cai               Modified comment(s),          */
-/*                                            added basic types guards,   */
-/*                                            resulting in version 6.3.0  */
+/*    This file contains data type definitions that make the FileX FAT    */
+/*    compatible file system function identically on a variety of         */
+/*    different processor architectures.  For example, the byte offset of */
+/*    various entries in the boot record, and directory entries are       */
+/*    defined in this file.                                               */
 /*                                                                        */
 /**************************************************************************/
 
@@ -62,7 +51,7 @@
 #ifdef FX_INCLUDE_USER_DEFINE_FILE
 
 
-/* Yes, include the user defines in fx_user.h. The defines in this file may 
+/* Yes, include the user defines in fx_user.h. The defines in this file may
    alternately be defined on the command line.  */
 
 #include "fx_user.h"
@@ -119,11 +108,11 @@ typedef unsigned long long                      ULONG64;
 
 /* Define FileX internal protection macros.  If FX_SINGLE_THREAD is defined,
    these protection macros are effectively disabled.  However, for multi-thread
-   uses, the macros are setup to utilize a ThreadX mutex for multiple thread 
+   uses, the macros are setup to utilize a ThreadX mutex for multiple thread
    access control into an open media.  */
 
 #if defined(FX_SINGLE_THREAD) || defined(FX_STANDALONE_ENABLE)
-#define FX_PROTECT                   
+#define FX_PROTECT
 #define FX_UNPROTECT
 #else
 #define FX_PROTECT                      if (media_ptr -> fx_media_id != FX_MEDIA_ID) return(FX_MEDIA_NOT_OPEN); \
@@ -156,8 +145,8 @@ typedef unsigned long long                      ULONG64;
 #define FX_RESTORE_INTS
 #endif
 
-/* Define the error checking logic to determine if there is a caller error in the FileX API.  
-   The default definitions assume ThreadX is being used.  This code can be completely turned 
+/* Define the error checking logic to determine if there is a caller error in the FileX API.
+   The default definitions assume ThreadX is being used.  This code can be completely turned
    off by just defining these macros to white space.  */
 
 #ifndef FX_STANDALONE_ENABLE
@@ -199,16 +188,16 @@ typedef unsigned long long                      ULONG64;
 #endif
 
 
-/* Defines the number of ThreadX timer ticks required to achieve the update rate specified by 
-   FX_UPDATE_RATE_IN_SECONDS defined previously. By default, the ThreadX timer tick is 10ms, 
+/* Defines the number of ThreadX timer ticks required to achieve the update rate specified by
+   FX_UPDATE_RATE_IN_SECONDS defined previously. By default, the ThreadX timer tick is 10ms,
    so the default value for this constant is 1000.  If TX_TIMER_TICKS_PER_SECOND is defined,
    this value is derived from TX_TIMER_TICKS_PER_SECOND.  */
- 
+
 #ifndef FX_UPDATE_RATE_IN_TICKS
 #if (defined(TX_TIMER_TICKS_PER_SECOND) && (!defined(FX_STANDALONE_ENABLE)))
 #define FX_UPDATE_RATE_IN_TICKS         (TX_TIMER_TICKS_PER_SECOND * FX_UPDATE_RATE_IN_SECONDS)
 #else
-#define FX_UPDATE_RATE_IN_TICKS         1000 
+#define FX_UPDATE_RATE_IN_TICKS         1000
 #endif
 #endif
 
@@ -216,8 +205,9 @@ typedef unsigned long long                      ULONG64;
 /* Define the version ID of FileX.  This may be utilized by the application.  */
 
 #ifdef FX_SYSTEM_INIT
-CHAR                            _fx_version_id[] = 
+CHAR                            _fx_version_id[] =
                                     "Copyright (c) 2024 Microsoft Corporation.  *  FileX Generic Version 6.4.1 *";
+ * Copyright (c) 2026-present Eclipse ThreadX contributors
 #else
 extern  CHAR                    _fx_version_id[];
 #endif

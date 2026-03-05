@@ -47,7 +47,7 @@ static UCHAR                    *thread_buffer;
 #else
 static UCHAR                    cache_buffer[CACHE_SIZE];
 static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE];
-#endif 
+#endif
 static UINT                     error_couter = 0;
 static UINT                     log_write_interrupt = FX_FALSE;
 static UINT                     write_index;
@@ -64,11 +64,11 @@ static UINT                         read_buffer_size = 4096;
 
 /* Define thread prototypes.  */
 
-static void    ftest_0_entry(ULONG thread_input);  
+static void    ftest_0_entry(ULONG thread_input);
 #ifndef FX_STANDALONE_ENABLE
 static void    ftest_1_entry(ULONG thread_input);
 #else
-static void    *ftest_1_entry(void * thread_input);  
+static void    *ftest_1_entry(void * thread_input);
 #endif
 extern void    _fx_ram_driver(FX_MEDIA *media_ptr);
 extern void    test_control_return(UINT status);
@@ -226,7 +226,7 @@ ULONG64     available_bytes_after_write;
         /* Get available bytes before write. */
         fx_media_extended_space_available(&ram_disk, &available_bytes_after_write);
         if (available_bytes_before_write != (available_bytes_after_write +
-                    ram_disk.fx_media_fault_tolerant_clusters * ram_disk.fx_media_bytes_per_sector * ram_disk.fx_media_sectors_per_cluster)) 
+                    ram_disk.fx_media_fault_tolerant_clusters * ram_disk.fx_media_bytes_per_sector * ram_disk.fx_media_sectors_per_cluster))
         {
 
             printf("ERROR!\n");
@@ -504,7 +504,7 @@ static void    ftest_1_entry(ULONG thread_input)
 
 #ifdef FX_STANDALONE_ENABLE
     UINT oldtype;
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);  
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
 #endif
 

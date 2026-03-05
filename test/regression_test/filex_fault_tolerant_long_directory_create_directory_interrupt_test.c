@@ -1,18 +1,18 @@
 /* This FileX test concentrates on the Fault-Tolerant directory write interrupt operation.  */
-/*                 
+/*
 For FAT 12, 16, 32, one cluster size is 1024 bytes;
-                                
-Check directory interrupt for fx_directory_create():  
-Step1: Format and open the media; 
-Step2: Enable fault tolerant feature;     
-Step3: Create directories and sub-directories; 
-Step4: Traverse the directory;       
+
+Check directory interrupt for fx_directory_create():
+Step1: Format and open the media;
+Step2: Enable fault tolerant feature;
+Step3: Create directories and sub-directories;
+Step4: Traverse the directory;
 Step5: Create new thread to create new directory with long directory name;
-Step6: Terminate the new thread to simulate poweroff when update the directory after record the redo log.  
-Step7: Open the media; 
-Step8: Enable fault tolerant feature to recover the data(redo operation);    
-Step9: Traverse the directory;      
-Step10: Recreate directory the new directory with long directory name; 
+Step6: Terminate the new thread to simulate poweroff when update the directory after record the redo log.
+Step7: Open the media;
+Step8: Enable fault tolerant feature to recover the data(redo operation);
+Step9: Traverse the directory;
+Step10: Recreate directory the new directory with long directory name;
 */
 
 #ifndef FX_STANDALONE_ENABLE
@@ -27,10 +27,10 @@ Step10: Recreate directory the new directory with long directory name;
 #include   "fx_system.h"
 #include   "fx_fault_tolerant.h"
 #include   <stdio.h>
-#include   "fx_ram_driver_test.h"               
+#include   "fx_ram_driver_test.h"
 extern void    test_control_return(UINT status);
 void    filex_fault_tolerant_long_directory_create_directory_interrupt_test_application_define(void *first_unused_memory);
-                                            
+
 #if defined (FX_ENABLE_FAULT_TOLERANT) && defined (FX_FAULT_TOLERANT) && defined (FX_FAULT_TOLERANT_DATA)
 
 #define     DEMO_STACK_SIZE         4096
@@ -41,18 +41,18 @@ void    filex_fault_tolerant_long_directory_create_directory_interrupt_test_appl
 /* Define the ThreadX and FileX object control blocks...  */
 
 #ifndef FX_STANDALONE_ENABLE
-static TX_THREAD              ftest_0;  
+static TX_THREAD              ftest_0;
 static TX_THREAD              ftest_1;
 #else
-static pthread_t              ptid1; 
+static pthread_t              ptid1;
 #endif
 static FX_MEDIA               ram_disk;
-static UCHAR                  *pointer;    
+static UCHAR                  *pointer;
 
 #define TEST_COUNT              3
 
 /* Define the counters used in the test application...  */
-                                                     
+
 #ifndef FX_STANDALONE_ENABLE
 static UCHAR                  *cache_buffer;
 static UCHAR                  *fault_tolerant_buffer;
@@ -60,37 +60,37 @@ static UCHAR                  *thread_buffer;
 #else
 static UCHAR                  cache_buffer[CACHE_SIZE];
 static UCHAR                  fault_tolerant_buffer[FAULT_TOLERANT_SIZE];
-#endif 
+#endif
 static UINT                   error_counter = 0;
 static UINT                   redo_complete =0;
-static UINT                   directory_write_interrupt = FX_FALSE; 
+static UINT                   directory_write_interrupt = FX_FALSE;
 static CHAR                   dir_name[256] = "C00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-                                             
+
 static UINT                   expected_index =  0;
 static CHAR *                 expected_name[] =  {
-                             
+
                         "A0",
                         ".",
-                        "..", 
-                        "A1",   
+                        "..",
+                        "A1",
                         ".",
-                        "..",   
+                        "..",
                         "B0",
                         ".",
-                        "..", 
-                        "B1",   
+                        "..",
+                        "B1",
                         ".",
-                        "..",   
-                        "B2",     
+                        "..",
+                        "B2",
                         ".",
-                        "..",   
-                        "B00",    
+                        "..",
+                        "B00",
                         ".",
-                        "..",     
-                        dir_name,    
+                        "..",
+                        dir_name,
                         ".",
-                        "..",   
-                        "END"};   
+                        "..",
+                        "END"};
 
 /* Define thread prototypes.  */
 
@@ -98,14 +98,14 @@ static void    ftest_0_entry(ULONG thread_input);
 #ifndef FX_STANDALONE_ENABLE
 static void    ftest_1_entry(ULONG thread_input);
 #else
-static void   * ftest_1_entry(void * thread_input);  
+static void   * ftest_1_entry(void * thread_input);
 #endif
 
 extern void    _fx_ram_driver(FX_MEDIA *media_ptr);
-extern void    test_control_return(UINT status);         
-static void    traverse_directory(CHAR *directory_name);    
-extern UINT    _filex_fault_tolerant_log_check(FX_MEDIA *media_ptr); 
-extern UINT    (*driver_write_callback)(FX_MEDIA *media_ptr, UINT sector_type, UCHAR *block_ptr, UINT *operation_ptr);  
+extern void    test_control_return(UINT status);
+static void    traverse_directory(CHAR *directory_name);
+extern UINT    _filex_fault_tolerant_log_check(FX_MEDIA *media_ptr);
+extern UINT    (*driver_write_callback)(FX_MEDIA *media_ptr, UINT sector_type, UCHAR *block_ptr, UINT *operation_ptr);
 static UINT    my_driver_write(FX_MEDIA *media_ptr, UINT sector_type, UCHAR *block_ptr, UINT *operation_ptr);
 
 
@@ -119,22 +119,22 @@ void    filex_fault_tolerant_long_directory_create_directory_interrupt_test_appl
 #endif
 {
 
-    
+
 #ifndef FX_STANDALONE_ENABLE
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
 
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
-                                              
+
     /* Create the main thread.  */
-    tx_thread_create(&ftest_1, "thread 1", ftest_1_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_1, "thread 1", ftest_1_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
     pointer =  pointer + DEMO_STACK_SIZE;
 
@@ -142,7 +142,7 @@ void    filex_fault_tolerant_long_directory_create_directory_interrupt_test_appl
     cache_buffer =  pointer;
     pointer += CACHE_SIZE;
     fault_tolerant_buffer = pointer;
-    pointer += FAULT_TOLERANT_SIZE;    
+    pointer += FAULT_TOLERANT_SIZE;
     thread_buffer = pointer;
     pointer += DEMO_STACK_SIZE;
 #endif
@@ -161,14 +161,14 @@ void    filex_fault_tolerant_long_directory_create_directory_interrupt_test_appl
 static void    ftest_0_entry(ULONG thread_input)
 {
 
-UINT        status;   
+UINT        status;
 UINT        i;
 
     FX_PARAMETER_NOT_USED(thread_input);
 
     /* Print out some test information banners.  */
     printf("FileX Test:   Fault Tolerant Long DIR Create DIR Interrupt Test......");
-                                         
+
     /* Loop to test FAT 12, 16, 32.   */
     for (i = 0; i < TEST_COUNT; i ++)
     {
@@ -176,57 +176,57 @@ UINT        i;
         if (i == 0)
         {
             /* Format the media with FAT12.  This needs to be done before opening it!  */
-            status =  fx_media_format(&ram_disk, 
+            status =  fx_media_format(&ram_disk,
                                      _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     256,                    // Total sectors 
-                                     256,                    // Sector size   
+                                     256,                    // Total sectors
+                                     256,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
-        }     
+                                     1);                     // Sectors per track
+        }
         else if (i == 1)
         {
             /* Format the media with FAT16.  This needs to be done before opening it!  */
-            status =  fx_media_format(&ram_disk, 
-                                     _fx_ram_driver,         // Driver entry            
+            status =  fx_media_format(&ram_disk,
+                                     _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     4200 * 8,               // Total sectors 
-                                     256,                    // Sector size   
+                                     4200 * 8,               // Total sectors
+                                     256,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
-        }  
+                                     1);                     // Sectors per track
+        }
         else if (i == 2)
         {
             /* Format the media with FAT32.  This needs to be done before opening it!  */
-            status =  fx_media_format(&ram_disk, 
-                                     _fx_ram_driver,         // Driver entry            
+            status =  fx_media_format(&ram_disk,
+                                     _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     70000 * 8,              // Total sectors 
-                                     256,                    // Sector size   
+                                     70000 * 8,              // Total sectors
+                                     256,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
-        }  
+                                     1);                     // Sectors per track
+        }
 
         /* Determine if the format had an error.  */
         if (status)
@@ -234,7 +234,7 @@ UINT        i;
 
             printf("ERROR!\n");
             test_control_return(1);
-        }            
+        }
 
         /* Open the ram_disk.  */
         status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
@@ -248,7 +248,7 @@ UINT        i;
             test_control_return(2);
         }
 
-        /* Enable the Fault-tolerant feature to recover the media.  */       
+        /* Enable the Fault-tolerant feature to recover the media.  */
         status = fx_fault_tolerant_enable(&ram_disk, fault_tolerant_buffer, FAULT_TOLERANT_SIZE);
 
         /* Check status.   */
@@ -297,18 +297,18 @@ UINT        i;
             /* Error creating sub-sub-directories.  Return to caller.  */
             printf("ERROR!\n");
             test_control_return(6);
-        }      
+        }
 
         /* Set the index as zero before traverse.  */
         expected_index = 0;
-                        
+
         /* Traverse the directory structure recursively.  */
         traverse_directory(FX_NULL);
-                        
+
         /* Create the main thread.  */
 #ifndef FX_STANDALONE_ENABLE
-        tx_thread_create(&ftest_1, "thread 1", ftest_1_entry, 0,  
-                        thread_buffer, DEMO_STACK_SIZE, 
+        tx_thread_create(&ftest_1, "thread 1", ftest_1_entry, 0,
+                        thread_buffer, DEMO_STACK_SIZE,
                         4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 #endif
 
@@ -324,7 +324,7 @@ UINT        i;
         pthread_join(ptid1,NULL);
 #endif
 
-        /* After interrupt, reread the files.  */ 
+        /* After interrupt, reread the files.  */
 
         /* Open the ram_disk.  */
         status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
@@ -336,9 +336,9 @@ UINT        i;
             /* Error, return error code.  */
             printf("ERROR!\n");
             test_control_return(7);
-        }  
+        }
 
-        /* Enable the Fault-tolerant feature to recover the media.  */        
+        /* Enable the Fault-tolerant feature to recover the media.  */
         status = fx_fault_tolerant_enable(&ram_disk, fault_tolerant_buffer, FAULT_TOLERANT_SIZE);
 
         /* Check status.   */
@@ -352,7 +352,7 @@ UINT        i;
         /* Set the index as zero before traverse.  */
         expected_index = 0;
         redo_complete = 1;
-		
+
         /* Traverse the directory structure recursively.  */
         traverse_directory(FX_NULL);
 
@@ -377,7 +377,7 @@ UINT        i;
 
             printf("ERROR!\n");
             test_control_return(10);
-        }    
+        }
 
         /* Delete the thread.  */
 #ifndef FX_STANDALONE_ENABLE
@@ -385,9 +385,9 @@ UINT        i;
 #else
         pthread_cancel(ptid1);
 #endif
-    }      
+    }
 
-    /* Output successful.  */     
+    /* Output successful.  */
     printf("SUCCESS!\n");
     test_control_return(0);
 }
@@ -402,7 +402,7 @@ static void    ftest_1_entry(ULONG thread_input)
 {
 #ifdef FX_STANDALONE_ENABLE
     UINT oldtype;
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);  
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
 #endif
 
@@ -419,7 +419,7 @@ static UINT my_driver_write(FX_MEDIA *media_ptr, UINT sector_type, UCHAR *block_
 {
 
     FX_PARAMETER_NOT_USED(block_ptr);
-    
+
     /* Interrupt the Directory write operation after record the redo log.  */
     if ((sector_type == FX_DIRECTORY_SECTOR) && (_filex_fault_tolerant_log_check(media_ptr) & FX_FAULT_TOLERANT_LOG_REDO_DONE))
     {
@@ -428,14 +428,14 @@ static UINT my_driver_write(FX_MEDIA *media_ptr, UINT sector_type, UCHAR *block_
         *operation_ptr = FX_OP_WRITE_INTERRUPT;
 
         /* Update the flag.  */
-        directory_write_interrupt = FX_TRUE;   
-                                             
+        directory_write_interrupt = FX_TRUE;
+
         /* Clean the callback function.  */
         driver_write_callback = FX_NULL;
-                        
+
         /* Delete the media protection structure if FX_SINGLE_THREAD is not
         defined.  */
-#ifndef FX_SINGLE_THREAD   
+#ifndef FX_SINGLE_THREAD
 #ifndef FX_DONT_CREATE_MUTEX
 
         /* Note that the protection is never released. The mutex delete
@@ -447,10 +447,10 @@ static UINT my_driver_write(FX_MEDIA *media_ptr, UINT sector_type, UCHAR *block_
 
         /* Clean the media data.  */
         _fx_system_media_opened_ptr = FX_NULL;
-        _fx_system_media_opened_count = 0;      
+        _fx_system_media_opened_count = 0;
 
         /* Clean the media.  */
-        memset(media_ptr, 0, sizeof(FX_MEDIA));   
+        memset(media_ptr, 0, sizeof(FX_MEDIA));
 
         /* Simulate poweroff.  */
         /* First terminate the thread to ensure it is ready for deletion.  */
@@ -500,7 +500,7 @@ UINT            skip;
         /* Compare with what is expected.  */
         if (strcmp(name, expected_name[expected_index++]))
             error_counter++;
-       
+
         /* Determine if this name is a directory or a file.  */
         status =  fx_directory_name_test(&ram_disk, name);
 
@@ -515,7 +515,7 @@ UINT            skip;
             status =  fx_file_close(&file);
             if (status != FX_SUCCESS)
                 error_counter++;
-        
+
             /* Pickup the next directory entry.  */
             status =  fx_directory_next_entry_find(&ram_disk, name);
         }
@@ -529,16 +529,16 @@ UINT            skip;
             {
                 /* Recursive call to traverse directory.  */
                 traverse_directory(name);
-            
+
                 /* Restore path.  */
                 status =  fx_directory_local_path_restore(&ram_disk, &local_path);
             }
 
             status =  fx_directory_next_entry_find(&ram_disk, name);
-        } 
-    } 
+        }
+    }
     fx_directory_local_path_clear(&ram_disk);
-}       
+}
 #else
 static void  traverse_directory(CHAR *directory_name)
 {
@@ -552,7 +552,7 @@ CHAR            name[300];
     status =  fx_directory_next_entry_find(&ram_disk, name);
     if (strcmp(name, "B0"))
         error_counter++;
-	
+
 	/* Set the current path */
     status =  fx_directory_default_set(&ram_disk, "/A0");
     status =  fx_directory_first_entry_find(&ram_disk, name);
@@ -576,7 +576,7 @@ CHAR            name[300];
     status =  fx_directory_next_entry_find(&ram_disk, name);
     if (strcmp(name, "B00"))
         error_counter++;
-	
+
 }
 #endif
 
@@ -588,11 +588,11 @@ void test_application_define(void *first_unused_memory)
 void    filex_fault_tolerant_long_directory_create_directory_interrupt_test_application_define(void *first_unused_memory)
 #endif
 {
-    
+
     FX_PARAMETER_NOT_USED(first_unused_memory);
 
     /* Print out some test information banners.  */
-    printf("FileX Test:   Fault Tolerant Long DIR Create DIR Interrupt Test......N/A\n");    
+    printf("FileX Test:   Fault Tolerant Long DIR Create DIR Interrupt Test......N/A\n");
 
     test_control_return(255);
 }

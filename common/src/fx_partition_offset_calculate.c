@@ -1,10 +1,11 @@
 /***************************************************************************
- * Copyright (c) 2024 Microsoft Corporation 
- * 
+ * Copyright (c) 2024 Microsoft Corporation
+ * Copyright (c) 2026-present Eclipse ThreadX contributors
+ *
  * This program and the accompanying materials are made available under the
  * terms of the MIT License which is available at
  * https://opensource.org/licenses/MIT.
- * 
+ *
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
@@ -111,18 +112,6 @@ UINT    _fx_partition_offset_calculate_extended(FX_MEDIA *media_ptr, void  *part
 /*  CALLED BY                                                             */
 /*                                                                        */
 /*    Application Driver                                                  */
-/*                                                                        */
-/*  RELEASE HISTORY                                                       */
-/*                                                                        */
-/*    DATE              NAME                      DESCRIPTION             */
-/*                                                                        */
-/*  05-19-2020     William E. Lamie         Initial Version 6.0           */
-/*  09-30-2020     William E. Lamie         Modified comment(s),          */
-/*                                            resulting in version 6.1    */
-/*  04-02-2021     William E. Lamie         Modified comment(s),          */
-/*                                            ignored signature check for */
-/*                                            no partition situation,     */
-/*                                            resulting in version 6.1.6  */
 /*                                                                        */
 /**************************************************************************/
 UINT  _fx_partition_offset_calculate(void  *partition_sector, UINT partition,
@@ -265,16 +254,6 @@ UCHAR             *partition_sector_ptr;
 /*                                                                        */
 /*    _fx_partition_offset_calculate        Calculate partition offset    */
 /*                                                                        */
-/*  RELEASE HISTORY                                                       */
-/*                                                                        */
-/*    DATE              NAME                      DESCRIPTION             */
-/*                                                                        */
-/*  05-19-2020     William E. Lamie         Initial Version 6.0           */
-/*  09-30-2020     William E. Lamie         Modified comment(s),          */
-/*                                            resulting in version 6.1    */
-/*  04-02-2021     William E. Lamie         Modified comment(s),          */
-/*                                            resulting in version 6.1.6  */
-/*                                                                        */
 /**************************************************************************/
 UINT  _fx_utility_partition_get(FX_MEDIA_PARTITION *partition_table,
                                 UINT *count, ULONG sector, UCHAR *sector_buffer)
@@ -372,12 +351,6 @@ ULONG base_sector, value;
 /*  CALLED BY                                                             */
 /*                                                                        */
 /*    Application Driver                                                  */
-/*                                                                        */
-/*  RELEASE HISTORY                                                       */
-/*                                                                        */
-/*    DATE              NAME                      DESCRIPTION             */
-/*                                                                        */
-/*  10-31-2022     Xiuwen Cai               Initial Version 6.2.0        */
 /*                                                                        */
 /**************************************************************************/
 UINT  _fx_partition_offset_calculate_extended(FX_MEDIA *media_ptr, void  *partition_sector, UINT partition,

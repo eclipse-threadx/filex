@@ -59,14 +59,14 @@ void    filex_fault_tolerant_media_check_application_define(void *first_unused_m
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
 
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -98,20 +98,20 @@ ULONG       errors_detected;
     printf("FileX Test:   Fault Tolerant Media Check Test........................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            sizeof(cache_buffer),   // Media buffer size 
+                            sizeof(cache_buffer),   // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            256,                    // Total sectors 
-                            2048,                   // Sector size   
+                            256,                    // Total sectors
+                            2048,                   // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -173,14 +173,14 @@ ULONG       errors_detected;
     test_control_return(0);
 }
 
-#else  
+#else
 #ifdef CTEST
 void test_application_define(void *first_unused_memory)
 #else
 void    filex_fault_tolerant_media_check_application_define(void *first_unused_memory)
 #endif
 {
-    
+
     FX_PARAMETER_NOT_USED(first_unused_memory);
 
     /* Print out some test information banners.  */

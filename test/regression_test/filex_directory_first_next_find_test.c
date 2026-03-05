@@ -52,13 +52,13 @@ void    filex_directory_first_next_find_application_define(void *first_unused_me
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -106,20 +106,20 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     printf("FileX Test:   Directory first/next entry find test...................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -128,7 +128,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         printf("ERROR!\n");
         test_control_return(1);
     }
-    
+
     /* Attempt to get the next entry before the media is opened to generate an error */
     status = fx_directory_next_entry_find(&ram_disk, "/A0");
     if (status != FX_MEDIA_NOT_OPEN)
@@ -136,16 +136,16 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         printf("ERROR!\n");
         test_control_return(2);
     }
-    
+
     /* Attempt to get the next full entry before the media is opened to generate an error */
-    status = fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status = fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (status != FX_MEDIA_NOT_OPEN)
     {
         printf("ERROR!\n");
         test_control_return(3);
     }
-    
+
     /* Attempt to get the first entry before the media is opened to generate an error */
     status = fx_directory_first_entry_find(&ram_disk, "/A0");
     if (status != FX_MEDIA_NOT_OPEN)
@@ -153,9 +153,9 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         printf("ERROR!\n");
         test_control_return(4);
     }
-    
+
     /* Attempt to get the first full entry before the media is opened to generate an error */
-    status = fx_directory_first_full_entry_find(&ram_disk, name, &attributes, 
+    status = fx_directory_first_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (status != FX_MEDIA_NOT_OPEN)
     {
@@ -174,7 +174,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         printf("ERROR!\n");
         test_control_return(6);
     }
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
@@ -184,9 +184,9 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         printf("ERROR!\n");
         test_control_return(6);
     }
-    
+
     /* send null pointer to generate an error */
-    status = fx_directory_first_full_entry_find(FX_NULL, name, &attributes, 
+    status = fx_directory_first_full_entry_find(FX_NULL, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (status != FX_PTR_ERROR)
     {
@@ -211,7 +211,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     status +=  fx_directory_create(&ram_disk, "RootDir13");
     status +=  fx_directory_create(&ram_disk, "RootDir14");
     status +=  fx_file_create(&ram_disk,      "RootFile15");
-    
+
     /* Create the sub-directories for RootDir03.  */
     status +=  fx_directory_create(&ram_disk, "/RootDir03/RootDir03_SubDir01");
     status +=  fx_file_create(&ram_disk,      "/RootDir03/RootDir03_File02");
@@ -322,7 +322,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     status +=  fx_directory_create(&ram_disk, "/RootDir04/RootDir04_SubDir08/RootDir04_SubDir08_SubSubDir02");
     status +=  fx_directory_create(&ram_disk, "/RootDir04/RootDir04_SubDir08/RootDir04_SubDir08_SubSubDir03");
     status +=  fx_file_create(&ram_disk,      "/RootDir04/RootDir04_SubDir05/RootDir04_SubDir08_SubSubFile04");
-    
+
     /* Create the sub-sub-sub directories under RootDir04.  */
     status +=  fx_directory_create(&ram_disk, "/RootDir04/RootDir04_SubDir04/RootDir04_SubDir04_SubSubDir01/RootDir04_SubDir04_SubSubDir01_SubSubSubDir01");
     status +=  fx_directory_create(&ram_disk, "/RootDir04/RootDir04_SubDir04/RootDir04_SubDir04_SubSubDir01/RootDir04_SubDir04_SubSubDir01_SubSubSubDir02");
@@ -355,14 +355,14 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     status =  fx_directory_default_set(&ram_disk, "/");
 
     /* Check the status.  */
-    if (status != FX_SUCCESS) 
+    if (status != FX_SUCCESS)
     {
 
         /* Error setting the path.  Return to caller.  */
         printf("ERROR!\n");
         test_control_return(9);
     }
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
@@ -441,11 +441,11 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     }
 
     /* Now test the full directory entry services.  */
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
-    status = fx_directory_next_full_entry_find(FX_NULL, name, &attributes, 
+    status = fx_directory_next_full_entry_find(FX_NULL, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (status != FX_PTR_ERROR)
     {
@@ -455,63 +455,63 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
 #endif /* FX_DISABLE_ERROR_CHECKING */
 
     /* Pickup the first entry in the root directory.  */
-    status =  fx_directory_first_full_entry_find(&ram_disk, name, &attributes, 
+    status =  fx_directory_first_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootFile01"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootFile02"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir03"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir04"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir05"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir06"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir07"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir08"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootFile09"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootFile10"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir11"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir12"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir13"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir14"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootFile15"))
         status++;
@@ -525,7 +525,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     }
 
     /* Now read one past the number of entries in order to get an error condition.  */
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
 
     /* Determine if the test was successful.  */
@@ -536,14 +536,14 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         test_control_return(15);
     }
 
-    /* Okay, now postion to the deepest sub-directory and ensure that the directory first/next 
+    /* Okay, now postion to the deepest sub-directory and ensure that the directory first/next
        operations work properly there as well.  */
 
     /* Set the current path. This should be / or NULL.   */
     status =  fx_directory_default_set(&ram_disk, "/RootDir04/RootDir04_SubDir04/RootDir04_SubDir04_SubSubDir02");
 
     /* Check the status.  */
-    if (status != FX_SUCCESS) 
+    if (status != FX_SUCCESS)
     {
 
         /* Error setting the path.  Return to caller.  */
@@ -591,49 +591,49 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     }
 
     /* Now do the same thing but with the full find first/next.  */
-    
+
 /*  pick up the first full entry with a local path defined to get to all of the code */
 #ifndef FX_NO_LOCAL_PATH
     status  =  fx_directory_local_path_set(&ram_disk, &local_path, "/RootDir04/RootDir04_SubDir03");
-    status +=  fx_directory_first_full_entry_find(&ram_disk, name, &attributes, 
+    status +=  fx_directory_first_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "."))
         status++;
     status +=  fx_directory_local_path_clear(&ram_disk);
     status +=  fx_directory_local_path_set(&ram_disk, &local_path, "/");
-    status +=  fx_directory_first_full_entry_find(&ram_disk, name, &attributes, 
+    status +=  fx_directory_first_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     status +=  fx_directory_local_path_clear(&ram_disk);
-    
+
     if (status != FX_SUCCESS)
     {
         printf("ERROR!\n");
         test_control_return(19);
     }
 #endif
-    
+
     /* Pickup the first entry in this sub-sub directory.  */
-    status =  fx_directory_first_full_entry_find(&ram_disk, name, &attributes, 
+    status =  fx_directory_first_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "."))
         status++;
-    status =  fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status =  fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, ".."))
         status++;
-    status =  fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status =  fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir04_SubDir04_SubSubDir01_SubSubSubDir01"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir04_SubDir04_SubSubDir01_SubSubSubDir02"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir04_SubDir04_SubSubDir01_SubSubSubDir03"))
         status++;
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
     if (strcmp(name, "RootDir04_SubDir04_SubSubDir01_SubSubSubFile04"))
         status++;
@@ -647,7 +647,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     }
 
     /* Now read one past the number of entries in order to get an error condition.  */
-    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes, 
+    status += fx_directory_next_full_entry_find(&ram_disk, name, &attributes,
                 &size, &year, &month, &day, &hour, &minute, &second);
 
     /* Determine if the test was successful.  */
@@ -657,7 +657,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         printf("ERROR!\n");
         test_control_return(21);
     }
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
 
@@ -668,22 +668,22 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         printf("ERROR!\n");
         test_control_return(22);
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            4096,                   // Total sectors 
-                            128,                    // Sector size   
+                            4096,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -692,7 +692,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         printf("ERROR!\n");
         test_control_return(23);
     }
-    
+
     /* Open the ram_disk - 1 sector cache.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -707,13 +707,13 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
 
     /* Call first entry find with nothing in the root directory.  */
     status =  fx_directory_first_entry_find(&ram_disk, name);
-    
+
     /* This should return no more entries.  */
     if (status != FX_NO_MORE_ENTRIES)
     {
         printf("ERROR!\n");
         test_control_return(25);
-    }   
+    }
 
     /* Create a directory structure that we can traverse.  */
     status =  fx_directory_create(&ram_disk, "\\SUB1");
@@ -741,7 +741,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         name[i] =  'a';
     }
     name[255] = 0;
-    
+
     /* Create a max length named file in this sub-directory.  */
     status +=  fx_file_create(&ram_disk, name);
 
@@ -756,50 +756,50 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     _fx_utility_fat_entry_read_error_request = 10001;
     status = fx_directory_first_entry_find(&ram_disk, name);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* This should return no more entries.  */
     if (status != FX_FAT_READ_ERROR)
     {
         printf("ERROR!\n");
         test_control_return(27);
-    }   
-    
+    }
+
     /* Now get the first entry... with a cluster equal to itself first.  Note this calls next entry find inside.  */
     _fx_utility_fat_entry_read_error_request = 30001;
     status = fx_directory_first_entry_find(&ram_disk, name);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* This should return no more entries.  */
     if (status != FX_FAT_READ_ERROR)
     {
         printf("ERROR!\n");
         test_control_return(28);
-    }   
+    }
 
     /* Now get the first entry... with an I/O error on the FAT read.  Note this calls next entry find inside.  */
     _fx_utility_fat_entry_read_error_request = 1;
     status = fx_directory_first_entry_find(&ram_disk, name);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* This should return no more entries.  */
     if (status != FX_IO_ERROR)
     {
         printf("ERROR!\n");
         test_control_return(29);
-    }   
+    }
 
     /* Now get the first entry... with a smaller value of total clusters.  Note this calls next entry find inside.  */
     temp =  ram_disk.fx_media_total_clusters;
     ram_disk.fx_media_total_clusters =  1;
     status = fx_directory_first_entry_find(&ram_disk, name);
     ram_disk.fx_media_total_clusters =  temp;
-    
+
     /* This should return no more entries.  */
     if (status != FX_FAT_READ_ERROR)
     {
         printf("ERROR!\n");
         test_control_return(30);
-    }   
+    }
 
     /* Now get the first entry... successfully.  Note this calls next entry find inside.  */
     status = fx_directory_first_entry_find(&ram_disk, name);    /* TEST.TXT  */
@@ -825,14 +825,14 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     _fx_utility_logical_sector_read_error_request = 1;
     status = fx_directory_next_entry_find(&ram_disk, name);
     _fx_utility_logical_sector_read_error_request = 0;
-    
+
     /* This should return no more entries.  */
     if (status != FX_IO_ERROR)
     {
         printf("ERROR!\n");
         test_control_return(32);
-    }   
-    
+    }
+
     /* Now get all the directory entires.   */
     status =  fx_directory_next_entry_find(&ram_disk, name);    /* .          */
     status =  fx_directory_next_entry_find(&ram_disk, name);    /* ..          */
@@ -861,7 +861,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
 
     /* Now make another request to get the FX_NO_MORE_ENTRIES error.  */
     status =  fx_directory_next_entry_find(&ram_disk, name);    /* END of Directory! */
-    
+
     /* This should return no more entries.  */
     if (status != FX_NO_MORE_ENTRIES)
     {
@@ -874,7 +874,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     ram_disk.fx_media_default_path.fx_path_current_entry =  100;
     status =  fx_directory_next_entry_find(&ram_disk, name);    /* END of Directory! */
     ram_disk.fx_media_default_path.fx_path_current_entry =  temp;
-    
+
     /* This should return no more entries.  */
     if (status != FX_NO_MORE_ENTRIES)
     {
@@ -950,7 +950,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         printf("ERROR!\n");
         test_control_return(36);
     }
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
 
@@ -960,23 +960,23 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
 
         printf("ERROR!\n");
         test_control_return(37);
-    }       
+    }
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            4096,                   // Total sectors 
-                            128,                    // Sector size   
+                            4096,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -985,7 +985,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         printf("ERROR!\n");
         test_control_return(38);
     }
-    
+
     /* Open the ram_disk - 1 sector cache.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -1000,13 +1000,13 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
 
     /* Call first entry find with nothing in the root directory.  */
     status =  fx_directory_first_full_entry_find(&ram_disk, name, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, &second);
-    
+
     /* This should return no more entries.  */
     if (status != FX_NO_MORE_ENTRIES)
     {
         printf("ERROR!\n");
         test_control_return(40);
-    }   
+    }
 
     /* Create a directory structure that we can traverse.  */
     status =  fx_directory_create(&ram_disk, "\\SUB1");
@@ -1034,7 +1034,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         name[i] =  'a';
     }
     name[255] = 0;
-    
+
     /* Create a max length named file in this sub-directory.  */
     status +=  fx_file_create(&ram_disk, name);
 
@@ -1049,50 +1049,50 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     _fx_utility_fat_entry_read_error_request = 10001;
     status = fx_directory_first_full_entry_find(&ram_disk, name, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, &minute, FX_NULL);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* This should return no more entries.  */
     if (status != FX_FAT_READ_ERROR)
     {
         printf("ERROR!\n");
         test_control_return(42);
-    }   
-    
+    }
+
     /* Now get the first entry... with a cluster equal to itself first.  Note this calls next entry find inside.  */
     _fx_utility_fat_entry_read_error_request = 30001;
     status = fx_directory_first_full_entry_find(&ram_disk, name, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, &second);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* This should return no more entries.  */
     if (status != FX_FAT_READ_ERROR)
     {
         printf("ERROR!\n");
         test_control_return(43);
-    }   
+    }
 
     /* Now get the first entry... with an I/O error on the FAT read.  Note this calls next entry find inside.  */
     _fx_utility_fat_entry_read_error_request = 1;
     status = fx_directory_first_full_entry_find(&ram_disk, name, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, &second);
     _fx_utility_fat_entry_read_error_request =  0;
-    
+
     /* This should return no more entries.  */
     if (status != FX_IO_ERROR)
     {
         printf("ERROR!\n");
         test_control_return(44);
-    }   
+    }
 
     /* Now get the first entry... with a smaller value of total clusters.  Note this calls next entry find inside.  */
     temp =  ram_disk.fx_media_total_clusters;
     ram_disk.fx_media_total_clusters =  1;
     status = fx_directory_first_full_entry_find(&ram_disk, name, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, &second);
     ram_disk.fx_media_total_clusters =  temp;
-    
+
     /* This should return no more entries.  */
     if (status != FX_FAT_READ_ERROR)
     {
         printf("ERROR!\n");
         test_control_return(45);
-    }   
+    }
 
     /* Now get the first entry... successfully.  Note this calls next entry find inside.  */
     status = fx_directory_first_full_entry_find(&ram_disk, name, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, &second);    /* TEST.TXT  */
@@ -1118,14 +1118,14 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     _fx_utility_logical_sector_read_error_request = 1;
     status = fx_directory_next_full_entry_find(&ram_disk, name, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, &second);
     _fx_utility_logical_sector_read_error_request = 0;
-    
+
     /* This should return no more entries.  */
     if (status != FX_IO_ERROR)
     {
         printf("ERROR!\n");
         test_control_return(47);
-    }   
-    
+    }
+
     /* Now get all the directory entires.   */
     status =  fx_directory_next_full_entry_find(&ram_disk, name, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, &second);    /* .          */
     status =  fx_directory_next_full_entry_find(&ram_disk, name, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, &minute, FX_NULL);    /* ..         */
@@ -1154,7 +1154,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
 
     /* Now make another request to get the FX_NO_MORE_ENTRIES error.  */
     status =  fx_directory_next_full_entry_find(&ram_disk, name, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, &second);    /* END of Directory! */
-    
+
     /* This should return no more entries.  */
     if (status != FX_NO_MORE_ENTRIES)
     {
@@ -1167,7 +1167,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     ram_disk.fx_media_default_path.fx_path_current_entry =  100;
     status =  fx_directory_next_full_entry_find(&ram_disk, name, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, FX_NULL, &second);    /* END of Directory! */
     ram_disk.fx_media_default_path.fx_path_current_entry =  temp;
-    
+
     /* This should return no more entries.  */
     if (status != FX_NO_MORE_ENTRIES)
     {
@@ -1247,7 +1247,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         printf("ERROR!\n");
         test_control_return(51);
     }
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
 
@@ -1257,22 +1257,22 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
 
         printf("ERROR!\n");
         test_control_return(52);
-    }       
+    }
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            4096,                   // Total sectors 
-                            128,                    // Sector size   
+                            4096,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Open the ram_disk.  */
     status +=  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);

@@ -54,13 +54,13 @@ void    filex_directory_long_short_get_application_define(void *first_unused_mem
 #ifndef FX_STANDALONE_ENABLE
     UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -95,20 +95,20 @@ UINT        i;
     printf("FileX Test:   Directory long/short name get test.....................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             128,                    // Directory Entries
                             0,                      // Hidden sectors
-                            2048,                   // Total sectors 
-                            128,                    // Sector size   
+                            2048,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -129,7 +129,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(2);
     }
-    
+
     /* Attempt to get a directory that does not exist */
     status =  fx_directory_short_name_get(&ram_disk, "does_not_exist", "does_not_exist");
     if (status == FX_SUCCESS)
@@ -144,7 +144,7 @@ UINT        i;
     status += fx_file_create(&ram_disk,  "longnametest");
     status += fx_file_create(&ram_disk,  "subdir/SNAME.TXT");
     status += fx_file_create(&ram_disk,  "subdir/longnametest");
-    
+
     /* Check the directory/file create status.  */
     if (status != FX_SUCCESS)
     {
@@ -153,7 +153,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(4);
     }
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
@@ -171,7 +171,7 @@ UINT        i;
         test_control_return(5);
     }
 #endif /* FX_DISABLE_ERROR_CHECKING */
-    
+
     /* attempt to get the long name of something that doesnt exist */
     status = fx_directory_long_name_get(&ram_disk, "does_not_exist", "does_not_exist");
     if (status == FX_SUCCESS)
@@ -192,7 +192,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(7);
     }
-   
+
     /* Set name to known state.  */
     memcpy(name, "ORIGINALSTRING", 15);
 
@@ -290,7 +290,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(11);
     }
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
@@ -308,8 +308,8 @@ UINT        i;
         test_control_return(12);
     }
 #endif /* FX_DISABLE_ERROR_CHECKING */
-    
-    
+
+
     /* Create a maximum size short file name.  */
     status =  fx_file_create(&ram_disk, "MAX_SIZE.TXT");
 
@@ -323,18 +323,18 @@ UINT        i;
         /* Error getting long/short name.  Return to caller.  */
         printf("ERROR!\n");
         test_control_return(13);
-    }  
-    
+    }
+
     /* Build a maximum sized long file name.  */
     for (i = 0; i < (FX_MAX_LONG_NAME_LEN-1); i++)
     {
-    
+
         /* Set a character in the file name.  */
         max_name[i] =  'a';
     }
     max_name[i] =  0;
     max_name[i-4] = '.';
-    
+
     /* Create a maximum size long file name.  */
     status =  fx_file_create(&ram_disk, max_name);
 
@@ -348,7 +348,7 @@ UINT        i;
         /* Error getting long/short name.  Return to caller.  */
         printf("ERROR!\n");
         test_control_return(14);
-    }  
+    }
 
     /* Get the long name.  */
     status += fx_directory_long_name_get(&ram_disk, return_name, return_name);
@@ -360,14 +360,14 @@ UINT        i;
         /* Error getting long/short name.  Return to caller.  */
         printf("ERROR!\n");
         test_control_return(15);
-    }  
-    
-    
+    }
+
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
 
     /* Determine if the test was successful.  */
-    if (status != FX_SUCCESS) 
+    if (status != FX_SUCCESS)
     {
 
         printf("ERROR!\n");

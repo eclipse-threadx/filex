@@ -38,13 +38,13 @@ void    filex_unicode_fat_entry_1_test_application_define(void *first_unused_mem
 
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
     pointer =  pointer + DEMO_STACK_SIZE;
 
@@ -76,20 +76,20 @@ FX_LOCAL_PATH   local_path;
     printf("FileX Test:   Unicode fat entry 1 test...............................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Open the ram_disk.  */
     status +=  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
@@ -121,7 +121,7 @@ FX_LOCAL_PATH   local_path;
     test_control_return(0);
 }
 
-#else  
+#else
 
 extern void    test_control_return(UINT status);
 #ifdef CTEST
@@ -130,7 +130,7 @@ void test_application_define(void *first_unused_memory)
 void    filex_fault_tolerant_enable_4_test_application_define(void *first_unused_memory)
 #endif
 {
-    
+
     FX_PARAMETER_NOT_USED(first_unused_memory);
 
     /* Print out some test information banners.  */

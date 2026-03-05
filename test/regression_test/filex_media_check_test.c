@@ -59,13 +59,13 @@ void    filex_media_check_application_define(void *first_unused_memory)
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -105,22 +105,22 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     printf("FileX Test:   Media check test.......................................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            256,                    // Total sectors 
-                            128,                    // Sector size   
+                            256,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Try to check the media before the media has been opened */
     status =  fx_media_check(&ram_disk, scratch_memory, SCRATCH_MEMORY_SIZE, 0, &errors_detected);
     return_if_fail( status == FX_MEDIA_NOT_OPEN);
@@ -128,7 +128,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
 
@@ -146,15 +146,15 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     status =  fx_media_close(&ram_disk);
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Invalidate the cache.  */
     status =  fx_media_cache_invalidate(&ram_disk);
-    
+
     /* Read the first FAT sector.  */
-    status += fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status += fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);
 
     /* Check the status.  */
-    return_if_fail((status == FX_SUCCESS) && 
+    return_if_fail((status == FX_SUCCESS) &&
         (raw_sector_buffer[0] == 0xF8) &&    /* _fx_media_format_media_type value set during media format */
         (raw_sector_buffer[1] == 0xFF) &&
         (raw_sector_buffer[2] == 0xFF));
@@ -163,15 +163,15 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     raw_sector_buffer[30] =  2;
     raw_sector_buffer[31] =  3;
     raw_sector_buffer[32] =  4;
-    
+
     /* Write the FAT sector back...  with the errors.  */
-    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Attempt to check the media but give it a bad scratch_memory_size to throw an error */
     status = fx_media_check(&ram_disk, scratch_memory, 0, 0, &errors_detected);
     return_if_fail( status == FX_NOT_ENOUGH_MEMORY);
-    
+
     /* Attempt to check the media but give it a bad scratch_memory_size to throw an error */
     status = fx_media_check(&ram_disk, scratch_memory, (ram_disk.fx_media_total_clusters / 8), 0, &errors_detected);
     return_if_fail( status == FX_NOT_ENOUGH_MEMORY);
@@ -179,11 +179,11 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Attempt to check the media but give it another bad scratch_memory_size to throw an error */
     status = fx_media_check(&ram_disk, scratch_memory, 977, 0, &errors_detected);
     return_if_fail( status == FX_NOT_ENOUGH_MEMORY);
-    
+
     /* Check the media for errors.  */
     status =  fx_media_check(&ram_disk, scratch_memory, SCRATCH_MEMORY_SIZE, 0, &errors_detected);
     return_if_fail( (status == FX_SUCCESS) && (errors_detected == FX_LOST_CLUSTER_ERROR));
-    
+
     /* Check the media for errors again, but correct them this time!  */
     status =  fx_media_check(&ram_disk, scratch_memory, SCRATCH_MEMORY_SIZE, FX_LOST_CLUSTER_ERROR, &errors_detected);
     return_if_fail( (status == FX_SUCCESS) && (errors_detected == FX_LOST_CLUSTER_ERROR));
@@ -214,23 +214,23 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     status += fx_file_close(&my_file);
     status += fx_media_close(&ram_disk);
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
-   
+
     /* Loop to clear the raw sector buffer... */
     for (i = 0; i < sizeof(raw_sector_buffer); i++)
     {
-    
+
         raw_sector_buffer[i] =  0;
-    } 
+    }
 
     /* Setup original FAT table to break the File's cluster!  */
     raw_sector_buffer[0] =  0x0F;
     raw_sector_buffer[1] =  0x0f;
     raw_sector_buffer[2] =  0xFF;
-    
+
     /* Write the FAT sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status += fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_ACCESS_ERROR);
-    
+
     /* Check the media for errors.  */
     status =  fx_media_check(&ram_disk, scratch_memory, SCRATCH_MEMORY_SIZE, 0, &errors_detected);
 
@@ -269,9 +269,9 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     raw_sector_buffer[0x1D] =  0;
     raw_sector_buffer[0x1E] =  0;
     raw_sector_buffer[0x1F] =  0;
-    
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);  
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Check the media for errors.  */
@@ -283,30 +283,30 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Clear the initial part of the RAM disk memory.  */
     for (i = 0; i < 4096; i++)
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            256,                    // Total sectors 
-                            128,                    // Sector size   
+                            256,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_file_create(&ram_disk, "ROOTF1.TXT");
@@ -325,7 +325,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     status += fx_media_flush(&ram_disk);
     status += fx_file_create(&ram_disk, "\\SUB1\\SUB2\\SUB2F2.TXT");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Write data to the files...  */
     status += fx_file_open(&ram_disk, &my_file, "ROOTF1.TXT", FX_OPEN_FOR_WRITE);
     status += fx_file_write(&my_file, "ROOT1_CONTENTS", 14);
@@ -341,7 +341,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     status += fx_file_write(&my_file, "SUB1F1_CONTENTS", 15);
     status += fx_file_close(&my_file);
     status += fx_media_flush(&ram_disk);
-        
+
     status += fx_file_open(&ram_disk, &my_file, "\\SUB1\\SUB1F2.TXT", FX_OPEN_FOR_WRITE);
     status += fx_file_write(&my_file, "SUB1F2_CONTENTS", 15);
     status += fx_file_close(&my_file);
@@ -371,24 +371,24 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            70000,                  // Total sectors 
-                            128,                    // Sector size   
+                            70000,                  // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_file_create(&ram_disk, "ROOTF1.TXT");
@@ -407,7 +407,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     status += fx_media_flush(&ram_disk);
     status += fx_file_create(&ram_disk, "\\SUB1\\SUB2\\SUB2F2.TXT");
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Write data to the files...  */
     status += fx_file_open(&ram_disk, &my_file, "ROOTF1.TXT", FX_OPEN_FOR_WRITE);
     status += fx_file_write(&my_file, "ROOT1_CONTENTS", 14);
@@ -423,7 +423,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     status += fx_file_write(&my_file, "SUB1F1_CONTENTS", 15);
     status += fx_file_close(&my_file);
     status += fx_media_flush(&ram_disk);
-        
+
     status += fx_file_open(&ram_disk, &my_file, "\\SUB1\\SUB1F2.TXT", FX_OPEN_FOR_WRITE);
     status += fx_file_write(&my_file, "SUB1F2_CONTENTS", 15);
     status += fx_file_close(&my_file);
@@ -455,24 +455,24 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             6000,                   // Total sectors  - FAT16
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_file_create(&ram_disk, "ROOTF1.TXT");
@@ -504,21 +504,21 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Set the second file's FAT chain to the same as the first.    */
     raw_sector_buffer[0x3A] =  raw_sector_buffer[0x1A];
     raw_sector_buffer[0x3B] =  raw_sector_buffer[0x1B];
-    
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);  
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);
     status += fx_media_flush(&ram_disk);
-    
+
     /* Read the first FAT sector.  */
     status += fx_media_read(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
 
     /* Break the FAT chain of the ROOTF1.TXT file.    */
     raw_sector_buffer[14] =  0;
     raw_sector_buffer[15] =  0;
-    
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);  
-    status += fx_media_flush(&ram_disk);   
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
+    status += fx_media_flush(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     /* Check the media for errors.  */
@@ -539,25 +539,25 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
 
     /* Loop to run through multiple tests...  */
     for (i = 0; i < 1000; i++)
-    {    
-    
+    {
+
         /* Format the media.  This needs to be done before opening it!  */
-        status =  fx_media_format(&ram_disk, 
+        status =  fx_media_format(&ram_disk,
                                 _fx_ram_driver,         // Driver entry
                                 ram_disk_memory,        // RAM disk memory pointer
                                 cache_buffer,           // Media buffer pointer
-                                CACHE_SIZE,             // Media buffer size 
+                                CACHE_SIZE,             // Media buffer size
                                 "MY_RAM_DISK",          // Volume Name
                                 1,                      // Number of FATs
                                 32,                     // Directory Entries
                                 0,                      // Hidden sectors
                                 6000,                   // Total sectors  - FAT16
-                                128,                    // Sector size   
+                                128,                    // Sector size
                                 1,                      // Sectors per cluster
                                 1,                      // Heads
-                                1);                     // Sectors per track 
+                                1);                     // Sectors per track
         return_if_fail( status == FX_SUCCESS);
-    
+
         /* Setup a new, more complicated directory structure.  */
         status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128 /*CACHE_SIZE*/);
         status += fx_file_create(&ram_disk, "ROOTF1.TXT");
@@ -624,11 +624,11 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         /* Set the second file's FAT chain starting cluster to the same as the first.    */
         raw_sector_buffer[0x3A] =  raw_sector_buffer[0x1A];
         raw_sector_buffer[0x3B] =  raw_sector_buffer[0x1B];
-    
+
         /* Write the root directory sector back...  with the errors.  */
-        status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);  
+        status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);
         status += fx_media_flush(&ram_disk);
-    
+
         /* Read the first FAT sector.  */
         status += fx_media_read(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
 
@@ -641,15 +641,15 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         }
         else
         {
-        
+
             /* Break with reserved fAT value.  */
             raw_sector_buffer[14] =  0xF0;
             raw_sector_buffer[15] =  0xFF;
         }
-    
+
         /* Write the root directory sector back...  with the errors.  */
-        status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);  
-        status += fx_media_flush(&ram_disk);   
+        status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
+        status += fx_media_flush(&ram_disk);
         return_if_fail( status == FX_SUCCESS);
 
         /* Create I/O errors via the RAM driver interface.  */
@@ -657,42 +657,42 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         _fx_utility_logical_sector_flush(&ram_disk, 1, 60000, FX_TRUE);
         j = (UINT)(rand() % 20);
         if (j == 0)
-           j =  1;        
+           j =  1;
         _fx_ram_driver_io_error_request =  j;
-    
+
         /* Check the media for errors.  */
         fx_media_check(&ram_disk, scratch_memory, 4000, (((ULONG) i) % 16), &errors_detected);
 
-        /* Clear the error generation flags.  */   
+        /* Clear the error generation flags.  */
         _fx_ram_driver_io_error_request =  0;
-   
+
         /* Abort the media.  */
         fx_media_abort(&ram_disk);
     }
-    
+
     /* FAT32 I/O error check.  */
 
     /* Loop to run through multiple tests...  */
     for (i = 0; i < 1000; i++)
-    {    
-    
+    {
+
         /* Format the media.  This needs to be done before opening it!  */
-        status =  fx_media_format(&ram_disk, 
+        status =  fx_media_format(&ram_disk,
                                 _fx_ram_driver,         // Driver entry
                                 ram_disk_memory,        // RAM disk memory pointer
                                 cache_buffer,           // Media buffer pointer
-                                CACHE_SIZE,             // Media buffer size 
+                                CACHE_SIZE,             // Media buffer size
                                 "MY_RAM_DISK",          // Volume Name
                                 1,                      // Number of FATs
                                 32,                     // Directory Entries
                                 0,                      // Hidden sectors
                                 70000,                  // Total sectors  - FAT32
-                                128,                    // Sector size   
+                                128,                    // Sector size
                                 1,                      // Sectors per cluster
                                 1,                      // Heads
-                                1);                     // Sectors per track 
+                                1);                     // Sectors per track
         return_if_fail( status == FX_SUCCESS);
-    
+
         /* Setup a new, more complicated directory structure.  */
         status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128 /*CACHE_SIZE*/);
         status += fx_file_create(&ram_disk, "ROOTF1.TXT");
@@ -760,11 +760,11 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         /* Set the second file's FAT chain starting cluster to the same as the first.    */
         raw_sector_buffer[0x3A] =  raw_sector_buffer[0x1A];
         raw_sector_buffer[0x3B] =  raw_sector_buffer[0x1B];
-    
+
         /* Write the root directory sector back...  with the errors.  */
-        status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);  
+        status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);
         status += fx_media_flush(&ram_disk);
-    
+
         /* Read the first FAT sector.  */
         status += fx_media_read(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
 
@@ -785,10 +785,10 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
             raw_sector_buffer[34] =  0xFF;
             raw_sector_buffer[35] =  0xFF;
         }
-            
+
         /* Write the root directory sector back...  with the errors.  */
-        status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);  
-        status += fx_media_flush(&ram_disk);   
+        status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
+        status += fx_media_flush(&ram_disk);
         return_if_fail( status == FX_SUCCESS);
 
         /* Create I/O errors via the RAM driver interface.  */
@@ -796,18 +796,18 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         _fx_utility_logical_sector_flush(&ram_disk, 1, 60000, FX_TRUE);
         j = (UINT)(rand() % 10);
         if (j == 0)
-           j =  1;        
+           j =  1;
         _fx_ram_driver_io_error_request =  j;
 
         /* Check the media for errors.  */
         fx_media_check(&ram_disk, scratch_memory, 4000, (((ULONG) i) % 16), &errors_detected);
 
-        /* Clear the error generation flags.  */   
+        /* Clear the error generation flags.  */
         _fx_ram_driver_io_error_request =  0;
 
         /* Abort the media.  */
         fx_media_abort(&ram_disk);
-    }     
+    }
 
     /* FAT32 Test for two files with the same FAT chain.  */
 
@@ -816,22 +816,22 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             70000,                  // Total sectors  - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -840,7 +840,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         printf("ERROR!\n");
         test_control_return(33);
     }
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_file_create(&ram_disk, "ROOTF1.TXT");
@@ -872,11 +872,11 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Set the second file's FAT chain to the same as the first.    */
     raw_sector_buffer[0x3A] =  raw_sector_buffer[0x1A];
     raw_sector_buffer[0x3B] =  raw_sector_buffer[0x1B];
-    
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);  
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);
     status += fx_media_flush(&ram_disk);
-    
+
     /* Read the first FAT sector.  */
     status += fx_media_read(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
 
@@ -885,10 +885,10 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     raw_sector_buffer[33] =  0;
     raw_sector_buffer[34] =  0;
     raw_sector_buffer[35] =  0;
-    
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);  
-    status += fx_media_flush(&ram_disk);   
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
+    status += fx_media_flush(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     /* Check the media for errors.  */
@@ -896,11 +896,11 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
 
     /* Determine if any were found - should not have found any errors at this point.  */
     return_if_fail((status == FX_SUCCESS) && (errors_detected == (FX_FAT_CHAIN_ERROR | FX_DIRECTORY_ERROR | FX_LOST_CLUSTER_ERROR)));
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* FAT32 Test for two files with the same FAT chain and a broken root directory FAT chain.  */
 
     /* Clear the initial part of the RAM disk memory.  */
@@ -908,24 +908,24 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             70000,                  // Total sectors  - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_file_create(&ram_disk, "ROOTF1.TXT");
@@ -957,11 +957,11 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Set the second file's FAT chain to the same as the first.    */
     raw_sector_buffer[0x3A] =  raw_sector_buffer[0x1A];
     raw_sector_buffer[0x3B] =  raw_sector_buffer[0x1B];
-    
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);  
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);
     status += fx_media_flush(&ram_disk);
-    
+
     /* Read the first FAT sector.  */
     status += fx_media_read(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
 
@@ -975,17 +975,17 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     raw_sector_buffer[32] =  0;
     raw_sector_buffer[33] =  0;
     raw_sector_buffer[34] =  0;
-    raw_sector_buffer[35] =  0;    
-    
+    raw_sector_buffer[35] =  0;
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);  
-    status += fx_media_flush(&ram_disk);   
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
+    status += fx_media_flush(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     /* Check the media for errors.  */
     status =  fx_media_check(&ram_disk, scratch_memory, 11000, (FX_FAT_CHAIN_ERROR | FX_DIRECTORY_ERROR | FX_LOST_CLUSTER_ERROR), &errors_detected);
     return_if_fail( status == FX_ERROR_NOT_FIXED);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -997,34 +997,34 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             6000,                   // Total sectors  - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_file_create(&ram_disk, "ROOTF1.TXT");
     status += fx_media_flush(&ram_disk);
     status += fx_file_open(&ram_disk, &my_file, "ROOTF1.TXT", FX_OPEN_FOR_WRITE);
-    do 
+    do
     {
         status =  fx_file_write(&my_file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 26);
     } while (status == FX_SUCCESS);
-    
+
     /* Determine if the write had anything other than a no more space error.  */
     return_if_fail( status == FX_NO_MORE_SPACE);
 
@@ -1041,7 +1041,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Undo the cluster adjustment.   */
     ram_disk.fx_media_total_clusters =  ram_disk.fx_media_total_clusters + 4;
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -1053,24 +1053,24 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             6000,                   // Total sectors  - FAT16
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a deep directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_directory_create(&ram_disk, "\\DIR1");
@@ -1087,17 +1087,17 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     status += fx_file_create(&ram_disk, "\\DIR1\\SUB11");
     status += fx_media_flush(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
- 
+
     /* Read the first FAT sector.  */
     status += fx_media_read(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
 
     /* Break the FAT chain of the in the first sub directory. */
     raw_sector_buffer[10] =  0;
     raw_sector_buffer[11] =  0;
-    
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);  
-    status += fx_media_flush(&ram_disk);   
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
+    status += fx_media_flush(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     /* Check the media for errors.  */
@@ -1117,24 +1117,24 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             70000,                  // Total sectors  - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_file_create(&ram_disk, "ROOTF1.TXT");
@@ -1167,10 +1167,10 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     raw_sector_buffer[13] =  0;
     raw_sector_buffer[14] = 0;
     raw_sector_buffer[15] = 0;
-   
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);  
-    status += fx_media_flush(&ram_disk);   
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
+    status += fx_media_flush(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     /* Check the media for errors.  */
@@ -1180,7 +1180,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
 #else
     return_if_fail( status == FX_SUCCESS);
 #endif
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -1192,34 +1192,34 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             6000,                   // Total sectors  - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_file_create(&ram_disk, "ROOTF1.TXT");
     status += fx_media_flush(&ram_disk);
     status += fx_file_open(&ram_disk, &my_file, "ROOTF1.TXT", FX_OPEN_FOR_WRITE);
-    do 
+    do
     {
         status =  fx_file_write(&my_file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 26);
     } while (status == FX_SUCCESS);
-    
+
     /* Determine if the write had anything other than a no more space error.  */
     return_if_fail( status == FX_NO_MORE_SPACE);
 
@@ -1233,15 +1233,15 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Make the FAT chain recursive. */
     raw_sector_buffer[6] =  raw_sector_buffer[4];
     raw_sector_buffer[7] =  raw_sector_buffer[5];
-            
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);  
-    status += fx_media_flush(&ram_disk);   
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
+    status += fx_media_flush(&ram_disk);
 
     /* Check the media for errors.  */
     status +=  fx_media_check(&ram_disk, scratch_memory, 11000, (FX_FAT_CHAIN_ERROR | FX_DIRECTORY_ERROR | FX_LOST_CLUSTER_ERROR), &errors_detected);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -1253,24 +1253,24 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             6000,                   // Total sectors  - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_directory_create(&ram_disk, "SUB1");
@@ -1283,10 +1283,10 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Make the FAT chain recursive. */
     raw_sector_buffer[4] =  0;
     raw_sector_buffer[5] =  0;
-            
+
     /* Write the FAT sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);  
-    status += fx_media_flush(&ram_disk);   
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
+    status += fx_media_flush(&ram_disk);
 
     /* Read the root directory's first sector.  */
     status += fx_media_read(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);
@@ -1294,7 +1294,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Check the media for errors.  */
     status +=  fx_media_check(&ram_disk, scratch_memory, 11000, (FX_FAT_CHAIN_ERROR | FX_DIRECTORY_ERROR | FX_LOST_CLUSTER_ERROR), &errors_detected);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -1306,24 +1306,24 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             6000,                   // Total sectors  - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_directory_create(&ram_disk, "\\SUB1");
@@ -1353,7 +1353,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Check the media for errors.  */
     status =  fx_media_check(&ram_disk, scratch_memory, 11000, (FX_FAT_CHAIN_ERROR | FX_DIRECTORY_ERROR | FX_LOST_CLUSTER_ERROR), &errors_detected);
     return_if_fail( status == FX_NOT_ENOUGH_MEMORY);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -1365,24 +1365,24 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             6000,                   // Total sectors  - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_directory_create(&ram_disk, "SUB1");
@@ -1395,10 +1395,10 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Make the FAT chain recursive. */
     raw_sector_buffer[4] =  0;
     raw_sector_buffer[5] =  0;
-            
+
     /* Write the FAT sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);  
-    status += fx_media_flush(&ram_disk);   
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
+    status += fx_media_flush(&ram_disk);
 
     /* Read the root directory's first sector.  */
     status += fx_media_read(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);
@@ -1406,7 +1406,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Check the media for errors.  */
     status +=  fx_media_check(&ram_disk, scratch_memory, 11000, (FX_FAT_CHAIN_ERROR | FX_LOST_CLUSTER_ERROR), &errors_detected);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -1418,24 +1418,24 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             70000,                  // Total sectors  - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_file_create(&ram_disk, "ROOTF1.TXT");
@@ -1493,11 +1493,11 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Set the second file's FAT chain to the same as the first.    */
     raw_sector_buffer[0x3A] =  raw_sector_buffer[0x1A];
     raw_sector_buffer[0x3B] =  raw_sector_buffer[0x1B];
-    
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);  
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);
     status += fx_media_flush(&ram_disk);
-    
+
     /* Read the first FAT sector.  */
     status += fx_media_read(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
 
@@ -1506,16 +1506,16 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     raw_sector_buffer[13] =  0;
     raw_sector_buffer[14] = 0;
     raw_sector_buffer[15] = 0;
-   
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);  
-    status += fx_media_flush(&ram_disk);   
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
+    status += fx_media_flush(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     /* Check the media for errors.  */
     status =  fx_media_check(&ram_disk, scratch_memory, 11000, (FX_DIRECTORY_ERROR | FX_LOST_CLUSTER_ERROR), &errors_detected);
     return_if_fail( status == FX_ERROR_NOT_FIXED);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -1539,24 +1539,24 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     {
         ram_disk_memory[i] =  0;
     }
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             70000,                  // Total sectors  - FAT32
-                            512,                    // Sector size   
+                            512,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Setup a new, more complicated directory structure.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     status += fx_file_create(&ram_disk, "ROOTF1.TXT");
@@ -1616,11 +1616,11 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Set the second file's FAT chain to the same as the first.    */
     raw_sector_buffer[0x3A] =  raw_sector_buffer[0x1A];
     raw_sector_buffer[0x3B] =  raw_sector_buffer[0x1B];
-    
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);  
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_root_sector_start, (VOID *) raw_sector_buffer);
     status += fx_media_flush(&ram_disk);
-    
+
     /* Read the first FAT sector.  */
     status += fx_media_read(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
 
@@ -1629,16 +1629,16 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     raw_sector_buffer[13] =  0;
     raw_sector_buffer[14] = 0;
     raw_sector_buffer[15] = 0;
-   
+
     /* Write the root directory sector back...  with the errors.  */
-    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);  
-    status += fx_media_flush(&ram_disk);   
+    status += fx_media_write(&ram_disk, ram_disk.fx_media_reserved_sectors, (VOID *) raw_sector_buffer);
+    status += fx_media_flush(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 
     /* Check the media for errors.  */
     status =  fx_media_check(&ram_disk, scratch_memory, 11000, (FX_DIRECTORY_ERROR | FX_LOST_CLUSTER_ERROR), &errors_detected);
     return_if_fail( status == FX_ERROR_NOT_FIXED);
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
@@ -1670,33 +1670,33 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         _fx_utility_logical_sector_flush(&ram_disk, 1, 60000, FX_TRUE);
         j = (UINT)(rand() % 10);
         if (j == 0)
-           j =  1;        
+           j =  1;
         _fx_ram_driver_io_error_request =  j;
-    
+
         /* Format the media.  This needs to be done before opening it!  */
-        fx_media_format(&ram_disk, 
+        fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MYDISK",               // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             70000,                  // Total sectors  - FAT32
-                            512,                    // Sector size   
+                            512,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
 
         _fx_utility_FAT_flush(&ram_disk);
         _fx_utility_logical_sector_flush(&ram_disk, 1, 60000, FX_TRUE);
         j = (UINT)(rand() % 10);
         if (j == 0)
-           j =  1;        
+           j =  1;
         _fx_ram_driver_io_error_request =  j;
-  
+
         /* Open media with errors.  */
         fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 512);
 
@@ -1704,7 +1704,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         _fx_utility_logical_sector_flush(&ram_disk, 1, 60000, FX_TRUE);
         j = (UINT)(rand() % 10);
         if (j == 0)
-           j =  1;        
+           j =  1;
         _fx_ram_driver_io_error_request =  j;
 
         /* Attempt to close media with errors.  */
@@ -1715,7 +1715,7 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
         _fx_utility_logical_sector_flush(&ram_disk, 1, 60000, FX_TRUE);
         j = (UINT)(rand() % 10);
         if (j == 0)
-           j =  1;        
+           j =  1;
         _fx_ram_driver_io_error_request =  j;
 
         /* Attempt to abort media with errors.  */
@@ -1725,70 +1725,70 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     }
 
     /* Test I/O errors in _fx_media_check_lost_cluster_check.   */
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            6000,                   // Total sectors 
-                            128,                    // Sector size   
+                            6000,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 2, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 2, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Change the FAT table to introduce lost clusters!  */
     raw_sector_buffer[30] =  2;
     raw_sector_buffer[31] =  3;
     raw_sector_buffer[32] =  4;
-    
+
     /* Write the FAT sector back...  with the errors.  */
-    status =  fx_media_write(&ram_disk, 2, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 2, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 3, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 3, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Change the FAT table to introduce lost clusters!  */
     raw_sector_buffer[30] =  5;
     raw_sector_buffer[31] =  6;
     raw_sector_buffer[32] =  7;
-    
+
     /* Write the FAT sector back...  with the errors.  */
-    status =  fx_media_write(&ram_disk, 3, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 3, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 4, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 4, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Change the FAT table to introduce lost clusters!  */
     raw_sector_buffer[30] =  8;
     raw_sector_buffer[31] =  9;
     raw_sector_buffer[32] =  10;
-    
+
     /* Write the FAT sector back...  with the errors.  */
-    status =  fx_media_write(&ram_disk, 4, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 4, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Flush and invalidate the cache.  */
     _fx_utility_logical_sector_flush(&ram_disk, 0, 4000, FX_TRUE);
-    
+
     /* Force media errors.  */
     _fx_utility_fat_entry_read_error_request =  1;
     status =  fx_media_check(&ram_disk, scratch_memory, SCRATCH_MEMORY_SIZE, FX_LOST_CLUSTER_ERROR, &errors_detected);
@@ -1802,68 +1802,68 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     return_if_fail( status == FX_SUCCESS);
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            6000,                   // Total sectors 
-                            128,                    // Sector size   
+                            6000,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 2, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 2, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Change the FAT table to introduce lost clusters!  */
     raw_sector_buffer[30] =  2;
     raw_sector_buffer[31] =  3;
     raw_sector_buffer[32] =  4;
-    
+
     /* Write the FAT sector back...  with the errors.  */
-    status =  fx_media_write(&ram_disk, 2, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 2, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 3, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 3, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Change the FAT table to introduce lost clusters!  */
     raw_sector_buffer[30] =  5;
     raw_sector_buffer[31] =  6;
     raw_sector_buffer[32] =  7;
-    
+
     /* Write the FAT sector back...  with the errors.  */
-    status =  fx_media_write(&ram_disk, 3, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 3, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 4, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 4, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Change the FAT table to introduce lost clusters!  */
     raw_sector_buffer[30] =  8;
     raw_sector_buffer[31] =  9;
     raw_sector_buffer[32] =  10;
-    
+
     /* Write the FAT sector back...  with the errors.  */
-    status =  fx_media_write(&ram_disk, 4, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 4, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Flush and invalidate the cache.  */
     _fx_utility_logical_sector_flush(&ram_disk, 0, 4000, FX_TRUE);
-    
+
     /* Check the media for errors.  */
     _fx_utility_fat_entry_write_error_request =  1;
     status =  fx_media_check(&ram_disk, scratch_memory, SCRATCH_MEMORY_SIZE, FX_LOST_CLUSTER_ERROR, &errors_detected);
@@ -1879,26 +1879,26 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Test the error paths in FAT32 root directory traversal.  */
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             70000,                  // Total sectors - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Now create a series to sub-directories to expand the root directory FAT chain.  */
     status =  fx_file_create(&ram_disk, "FILE1");
     status += fx_file_create(&ram_disk, "FILE2");
@@ -1930,12 +1930,12 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     status += fx_file_create(&ram_disk, "FILE28");
     status += fx_file_create(&ram_disk, "FILE29");
     status += fx_file_create(&ram_disk, "FILE30");
-    status += fx_file_create(&ram_disk, "FILE31"); 
+    status += fx_file_create(&ram_disk, "FILE31");
     status += fx_media_flush(&ram_disk);
 
-    
+
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Break the FAT chain of the root directory!  */
@@ -1943,15 +1943,15 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     raw_sector_buffer[37] =  0;
     raw_sector_buffer[38] =  0;
     raw_sector_buffer[39] =  0;
-    
+
     /* Write the FAT sector back...  with the errors.  */
-    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Flush and invalidate the cache.  */
     fx_media_flush(&ram_disk);
     _fx_utility_logical_sector_flush(&ram_disk, 0, 4000, FX_TRUE);
-    
+
     /* Check the media for errors.  */
     _fx_utility_fat_entry_read_error_request =  1;
     status =  fx_media_check(&ram_disk, scratch_memory, 11000, (FX_LOST_CLUSTER_ERROR | FX_DIRECTORY_ERROR | FX_FAT_CHAIN_ERROR), &errors_detected);
@@ -1971,40 +1971,40 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Test the error paths in file FAT traversal.  */
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             70000,                  // Total sectors - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Now create a series to sub-directories to expand the root directory FAT chain.  */
     status =  fx_file_create(&ram_disk, "FILE1");
-    
+
     /* Flush and invalidate the cache.  */
     fx_media_flush(&ram_disk);
     _fx_utility_logical_sector_flush(&ram_disk, 0, 4000, FX_TRUE);
 
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Open the file.  */
-    status += fx_file_open(&ram_disk, &my_file, "FILE1", FX_OPEN_FOR_WRITE); 
-    
+    status += fx_file_open(&ram_disk, &my_file, "FILE1", FX_OPEN_FOR_WRITE);
+
     /* Write to the file.  */
     status += fx_file_write(&my_file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 26);
     status += fx_file_write(&my_file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 26);
@@ -2077,9 +2077,9 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     status += fx_file_write(&my_file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 26);
     status += fx_file_close(&my_file);
     status += fx_media_flush(&ram_disk);
-    
+
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Break the FAT chain of the root directory!  */
@@ -2087,15 +2087,15 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     raw_sector_buffer[37] =  0;
     raw_sector_buffer[38] =  0;
     raw_sector_buffer[39] =  0;
-    
+
     /* Write the FAT sector back...  with the errors.  */
-    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Flush and invalidate the cache.  */
     fx_media_flush(&ram_disk);
     _fx_utility_logical_sector_flush(&ram_disk, 0, 4000, FX_TRUE);
-    
+
     /* Check the media for errors.  */
     _fx_utility_fat_entry_write_error_request =  1;
     status =  fx_media_check(&ram_disk, scratch_memory, 11000, (FX_LOST_CLUSTER_ERROR | FX_DIRECTORY_ERROR | FX_FAT_CHAIN_ERROR), &errors_detected);
@@ -2109,43 +2109,43 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     /* Test the error paths in sub-directory delete path.  */
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
                             70000,                  // Total sectors - FAT32
-                            128,                    // Sector size   
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Now create a sub-directory.  */
     status =  fx_directory_create(&ram_disk, "SUB1");
-    
+
     /* Flush and invalidate the cache.  */
     fx_media_flush(&ram_disk);
     _fx_utility_logical_sector_flush(&ram_disk, 0, 4000, FX_TRUE);
 
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Open the file.  */
-    status += fx_file_open(&ram_disk, &my_file, "FILE1", FX_OPEN_FOR_WRITE); 
+    status += fx_file_open(&ram_disk, &my_file, "FILE1", FX_OPEN_FOR_WRITE);
     status += fx_media_flush(&ram_disk);
-    
+
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Break the FAT chain of the sub-directory!  */
@@ -2153,15 +2153,15 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     raw_sector_buffer[13] =  0;
     raw_sector_buffer[14] =  0;
     raw_sector_buffer[15] =  0;
-    
+
     /* Write the FAT sector back...  with the errors.  */
-    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Flush and invalidate the cache.  */
     fx_media_flush(&ram_disk);
     _fx_utility_logical_sector_flush(&ram_disk, 0, 4000, FX_TRUE);
-    
+
     /* Check the media for errors.  */
     _fx_ram_driver_io_error_request =  4;
     status =  fx_media_check(&ram_disk, scratch_memory, 11000, (FX_LOST_CLUSTER_ERROR | FX_DIRECTORY_ERROR | FX_FAT_CHAIN_ERROR), &errors_detected);
@@ -2173,20 +2173,20 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
     return_if_fail( status == FX_SUCCESS);
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                               _fx_ram_driver,         // Driver entry
                               ram_disk_memory,        // RAM disk memory pointer
                               cache_buffer,           // Media buffer pointer
-                              CACHE_SIZE,             // Media buffer size 
+                              CACHE_SIZE,             // Media buffer size
                               "MY_RAM_DISK",          // Volume Name
                               1,                      // Number of FATs
                               32,                     // Directory Entries
                               0,                      // Hidden sectors
-                              256,                    // Total sectors 
-                              128,                    // Sector size   
+                              256,                    // Total sectors
+                              128,                    // Sector size
                               1,                      // Sectors per cluster
                               1,                      // Heads
-                              1);                     // Sectors per track 
+                              1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Open the ram_disk.  */
@@ -2205,29 +2205,29 @@ UCHAR       specified_ascii_name[] = { 0xe5, 'a', 'b', 'c', 0};
 
     status = fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Read the first FAT sector.  */
-    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Change the FAT table to introduce lost clusters!  */
     memcpy(raw_sector_buffer_check, raw_sector_buffer, ram_disk.fx_media_bytes_per_sector);
     raw_sector_buffer[3] = (ram_disk.fx_media_total_clusters + FX_FAT_ENTRY_START) & 0xFF;
     raw_sector_buffer[4] = (UCHAR)((ram_disk.fx_media_total_clusters + FX_FAT_ENTRY_START) >> 8);
-    
+
     /* Write the FAT sector back...  with the errors.  */
-    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Attempt to check the media but give it a bad scratch_memory_size to throw an error */
     status =  fx_media_check(&ram_disk, scratch_memory, SCRATCH_MEMORY_SIZE, FX_FAT_CHAIN_ERROR,
                              &errors_detected);
     return_if_fail( (status == FX_SUCCESS) &&
                     (errors_detected == (FX_FAT_CHAIN_ERROR| FX_DIRECTORY_ERROR| FX_LOST_CLUSTER_ERROR)));
-    
+
 #if 0
     /* Read the first FAT sector again.  */
-    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status = fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Compare the */

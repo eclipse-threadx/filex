@@ -58,13 +58,13 @@ void    filex_media_read_write_sector_application_define(void *first_unused_memo
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -73,7 +73,7 @@ UCHAR    *pointer;
     cache_buffer =  pointer;
     pointer =  pointer + CACHE_SIZE;
     direct_buffer =  pointer;
-    pointer =  pointer + 20*128;   
+    pointer =  pointer + 20*128;
     ram_disk_memory =  pointer;
 
 #endif
@@ -113,47 +113,47 @@ TEST_START:
 #endif /* FX_FAULT_TOLERANT */
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             2,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            256,                    // Total sectors 
-                            128,                    // Sector size   
+                            256,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* try to read before the media has been opened */
-    status =  fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer); 
+    status =  fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_MEDIA_NOT_OPEN);
-    
+
     /* try to write before the media has been opened  */
-    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_MEDIA_NOT_OPEN);
 
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* try to write while the media is write protected  */
     ram_disk.fx_media_driver_write_protect = FX_TRUE;
-    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);
     ram_disk.fx_media_driver_write_protect = FX_FALSE;
     return_if_fail( status == FX_WRITE_PROTECT);
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
 
     /* send null pointer to generate an error */
     status = fx_media_read(FX_NULL, 0, (void *) raw_sector_buffer);
     return_if_fail( status == FX_PTR_ERROR);
-    
+
     /* send null pointer to generate an error */
     status = fx_media_write(FX_NULL, 0, (void *) raw_sector_buffer);
     return_if_fail( status == FX_PTR_ERROR);
@@ -161,35 +161,35 @@ TEST_START:
 #endif /* FX_DISABLE_ERROR_CHECKING */
 
     /* Read the first FAT sector.  */
-    status =  fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);  
-    return_if_fail ((status == FX_SUCCESS) && 
+    status =  fx_media_read(&ram_disk, 1, (VOID *) raw_sector_buffer);
+    return_if_fail ((status == FX_SUCCESS) &&
         (raw_sector_buffer[0] == 0xF8) &&    /* _fx_media_format_media_type value set during media format */
         (raw_sector_buffer[1] == 0xFF) &&
         (raw_sector_buffer[2] == 0xFF));
-    
+
     /* Write the same, unchanged sector back.  */
-    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);  
+    status =  fx_media_write(&ram_disk, 1, (VOID *) raw_sector_buffer);
     return_if_fail( status == FX_SUCCESS);
 
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             2,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            7000,                   // Total sectors 
-                            128,                    // Sector size   
+                            7000,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
@@ -207,7 +207,7 @@ TEST_START:
     logical_sector =  0xFFFFFFFF;
     status =  _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
     return_if_fail( status == FX_SECTOR_INVALID);
-    
+
     /* Test for invalid sector.  */
     logical_sector =  ram_disk.fx_media_total_sectors;
     status =  _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 4, FX_DATA_SECTOR);
@@ -222,12 +222,12 @@ TEST_START:
     logical_sector =  0xFFFFFFFF;
     status =  _fx_utility_logical_sector_write(&ram_disk, logical_sector, direct_buffer, 4, FX_DATA_SECTOR);
     return_if_fail( status == FX_SECTOR_INVALID);
-    
+
     /* Test for invalid sector.  */
     logical_sector =  ram_disk.fx_media_total_sectors;
     status =  _fx_utility_logical_sector_write(&ram_disk, logical_sector, direct_buffer, 4, FX_DATA_SECTOR);
     return_if_fail( status == FX_SECTOR_INVALID);
-    
+
     /* Write to a sector not in the cache.  */
     status =  _fx_utility_logical_sector_write(&ram_disk, 6900, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
 
@@ -236,7 +236,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
 #ifdef FX_FAULT_TOLERANT
         if (first_test)
@@ -252,13 +252,13 @@ TEST_START:
 #endif
         logical_sector++;
     }
-    
+
     /* At this point the cache is complete full.  */
-    
+
     /* Now perform direct buffer read ram_disk.fx_media_data_sector_start on sectors before the cache.  */
     logical_sector =  + 2;
     status =  _fx_utility_logical_sector_read(&ram_disk, logical_sector, direct_buffer, 4, FX_DIRECTORY_SECTOR);
-    
+
     /* Now perform direct buffer write.  */
 #ifdef FX_FAULT_TOLERANT
     if (first_test)
@@ -272,7 +272,7 @@ TEST_START:
 #ifdef FX_FAULT_TOLERANT
     }
 #endif
-    
+
     /* Perform a flush.  */
     status += _fx_utility_logical_sector_flush(&ram_disk, logical_sector, 300, FX_TRUE);
 
@@ -283,7 +283,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
 #ifdef FX_FAULT_TOLERANT
         if (first_test)
@@ -303,7 +303,7 @@ TEST_START:
     /* Now perform direct buffer read ram_disk.fx_media_data_sector_start on sectors before the cache.  */
     logical_sector = (ULONG64)-2;
     status =  _fx_utility_logical_sector_read(&ram_disk, logical_sector, direct_buffer, 4, FX_DIRECTORY_SECTOR);
-    
+
     /* Now perform direct buffer write.  */
 #ifdef FX_FAULT_TOLERANT
     if (first_test)
@@ -325,7 +325,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 512; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
 #ifdef FX_FAULT_TOLERANT
         if (first_test)
@@ -349,15 +349,15 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-   
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
         logical_sector++;
     }
 
     /* Write same 256 sectors in reverse order.  */
     for (i = 0; i < 256; i++)
-    {  
-    
+    {
+
         logical_sector--;
 #ifdef FX_FAULT_TOLERANT
         if (first_test)
@@ -381,16 +381,16 @@ TEST_START:
 
     /* Flush the FAT.  */
     status += _fx_utility_FAT_map_flush(&ram_disk);
-        
+
     /* Indicate that the driver needs to know!  */
     ram_disk.fx_media_driver_free_sector_update =  FX_TRUE;
-        
+
     /* Update FAT entries again, but this time with free marker.  */
     for (i = 2; i < 6000; i++)
     {
         status +=  _fx_utility_FAT_entry_write(&ram_disk, (ULONG) i, FX_FREE_CLUSTER);
     }
-   
+
     /* Flush the FAT.  */
     status += _fx_utility_FAT_map_flush(&ram_disk);
     ram_disk.fx_media_driver_free_sector_update =  FX_FALSE;
@@ -398,7 +398,7 @@ TEST_START:
     /* Random test of 300 sectors.  */
     for (i = 0; i < 300; i++)
     {
-        accessed_sectors[i] =  logical_sector + (ULONG64)(rand() % 5000); 
+        accessed_sectors[i] =  logical_sector + (ULONG64)(rand() % 5000);
         status += _fx_utility_logical_sector_read(&ram_disk, accessed_sectors[i], ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         if ((i > 0) && (rand() & 1))
         {
@@ -410,7 +410,7 @@ TEST_START:
     /* Random test of 300 sectors with random logical sector flush.  */
     for (i = 0; i < 300; i++)
     {
-        accessed_sectors[i] =  logical_sector + (ULONG64)(rand() % 5000); 
+        accessed_sectors[i] =  logical_sector + (ULONG64)(rand() % 5000);
         status += _fx_utility_logical_sector_read(&ram_disk, accessed_sectors[i], ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         if ((i > 0) && (rand() & 1))
         {
@@ -423,14 +423,14 @@ TEST_START:
             if (rand() & 1)
                 status += _fx_utility_logical_sector_flush(&ram_disk, accessed_sectors[j], 1, FX_TRUE);
             else
-                status += _fx_utility_logical_sector_flush(&ram_disk, accessed_sectors[j], 1, FX_FALSE);           
+                status += _fx_utility_logical_sector_flush(&ram_disk, accessed_sectors[j], 1, FX_FALSE);
         }
     }
 
     /* Random test of 1000 FAT entry reads/writes.  */
     for (i = 0; i < 1000; i++)
     {
-    
+
         j = ((UINT)rand() % 100);
         status +=  _fx_utility_FAT_entry_read(&ram_disk, j+2, &fat_entry);
 
@@ -440,14 +440,14 @@ TEST_START:
             if (rand() & 1)
                 status +=  _fx_utility_FAT_entry_write(&ram_disk, j+2, j+3);
             else
-                status +=  _fx_utility_FAT_entry_write(&ram_disk, j+2, FX_FREE_CLUSTER);                            
+                status +=  _fx_utility_FAT_entry_write(&ram_disk, j+2, FX_FREE_CLUSTER);
         }
     }
-    
+
     /* Random test of 1000 FAT entry reads/writes with random FAT flush.  */
     for (i = 0; i < 1000; i++)
     {
-    
+
         j = ((UINT)rand() % 100);
         status +=  _fx_utility_FAT_entry_read(&ram_disk, j+2, &fat_entry);
 
@@ -457,18 +457,18 @@ TEST_START:
             if (rand() & 1)
                 status +=  _fx_utility_FAT_entry_write(&ram_disk, j+2, j+3);
             else
-                status +=  _fx_utility_FAT_entry_write(&ram_disk, j+2, FX_FREE_CLUSTER);                            
+                status +=  _fx_utility_FAT_entry_write(&ram_disk, j+2, FX_FREE_CLUSTER);
         }
-        
+
         if (rand() & 1)
         {
-        
+
             status += _fx_utility_FAT_flush(&ram_disk);
         }
 
         if (rand() & 1)
         {
-        
+
             status += _fx_utility_FAT_map_flush(&ram_disk);
         }
     }
@@ -483,7 +483,7 @@ TEST_START:
     _fx_ram_driver_io_error_request =  1000;
     for (i = 0; i < 300000; i++)
     {
-               
+
         j =  ((UINT)rand() % 100);
          _fx_utility_FAT_entry_read(&ram_disk, j+2, &fat_entry);
 
@@ -493,9 +493,9 @@ TEST_START:
             if (rand() & 1)
                 _fx_utility_FAT_entry_write(&ram_disk, j+2, j+3);
             else
-                _fx_utility_FAT_entry_write(&ram_disk, j+2, FX_FREE_CLUSTER);                            
+                _fx_utility_FAT_entry_write(&ram_disk, j+2, FX_FREE_CLUSTER);
         }
- 
+
         if (i & 1)
             _fx_utility_FAT_flush(&ram_disk);
         else
@@ -514,7 +514,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
 #ifdef FX_FAULT_TOLERANT
         if (first_test)
@@ -544,7 +544,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
 #ifdef FX_FAULT_TOLERANT
         if (first_test)
@@ -573,7 +573,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
 #ifdef FX_FAULT_TOLERANT
         if (first_test)
@@ -598,21 +598,21 @@ TEST_START:
     return_if_fail( status == FX_SUCCESS);
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             2,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            7000,                   // Total sectors 
-                            128,                    // Sector size   
+                            7000,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
-    
+                            1);                     // Sectors per track
+
     /* Open the ram_disk.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE-1);
     return_if_fail( status == FX_SUCCESS);
@@ -646,33 +646,33 @@ TEST_START:
     logical_sector =  0xFFFFFFFF;
     status =  _fx_utility_logical_sector_write(&ram_disk, logical_sector, direct_buffer, 4, FX_DATA_SECTOR);
     return_if_fail( status == FX_SECTOR_INVALID);
-    
+
     /* Test for invalid sector.  */
     logical_sector =  ram_disk.fx_media_total_sectors;
     status =  _fx_utility_logical_sector_write(&ram_disk, logical_sector, direct_buffer, 4, FX_DATA_SECTOR);
     return_if_fail( status == FX_SECTOR_INVALID);
-    
+
     status =  0;
 
     /* Read/write 256 sectors, filling the caches.  */
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
         status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         logical_sector++;
     }
-    
+
     /* At this point the cache is complete full.  */
-    
+
     /* Now perform direct buffer read ram_disk.fx_media_data_sector_start on sectors before the cache.  */
     logical_sector =  + 2;
     status =  _fx_utility_logical_sector_read(&ram_disk, logical_sector, direct_buffer, 4, FX_DIRECTORY_SECTOR);
-    
+
     /* Now perform direct buffer write.  */
     status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, direct_buffer, 4, FX_DATA_SECTOR);
-    
+
     /* Perform a flush.  */
     status += _fx_utility_logical_sector_flush(&ram_disk, logical_sector, 300, FX_TRUE);
 
@@ -683,7 +683,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
         status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         logical_sector++;
@@ -692,7 +692,7 @@ TEST_START:
     /* Now perform direct buffer read ram_disk.fx_media_data_sector_start on sectors before the cache.  */
     logical_sector = (ULONG64)-2;
     status =  _fx_utility_logical_sector_read(&ram_disk, logical_sector, direct_buffer, 4, FX_DIRECTORY_SECTOR);
-    
+
     /* Now perform direct buffer write.  */
     status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, direct_buffer, 4, FX_DATA_SECTOR);
 
@@ -703,7 +703,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 300; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
         status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         logical_sector++;
@@ -716,15 +716,15 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-   
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
         logical_sector++;
     }
 
     /* Write same 256 sectors in reverse order.  */
     for (i = 0; i < 256; i++)
-    {  
-    
+    {
+
         logical_sector--;
         status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
     }
@@ -737,16 +737,16 @@ TEST_START:
 
     /* Flush the FAT.  */
     status += _fx_utility_FAT_map_flush(&ram_disk);
-        
+
     /* Indicate that the driver needs to know!  */
     ram_disk.fx_media_driver_free_sector_update =  FX_TRUE;
-        
+
     /* Update FAT entries again, but this time with free marker.  */
     for (i = 2; i < 6000; i++)
     {
         status +=  _fx_utility_FAT_entry_write(&ram_disk, (ULONG) i, FX_FREE_CLUSTER);
     }
-   
+
     /* Flush the FAT.  */
     status += _fx_utility_FAT_map_flush(&ram_disk);
     ram_disk.fx_media_driver_free_sector_update =  FX_FALSE;
@@ -762,7 +762,7 @@ TEST_START:
     /* Random test of 300 sectors.  */
     for (i = 0; i < 300; i++)
     {
-        accessed_sectors[i] = logical_sector + (ULONG64)(rand() % 5000); 
+        accessed_sectors[i] = logical_sector + (ULONG64)(rand() % 5000);
         status += _fx_utility_logical_sector_read(&ram_disk, accessed_sectors[i], ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         if ((i > 0) && (rand() & 1))
         {
@@ -774,7 +774,7 @@ TEST_START:
     /* Random test of 300 sectors with random logical sector flush.  */
     for (i = 0; i < 300; i++)
     {
-        accessed_sectors[i] = logical_sector + (ULONG64)(rand() % 5000); 
+        accessed_sectors[i] = logical_sector + (ULONG64)(rand() % 5000);
         status += _fx_utility_logical_sector_read(&ram_disk, accessed_sectors[i], ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         if ((i > 0) && (rand() & 1))
         {
@@ -787,14 +787,14 @@ TEST_START:
             if (rand() & 1)
                 status += _fx_utility_logical_sector_flush(&ram_disk, accessed_sectors[j], 1, FX_TRUE);
             else
-                status += _fx_utility_logical_sector_flush(&ram_disk, accessed_sectors[j], 1, FX_FALSE);           
+                status += _fx_utility_logical_sector_flush(&ram_disk, accessed_sectors[j], 1, FX_FALSE);
         }
     }
-    
+
     /* Random test of 1000 FAT entry reads/writes. */
     for (i = 0; i < 1000; i++)
     {
-    
+
         j = ((UINT)rand() % 100);
         status +=  _fx_utility_FAT_entry_read(&ram_disk, j+2, &fat_entry);
 
@@ -804,14 +804,14 @@ TEST_START:
             if (rand() & 1)
                 status +=  _fx_utility_FAT_entry_write(&ram_disk, j+2, j+3);
             else
-                status +=  _fx_utility_FAT_entry_write(&ram_disk, j+2, FX_FREE_CLUSTER);                            
+                status +=  _fx_utility_FAT_entry_write(&ram_disk, j+2, FX_FREE_CLUSTER);
         }
     }
-    
+
     /* Random test of 1000 FAT entry reads/writes with random FAT flush.  */
     for (i = 0; i < 1000; i++)
     {
-    
+
         j = ((UINT)rand() % 100);
         status +=  _fx_utility_FAT_entry_read(&ram_disk, j+2, &fat_entry);
 
@@ -821,23 +821,23 @@ TEST_START:
             if (rand() & 1)
                 status +=  _fx_utility_FAT_entry_write(&ram_disk, j+2, j+3);
             else
-                status +=  _fx_utility_FAT_entry_write(&ram_disk, j+2, FX_FREE_CLUSTER);                            
+                status +=  _fx_utility_FAT_entry_write(&ram_disk, j+2, FX_FREE_CLUSTER);
         }
-        
+
         if (rand() & 1)
         {
-        
+
             status += _fx_utility_FAT_flush(&ram_disk);
         }
 
         if (rand() & 1)
         {
-        
+
             status += _fx_utility_FAT_map_flush(&ram_disk);
         }
     }
     return_if_fail( status == FX_SUCCESS);
-   
+
     /* Set the free sector update.  */
     ram_disk.fx_media_driver_free_sector_update  =  FX_TRUE;
 
@@ -847,14 +847,14 @@ TEST_START:
     _fx_ram_driver_io_error_request =  1000;
     for (i = 0; i < 300000; i++)
     {
-               
+
 
         j = ((UINT)rand() % 100);
         _fx_utility_logical_sector_read(&ram_disk, (ULONG64) j, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
 
         if (rand() & 1)
             _fx_utility_logical_sector_write(&ram_disk, (ULONG64) j, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
-        
+
         j = ((UINT)rand() % 100);
          _fx_utility_FAT_entry_read(&ram_disk, j+2, &fat_entry);
 
@@ -864,9 +864,9 @@ TEST_START:
             if (rand() & 1)
                 _fx_utility_FAT_entry_write(&ram_disk, j+2, j+3);
             else
-                _fx_utility_FAT_entry_write(&ram_disk, j+2, FX_FREE_CLUSTER);                            
+                _fx_utility_FAT_entry_write(&ram_disk, j+2, FX_FREE_CLUSTER);
         }
-        
+
         if (i & 1)
             _fx_utility_FAT_flush(&ram_disk);
         else
@@ -881,7 +881,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
         status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         logical_sector++;
@@ -890,7 +890,7 @@ TEST_START:
     /* Now perform direct buffer read ram_disk.fx_media_data_sector_start on sectors before the cache.  */
     logical_sector =  ram_disk.fx_media_data_sector_start;
     status =  _fx_utility_logical_sector_read(&ram_disk, logical_sector, direct_buffer, 12, FX_DIRECTORY_SECTOR);
-    
+
     /* Now perform direct buffer write.  */
     status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, direct_buffer, 12, FX_DATA_SECTOR);
 
@@ -901,7 +901,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
         status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         logical_sector++;
@@ -921,7 +921,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
         status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         logical_sector++;
@@ -939,7 +939,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         logical_sector++;
@@ -958,7 +958,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         logical_sector++;
@@ -976,7 +976,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
         status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         logical_sector++;
@@ -995,7 +995,7 @@ TEST_START:
     logical_sector =  ram_disk.fx_media_data_sector_start + 4;
     for (i = 0; i < 256; i++)
     {
-    
+
         status += _fx_utility_logical_sector_read(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DIRECTORY_SECTOR);
         status += _fx_utility_logical_sector_write(&ram_disk, logical_sector, ram_disk.fx_media_memory_buffer, 1, FX_DATA_SECTOR);
         logical_sector++;
@@ -1025,22 +1025,22 @@ TEST_START:
     return_if_fail( status == FX_SUCCESS);
 
     /* FAT12 FAT flush I/O error testing.  */
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             2,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            2000,                   // Total sectors 
-                            128,                    // Sector size   
+                            2000,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Open the ram_disk.  */
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
@@ -1048,7 +1048,7 @@ TEST_START:
 
     /* Now loop to write the FAT entries out with random I/O erorrs.  */
     fat_entry =  4;
-    for (i = 0; i < 500000; i++) 
+    for (i = 0; i < 500000; i++)
     {
 
         _fx_ram_driver_io_error_request = ((UINT)rand() % 5);
@@ -1060,11 +1060,11 @@ TEST_START:
         _fx_utility_logical_sector_flush(&ram_disk, 1, 60000, FX_TRUE);
 
         /* Move to next FAT entry.  */
-        fat_entry++;          
+        fat_entry++;
         if (fat_entry >= (ram_disk.fx_media_available_clusters-1))
             fat_entry =  4;
     }
-    for (i = 0; i < 500000; i++) 
+    for (i = 0; i < 500000; i++)
     {
 
         _fx_ram_driver_io_error_request = ((UINT)rand() % 5);
@@ -1074,7 +1074,7 @@ TEST_START:
         _fx_utility_FAT_entry_write(&ram_disk, fat_entry, fat_entry+1);
 
         /* Move to next FAT entry.  */
-        fat_entry++;          
+        fat_entry++;
         if (fat_entry >= (ram_disk.fx_media_available_clusters-1))
             fat_entry =  4;
     }
@@ -1083,7 +1083,7 @@ TEST_START:
     /* Set the error flag to make logical sector write return an error.  */
     _fx_utility_logical_sector_write_error_request =  1;
     status =  _fx_utility_FAT_flush(&ram_disk);
-    _fx_utility_logical_sector_write_error_request =  70000;    /* This should not hit, but satisfy the code coverage.  */ 
+    _fx_utility_logical_sector_write_error_request =  70000;    /* This should not hit, but satisfy the code coverage.  */
     _fx_utility_FAT_flush(&ram_disk);
     _fx_utility_logical_sector_write_error_request =  0;
 
@@ -1092,28 +1092,28 @@ TEST_START:
     return_if_fail( status == FX_SUCCESS);
 
     /* FAT16 FAT flush I/O error testing.  */
-    
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             2,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            7000,                   // Total sectors 
-                            128,                    // Sector size   
+                            7000,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
 
     /* Now loop to write the FAT entries out with random I/O erorrs.  */
     fat_entry =  4;
-    for (i = 0; i < 500000; i++) 
+    for (i = 0; i < 500000; i++)
     {
 
         _fx_ram_driver_io_error_request = ((UINT)rand() % 5);
@@ -1125,11 +1125,11 @@ TEST_START:
         _fx_utility_logical_sector_flush(&ram_disk, 1, 60000, FX_TRUE);
 
         /* Move to next FAT entry.  */
-        fat_entry++;          
+        fat_entry++;
         if (fat_entry >= (ram_disk.fx_media_available_clusters-1))
             fat_entry =  4;
     }
-    for (i = 0; i < 500000; i++) 
+    for (i = 0; i < 500000; i++)
     {
 
         _fx_ram_driver_io_error_request =  ((UINT)rand() % 5);
@@ -1139,46 +1139,46 @@ TEST_START:
         _fx_utility_FAT_entry_write(&ram_disk, fat_entry, fat_entry+1);
 
         /* Move to next FAT entry.  */
-        fat_entry++;          
+        fat_entry++;
         if (fat_entry >= (ram_disk.fx_media_available_clusters-1))
             fat_entry =  4;
     }
     _fx_ram_driver_io_error_request = 0;
-    
+
     /* Set the error flag to make logical sector write return an error.  */
     _fx_utility_logical_sector_write_error_request =  1;
     status =  _fx_utility_FAT_flush(&ram_disk);
-    _fx_utility_logical_sector_write_error_request =  70000;    /* This should not hit, but satisfy the code coverage.  */ 
+    _fx_utility_logical_sector_write_error_request =  70000;    /* This should not hit, but satisfy the code coverage.  */
     _fx_utility_FAT_flush(&ram_disk);
     _fx_utility_logical_sector_write_error_request =  0;
 
     /* Close the media.  */
     status = fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
-    
+
     /* FAT32 FAT flush I/O error testing.  */
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             2,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            70128,                   // Total sectors 
-                            128,                    // Sector size   
+                            70128,                   // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
     status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
     return_if_fail( status == FX_SUCCESS);
 
     /* Now loop to write the FAT entries out with random I/O erorrs.  */
     fat_entry =  4;
-    for (i = 0; i < 500000; i++) 
+    for (i = 0; i < 500000; i++)
     {
 
         _fx_ram_driver_io_error_request =  ((UINT)rand() % 5);
@@ -1190,11 +1190,11 @@ TEST_START:
         _fx_utility_logical_sector_flush(&ram_disk, 1, 60000, FX_TRUE);
 
         /* Move to next FAT entry.  */
-        fat_entry++;          
+        fat_entry++;
         if (fat_entry >= (ram_disk.fx_media_available_clusters-1))
             fat_entry =  4;
     }
-    for (i = 0; i < 500000; i++) 
+    for (i = 0; i < 500000; i++)
     {
 
         _fx_ram_driver_io_error_request =  ((UINT)rand() % 5);
@@ -1204,7 +1204,7 @@ TEST_START:
         _fx_utility_FAT_entry_write(&ram_disk, fat_entry, fat_entry+1);
 
         /* Move to next FAT entry.  */
-        fat_entry++;          
+        fat_entry++;
         if (fat_entry >= (ram_disk.fx_media_available_clusters-1))
             fat_entry =  4;
     }
@@ -1214,10 +1214,10 @@ TEST_START:
     /* Set the error flag to make logical sector write return an error.  */
     _fx_utility_logical_sector_write_error_request =  1;
     status =  _fx_utility_FAT_flush(&ram_disk);
-    _fx_utility_logical_sector_write_error_request =  70000;    /* This should not hit, but satisfy the code coverage.  */ 
+    _fx_utility_logical_sector_write_error_request =  70000;    /* This should not hit, but satisfy the code coverage.  */
     _fx_utility_FAT_flush(&ram_disk);
     _fx_utility_logical_sector_write_error_request =  0;
-    
+
     /* Close the media.  */
     status = fx_media_close(&ram_disk);
     return_if_fail( status == FX_SUCCESS);

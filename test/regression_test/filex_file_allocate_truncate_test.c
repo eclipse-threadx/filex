@@ -53,13 +53,13 @@ void    filex_file_allocate_truncate_application_define(void *first_unused_memor
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -99,20 +99,20 @@ ULONG       i;
     printf("FileX Test:   File allocate/truncate test............................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -121,7 +121,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(1);
     }
-    
+
     /* Attempt to truncate a file before the file is opened */
     status = fx_file_extended_truncate(&my_file, 0);
     if (status != FX_NOT_OPEN)
@@ -129,7 +129,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(2);
     }
-    
+
     /* Attempt to release a file before the file is opened */
     status = fx_file_extended_truncate_release(&my_file, 0);
     if (status != FX_NOT_OPEN)
@@ -174,7 +174,7 @@ ULONG       i;
 
     /* Pickup the available bytes in the media.  */
     status =  fx_media_space_available(&ram_disk, &available_bytes);
-    
+
     /* Check for available bytes error.  */
     if ((status != FX_SUCCESS) || (available_bytes < sizeof(ULONG)))
     {
@@ -194,7 +194,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(8);
     }
-    
+
     /* Try to release more than was allocated */
     status = fx_file_extended_truncate_release(&my_file, 0xFFFFFFFFFFFFFFFF);
     if (status != FX_SUCCESS)
@@ -202,7 +202,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(9);
     }
-    
+
     /* Attempt to truncate a file that is not open for writing */
     status = fx_file_extended_truncate(&read_only, 0);
     if (status != FX_ACCESS_ERROR)
@@ -210,7 +210,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(10);
     }
-    
+
     /* Attempt to release a file that is not open for writing */
     status = fx_file_extended_truncate_release(&read_only, 0);
     if (status != FX_ACCESS_ERROR)
@@ -218,7 +218,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(11);
     }
-    
+
     /* Attempt to truncate a file while the media is write protected */
     ram_disk.fx_media_driver_write_protect = FX_TRUE;
     status = fx_file_extended_truncate(&my_file, 0);
@@ -227,7 +227,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(12);
     }
-    
+
     /* Attempt to release a file while the media is write protected */
     status = fx_file_extended_truncate_release(&my_file, 0);
     if (status != FX_WRITE_PROTECT)
@@ -236,7 +236,7 @@ ULONG       i;
         test_control_return(13);
     }
     ram_disk.fx_media_driver_write_protect = FX_FALSE;
-    
+
     ram_disk.fx_media_bytes_per_sector = 0;
 
     /* Attempt to release a file while the media is corrupted.  */
@@ -255,7 +255,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(14);
     }
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
@@ -265,7 +265,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(15);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_file_extended_truncate(FX_NULL, 0xFF);
     if (status != FX_PTR_ERROR)
@@ -273,7 +273,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(16);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_file_extended_truncate_release(FX_NULL, 0xFF);
     if (status != FX_PTR_ERROR)
@@ -281,7 +281,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(17);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_file_extended_allocate(FX_NULL, 0xFF);
     if (status != FX_PTR_ERROR)
@@ -289,7 +289,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(18);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_file_best_effort_allocate(FX_NULL, 0xFF, FX_NULL);
     if (status != FX_PTR_ERROR)
@@ -301,7 +301,7 @@ ULONG       i;
 
     /* Allocate half the size first...  */
     status =  fx_file_allocate(&my_file, available_bytes/2);
-    
+
     /* Check the file allocate status.  */
     if (status != FX_SUCCESS)
     {
@@ -313,31 +313,31 @@ ULONG       i;
     /* Pickup the available bytes in the media again.  */
     status =  fx_media_space_available(&ram_disk, &i);
 
-    
-    /* Attempt to allocate all the bytes again... but the best effort should just get us the 
+
+    /* Attempt to allocate all the bytes again... but the best effort should just get us the
        remaining bytes...  */
     status +=  fx_file_best_effort_allocate(&my_file, available_bytes, &actual);
-    
+
     /* Check the best effort file allocate status.  */
     if ((status != FX_SUCCESS) || (actual != i))
     {
 
         printf("ERROR!\n");
         test_control_return(21);
-    }    
-    
-#ifdef FX_UPDATE_FILE_SIZE_ON_ALLOCATE    
+    }
+
+#ifdef FX_UPDATE_FILE_SIZE_ON_ALLOCATE
     /* Seek to the beginning of the test file.  */
     status =  fx_file_seek(&my_file, 0);
 
     /* Check the file seek status.  */
-    if (status != FX_SUCCESS)    
+    if (status != FX_SUCCESS)
     {
 
         printf("ERROR!\n");
         test_control_return(22);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_file_best_effort_allocate(FX_NULL, 1500, FX_NULL);
     if (status != FX_PTR_ERROR)
@@ -352,7 +352,7 @@ ULONG       i;
     write_value =  0;
     while (i < available_bytes)
     {
-    
+
         /* Write 4 bytes to the file.  */
         status =  fx_file_write(&my_file, (void *) &write_value, sizeof(ULONG));
 
@@ -363,17 +363,17 @@ ULONG       i;
             printf("ERROR!\n");
             test_control_return(24);
         }
-        
+
         /* Increment byte count.  */
         i =  i + sizeof(ULONG);
-        
+
         /* Increment write value.  */
         write_value++;
     }
-    
+
     /* Pickup the available bytes in the media again.  */
     status =  fx_media_space_available(&ram_disk, &i);
-    
+
     /* Check for available bytes error.  */
     if ((status != FX_SUCCESS) || (i != 0))
     {
@@ -381,12 +381,12 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(25);
     }
-    
+
 #ifndef FX_DISABLE_CACHE
-    /* At this point, we should invalidate the (which also flushes the cache) media to ensure that all 
+    /* At this point, we should invalidate the (which also flushes the cache) media to ensure that all
        dirty sectors are written.  */
     status =  fx_media_cache_invalidate(&ram_disk);
-    
+
     /* Check for invalidate errors.  */
     if ((status != FX_SUCCESS) || (ram_disk.fx_media_sector_cache_dirty_count))
     {
@@ -394,15 +394,15 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(26);
     }
-    
+
     /* See if any sectors are still valid in the cache.  */
     for (i = 0; i < FX_MAX_SECTOR_CACHE; i++)
     {
-    
+
         /* Determine if this cache entry is still valid.  */
         if (ram_disk.fx_media_sector_cache[i].fx_cached_sector_valid)
         {
-        
+
             printf("ERROR!\n");
             test_control_return(27);
         }
@@ -411,7 +411,7 @@ ULONG       i;
 
     /* Now truncate half the file...  */
     status =  fx_file_truncate(&my_file, available_bytes/2);
-    
+
     /* Check for errors... */
     if ((status) || (my_file.fx_file_current_file_size != my_file.fx_file_current_available_size/2))
     {
@@ -419,7 +419,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(28);
     }
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
@@ -429,7 +429,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(29);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_file_truncate_release(FX_NULL, 0);
     if (status != FX_PTR_ERROR)
@@ -441,7 +441,7 @@ ULONG       i;
 
     /* Now truncate the remainder of file...  */
     status =  fx_file_truncate(&my_file, 0);
-    
+
     /* Check for errors... */
     if ((status) || (my_file.fx_file_current_file_size != 0))
     {
@@ -452,7 +452,7 @@ ULONG       i;
 
     /* Pickup the available bytes in the media again.  */
     status =  fx_media_space_available(&ram_disk, &i);
-    
+
     /* Check for available bytes error.  */
     if ((status != FX_SUCCESS) || (i != 0))
     {
@@ -466,7 +466,7 @@ ULONG       i;
     write_value =  0;
     while (i < available_bytes)
     {
-    
+
         /* Write 4 bytes to the file.  */
         status =  fx_file_write(&my_file, (void *) &write_value, sizeof(ULONG));
 
@@ -477,20 +477,20 @@ ULONG       i;
             printf("ERROR!\n");
             test_control_return(33);
         }
-        
+
         /* Increment byte count.  */
         i =  i + sizeof(ULONG);
-        
+
         /* Increment write value.  */
         write_value++;
     }
-    
+
     /* Now truncate and release half the file...  */
     status =  fx_file_truncate_release(&my_file, available_bytes/2);
 
     /* Pickup the available bytes in the media again.  */
     status +=  fx_media_space_available(&ram_disk, &i);
-    
+
     /* Check for errors... */
     if ((status) || (my_file.fx_file_current_file_size != available_bytes/2))
     {
@@ -504,9 +504,9 @@ ULONG       i;
 
     /* Pickup the available bytes in the media again.  */
     status +=  fx_media_space_available(&ram_disk, &i);
-    
+
     /* Check for errors... */
-    if ((status) || (my_file.fx_file_current_file_size != 0) || 
+    if ((status) || (my_file.fx_file_current_file_size != 0) ||
             (i != available_bytes))
     {
 
@@ -522,10 +522,10 @@ ULONG       i;
 
     /* Pickup the available bytes in the media again.  */
     status =  fx_media_space_available(&ram_disk, &available_bytes);
-    
+
     /* Restore the actual available clusters.  */
     ram_disk.fx_media_available_clusters =  temp;
-    
+
     /* Check for errors... */
     if ((status) || (available_bytes != 0xFFFFFFFF))
     {
@@ -533,12 +533,12 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(36);
     }
- 
+
     /* Close the file.  */
     status =  fx_file_close(&my_file);
 
     /* Close the media.  */
-    status +=  fx_media_close(&ram_disk);   
+    status +=  fx_media_close(&ram_disk);
 
     /* Determine if the test was successful.  */
     if (status != FX_SUCCESS)
@@ -550,20 +550,20 @@ ULONG       i;
 
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            18000,                  // Total sectors 
-                            128,                    // Sector size   
+                            18000,                  // Total sectors
+                            128,                    // Sector size
                             3,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -572,7 +572,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(38);
     }
-    
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
 
@@ -618,7 +618,7 @@ ULONG       i;
     status += fx_file_open(&ram_disk, &read_only, "TEST.TXT", FX_OPEN_FOR_READ);
     status += fx_file_open(&ram_disk, &my_file1, "TEST1.TXT", FX_OPEN_FOR_READ);
     status += fx_file_open(&ram_disk, &my_file2, "TEST17.TXT", FX_OPEN_FOR_READ);
-   
+
     /* Write 2048 bytes to the file.  */
     for (i = 0; i < 4096; i++)
     {
@@ -629,7 +629,7 @@ ULONG       i;
 
     /* Allocate some additional clusters.  */
     status +=  fx_file_allocate(&my_file, 128*6);
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -637,7 +637,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(41);
     }
-    
+
     /* Now truncate the file to a value less than the available size, but greater than the current size.  */
     status = fx_file_extended_truncate_release(&my_file, 4096 + 128);
     if (status != FX_SUCCESS)
@@ -645,7 +645,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(42);
     }
-    
+
     /* Now truncate the file to the available size.  */
     status = fx_file_extended_truncate_release(&my_file, 4096);
     if (status != FX_SUCCESS)
@@ -661,7 +661,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(44);
     }
-    
+
     /* Now truncate the file to nothing.  */
     status = fx_file_extended_truncate_release(&my_file, 0);
     if (status != FX_SUCCESS)
@@ -669,36 +669,36 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(45);
     }
-    
+
     /* Close everything down.  */
     status =  fx_file_close(&my_file);
     status += fx_file_close(&my_file1);
     status += fx_file_close(&my_file2);
     status += fx_file_close(&read_only);
     status += fx_media_close(&ram_disk);
-    
+
     /* Check status.  */
     if (status != FX_SUCCESS)
     {
         printf("ERROR!\n");
         test_control_return(46);
-    }   
-     
+    }
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            18000,                  // Total sectors 
-                            128,                    // Sector size   
+                            18000,                  // Total sectors
+                            128,                    // Sector size
                             3,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -707,7 +707,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(47);
     }
-    
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -734,7 +734,7 @@ ULONG       i;
     /* Open the test file.  */
     status =  fx_file_open(&ram_disk, &my_file, "TEST.TXT", FX_OPEN_FOR_WRITE);
     status += fx_file_open(&ram_disk, &read_only, "TEST.TXT", FX_OPEN_FOR_READ);
-   
+
     /* Write 2048 bytes to the file.  */
     for (i = 0; i < 4096; i++)
     {
@@ -742,10 +742,10 @@ ULONG       i;
         status += fx_file_write(&my_file, " ", 1);
         status += fx_file_read(&read_only, buffer, 1, &actual);
     }
-    
+
     /* Flush the media.  */
     status += fx_media_flush(&ram_disk);
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -753,7 +753,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(50);
     }
-    
+
     /* Now truncate the file to half the available size, but force an I/O error on the directory entry write.  */
     _fx_ram_driver_io_error_request =  1;
     status = fx_file_extended_truncate_release(&my_file, 2048);
@@ -763,7 +763,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(51);
     }
-    
+
     /* Now truncate the file with FAT I/O Error.  */
     _fx_utility_fat_entry_read_error_request =  1;
     status = fx_file_extended_truncate_release(&my_file, 2000);
@@ -818,31 +818,31 @@ ULONG       i;
     status =  fx_file_close(&my_file);
     status += fx_file_close(&read_only);
     status += fx_media_close(&ram_disk);
-    
+
     /* Check status.  */
     if (status != FX_SUCCESS)
     {
         printf("ERROR!\n");
         test_control_return(54);
-    }    
+    }
 
     /* Test the cluster values of 1 and fx_media_fat_reserved errors in the FAT chain.  */
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            18000,                  // Total sectors 
-                            128,                    // Sector size   
+                            18000,                  // Total sectors
+                            128,                    // Sector size
                             3,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -851,7 +851,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(55);
     }
-    
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -878,7 +878,7 @@ ULONG       i;
     /* Open the test file.  */
     status =  fx_file_open(&ram_disk, &my_file, "TEST.TXT", FX_OPEN_FOR_WRITE);
     status += fx_file_open(&ram_disk, &read_only, "TEST.TXT", FX_OPEN_FOR_READ);
-   
+
     /* Write 2048 bytes to the file.  */
     for (i = 0; i < 4096; i++)
     {
@@ -886,10 +886,10 @@ ULONG       i;
         status += fx_file_write(&my_file, " ", 1);
         status += fx_file_read(&read_only, buffer, 1, &actual);
     }
-    
+
     /* Flush the media.  */
     status += fx_media_flush(&ram_disk);
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -897,7 +897,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(58);
     }
-    
+
     /* Now truncate one byte of the file.  */
     status = fx_file_extended_truncate_release(&my_file, 4095);
 
@@ -962,31 +962,31 @@ ULONG       i;
     status =  fx_file_close(&my_file);
     status += fx_file_close(&read_only);
     status += fx_media_close(&ram_disk);
-    
+
     /* Check status.  */
     if (status != FX_SUCCESS)
     {
         printf("ERROR!\n");
         test_control_return(63);
-    }    
+    }
 
     /* Test file extended truncate corner cases.  */
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            18000,                  // Total sectors 
-                            128,                    // Sector size   
+                            18000,                  // Total sectors
+                            128,                    // Sector size
                             3,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -995,7 +995,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(64);
     }
-    
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, 128);
 
@@ -1055,7 +1055,7 @@ ULONG       i;
     status += fx_file_open(&ram_disk, &read_only, "TEST.TXT", FX_OPEN_FOR_READ);
     status += fx_file_open(&ram_disk, &my_file1, "TEST1.TXT", FX_OPEN_FOR_WRITE);
     status += fx_file_open(&ram_disk, &my_file2, "TEST30.TXT", FX_OPEN_FOR_WRITE);
-   
+
     /* Write 2048 bytes to the file.  */
     for (i = 0; i < 4096; i++)
     {
@@ -1063,10 +1063,10 @@ ULONG       i;
         status += fx_file_write(&my_file, " ", 1);
         status += fx_file_read(&read_only, buffer, 1, &actual);
     }
-    
+
     /* Flush the media.  */
     status += fx_media_flush(&ram_disk);
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -1074,7 +1074,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(68);
     }
-    
+
     /* Now truncate one byte of the file.  */
     status = fx_file_extended_truncate(&my_file, 4095);
 
@@ -1086,7 +1086,7 @@ ULONG       i;
 
     /* Seek to make the file offset less than our new truncate size.  */
     status =  fx_file_seek(&my_file, 4094);
-    
+
     /* Truncate another byte of the file.  */
     status = fx_file_extended_truncate(&my_file, 4094);
 
@@ -1095,18 +1095,18 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(70);
     }
-    
+
     /* Now truncate the another byte of the file, but with a FAT read error.  */
     _fx_utility_fat_entry_read_error_request =  1;
     status = fx_file_extended_truncate(&my_file, 4093);
     _fx_utility_fat_entry_read_error_request =  0;
-    if (status != FX_IO_ERROR)   
+    if (status != FX_IO_ERROR)
     {
         printf("ERROR!\n");
         test_control_return(71);
     }
-      
-    
+
+
     /* Now truncate the file but force a FAT entry of 1.  */
     _fx_utility_fat_entry_read_error_request =  10003;
     status = fx_file_extended_truncate(&my_file, 4092);
@@ -1133,13 +1133,13 @@ ULONG       i;
     status += fx_file_close(&my_file2);
     status += fx_file_close(&read_only);
     status += fx_media_close(&ram_disk);
-    
+
     /* Check status.  */
     if (status != FX_SUCCESS)
     {
         printf("ERROR!\n");
         test_control_return(74);
-    }    
+    }
     else
     {
 
