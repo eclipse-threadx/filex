@@ -98,25 +98,25 @@ FX_DIR_ENTRY  *entry_ptr=&entry;
 UINT   status, length;
 
     FX_PARAMETER_NOT_USED(thread_input);
-    
+
     /* Print out some test information banners.  */
     printf("FileX Test:   Unicode directory entry change test....................");
 
     /* Format the media with FAT32.  This needs to be done before opening it!  */
     status = fx_media_format(&ram_disk,
-                             _fx_ram_driver,         // Driver entry            
+                             _fx_ram_driver,         // Driver entry
                              ram_disk_memory_large,  // RAM disk memory pointer
                              cache_buffer,           // Media buffer pointer
-                             CACHE_SIZE,             // Media buffer size 
+                             CACHE_SIZE,             // Media buffer size
                              "MY_RAM_DISK",          // Volume Name
                              1,                      // Number of FATs
                              32,                     // Directory Entries
                              0,                      // Hidden sectors
-                             70000,                  // Total sectors 
-                             128,                    // Sector size   
+                             70000,                  // Total sectors
+                             128,                    // Sector size
                              1,                      // Sectors per cluster
                              1,                      // Heads
-                             1);                     // Sectors per track 
+                             1);                     // Sectors per track
 
     return_value_if_fail(status == FX_SUCCESS, 1);
 
@@ -163,7 +163,7 @@ UINT   status, length;
     entry_ptr->fx_dir_entry_log_sector =ram_disk.fx_media_data_sector_start-1;
     status = _fx_unicode_directory_entry_change(&ram_disk, entry_ptr, long_unicode_name1, length);
     return_value_if_fail(status == FX_FILE_CORRUPT, 5);
-    
+
     /*This case is determined to cover lines 315 in fx_unicode_directory_entry_change.c. */
     entry_ptr->fx_dir_entry_byte_offset = CACHE_SIZE + 1;
     *(ram_disk.fx_media_driver_buffer + CACHE_SIZE + 1) = 90;

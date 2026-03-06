@@ -27,14 +27,14 @@ extern UINT         (*driver_write_callback)(FX_MEDIA *media_ptr,
                                              UINT sector_type,
                                              UCHAR *block_ptr,
                                              UINT *operation_ptr);
-extern VOID (*driver_fault_tolerant_enable_callback)(FX_MEDIA *media_ptr, 
+extern VOID (*driver_fault_tolerant_enable_callback)(FX_MEDIA *media_ptr,
                                                      UCHAR *fault_tolerant_memory_buffer,
                                                      ULONG log_size);
 static UINT         my_driver_write_callback(FX_MEDIA *media_ptr,
                                              UINT sector_type,
                                              UCHAR *block_ptr,
                                              UINT *operation_ptr);
-static VOID         my_fault_tolerant_enable_callback(FX_MEDIA *media_ptr, 
+static VOID         my_fault_tolerant_enable_callback(FX_MEDIA *media_ptr,
                                                       UCHAR *fault_tolerant_memory_buffer,
                                                       ULONG log_size);
 static void         ftest_0_entry(ULONG thread_input);
@@ -344,7 +344,7 @@ static UINT         my_driver_write_callback(FX_MEDIA *media_ptr,
     return(FX_SUCCESS);
 }
 
-static VOID         my_fault_tolerant_enable_callback(FX_MEDIA *media_ptr, 
+static VOID         my_fault_tolerant_enable_callback(FX_MEDIA *media_ptr,
                                                       UCHAR *fault_tolerant_memory_buffer,
                                                       ULONG log_size)
 {

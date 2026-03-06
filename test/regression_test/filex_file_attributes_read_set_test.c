@@ -4,7 +4,7 @@
 #include   "tx_api.h"
 #endif
 #include   "fx_api.h"
-#include   <stdio.h> 
+#include   <stdio.h>
 #include   "fx_ram_driver_test.h"
 
 #define     DEMO_STACK_SIZE         4096
@@ -61,13 +61,13 @@ void    filex_file_attributes_read_set_application_define(void *first_unused_mem
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -103,20 +103,20 @@ FX_FILE     open_file;
     printf("FileX Test:   File attributes read/set test..........................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -125,7 +125,7 @@ FX_FILE     open_file;
         printf("ERROR!\n");
         test_control_return(1);
     }
-    
+
     /* Attempt to read file attributes before the media has been opened */
     status = fx_file_attributes_read(&ram_disk, "TEST.TXT", &attributes);
     if (status != FX_MEDIA_NOT_OPEN)
@@ -133,7 +133,7 @@ FX_FILE     open_file;
         printf("ERROR!\n");
         test_control_return(2);
     }
-    
+
     /* Attempt to set file attributes before the media has been opened */
     status = fx_file_attributes_set(&ram_disk, "TEST.TXT", 0);
     if (status != FX_MEDIA_NOT_OPEN)
@@ -153,7 +153,7 @@ FX_FILE     open_file;
         printf("ERROR!\n");
         test_control_return(4);
     }
-    
+
     /* Attempt to set file attributes while the media is write protected */
     ram_disk.fx_media_driver_write_protect = FX_TRUE;
     status = fx_file_attributes_set(&ram_disk, "TEST.TXT", FX_READ_ONLY);
@@ -163,7 +163,7 @@ FX_FILE     open_file;
         test_control_return(5);
     }
     ram_disk.fx_media_driver_write_protect = FX_FALSE;
-    
+
     /* attempt to read file attributes from a file that does not exist */
     status = fx_file_attributes_read(&ram_disk, "TEST.TXT", &attributes);
     if (status == FX_SUCCESS)
@@ -171,7 +171,7 @@ FX_FILE     open_file;
         printf("ERROR!\n");
         test_control_return(6);
     }
-    
+
     /* Attempt to set file attributes before the media has been opened */
     status = fx_file_attributes_set(&ram_disk, "TEST.TXT", attributes);
     if (status == FX_SUCCESS)
@@ -179,7 +179,7 @@ FX_FILE     open_file;
         printf("ERROR!\n");
         test_control_return(7);
     }
-    
+
     /* attempt to read file attributes from something that is not a file */
     status  = fx_directory_create(&ram_disk, "NOT_A_FILE");
     status += fx_file_attributes_read(&ram_disk, "NOT_A_FILE", &attributes);
@@ -188,7 +188,7 @@ FX_FILE     open_file;
         printf("ERROR!\n");
         test_control_return(8);
     }
-    
+
     /* Attempt to set file attributes before the media has been opened */
     status = fx_file_attributes_set(&ram_disk, "NOT_A_FILE", FX_READ_ONLY);
     if (status != FX_NOT_A_FILE)
@@ -215,9 +215,9 @@ FX_FILE     open_file;
         printf("ERROR!\n");
         test_control_return(10);
     }
-    
+
 #ifndef FX_DISABLE_ERROR_CHECKING
-    
+
     /* send null pointer to generate an error */
     status = fx_file_attributes_set(FX_NULL, "filename", FX_READ_ONLY);
     if (status != FX_PTR_ERROR)
@@ -225,7 +225,7 @@ FX_FILE     open_file;
         printf("ERROR!\n");
         test_control_return(11);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_file_attributes_set(&ram_disk, "filename", 0x40);
     if (status != FX_INVALID_ATTR)
@@ -233,7 +233,7 @@ FX_FILE     open_file;
         printf("ERROR!\n");
         test_control_return(12);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_file_attributes_read(FX_NULL, "filename", FX_NULL);
     if (status != FX_PTR_ERROR)
@@ -241,7 +241,7 @@ FX_FILE     open_file;
         printf("ERROR!\n");
         test_control_return(13);
     }
-    
+
 #endif
 
     /* Invalidate the media cache.  */
@@ -265,13 +265,13 @@ FX_FILE     open_file;
     status =  fx_file_attributes_set(&ram_disk, "TEST.TXT", attributes | FX_READ_ONLY);
 
     /* Check the attributes set status.  */
-    if (status != FX_SUCCESS) 
+    if (status != FX_SUCCESS)
     {
 
         printf("ERROR!\n");
         test_control_return(15);
     }
-    
+
     /* Write the attributes out to the file while another file is opened to get better code coverage */
     status  = fx_file_create(&ram_disk, "open_file.txt");
     status += fx_file_open(&ram_disk, &open_file, "open_file.txt", FX_OPEN_FOR_WRITE);
@@ -306,7 +306,7 @@ FX_FILE     open_file;
         printf("ERROR!\n");
         test_control_return(18);
     }
-    
+
     /* Attempt to set file attributes for a file that is open */
     status  = fx_file_open(&ram_disk, &my_file, "TEST.TXT", FX_OPEN_FOR_READ);
     status += fx_file_attributes_set(&ram_disk, "TEST.TXT", attributes);
@@ -317,7 +317,7 @@ FX_FILE     open_file;
     }
 
     /* Close the media.  */
-    status =  fx_media_close(&ram_disk);   
+    status =  fx_media_close(&ram_disk);
 
     /* Determine if the test was successful.  */
     if (status != FX_SUCCESS)
@@ -327,24 +327,24 @@ FX_FILE     open_file;
         test_control_return(20);
     }
 
-    /* Now test the attributes set with multiple files open that have directory entries that reside on 
+    /* Now test the attributes set with multiple files open that have directory entries that reside on
        different logical sectors.  */
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -353,7 +353,7 @@ FX_FILE     open_file;
         printf("ERROR!\n");
         test_control_return(21);
     }
-    
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
 
@@ -390,10 +390,10 @@ FX_FILE     open_file;
     status += fx_file_open(&ram_disk, &my_file7, "TEST8.TXT", FX_OPEN_FOR_WRITE);
     status += fx_file_open(&ram_disk, &my_file8, "TEST9.TXT", FX_OPEN_FOR_WRITE);
     status += fx_file_open(&ram_disk, &my_file9, "TEST10.TXT", FX_OPEN_FOR_WRITE);
-        
+
     /* Now set the attributes for TEST.TXT.  */
     status += fx_file_attributes_set(&ram_disk, "TEST.TXT", FX_READ_ONLY);
-    
+
     /* Check the status.  */
     if (status != FX_SUCCESS)
     {
@@ -404,7 +404,7 @@ FX_FILE     open_file;
     }
 
     /* Close the media.  */
-    status =  fx_media_close(&ram_disk);   
+    status =  fx_media_close(&ram_disk);
 
     /* Determine if the test was successful.  */
     if (status != FX_SUCCESS)

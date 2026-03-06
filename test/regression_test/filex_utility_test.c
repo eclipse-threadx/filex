@@ -91,13 +91,13 @@ void    filex_utility_application_define(void *first_unused_memory)
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -123,7 +123,7 @@ UINT status;
 ULONG total_sectors;
 ULONG partition_start;
 ULONG partition_size;
-                  
+
     /* Loop to test FAT 12, 16, 32.   */
     for (i = 0; i < TEST_COUNT; i ++)
     {
@@ -131,96 +131,96 @@ ULONG partition_size;
         {
             /* Format the media with FAT12.  This needs to be done before opening it!  */
             total_sectors = 256;
-            status =  fx_media_format(&ram_disk, 
+            status =  fx_media_format(&ram_disk,
                                      _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     total_sectors,          // Total sectors 
-                                     512,                    // Sector size   
+                                     total_sectors,          // Total sectors
+                                     512,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
-        }     
+                                     1);                     // Sectors per track
+        }
         else if (i == 1)
         {
             /* Format the media with FAT16.  This needs to be done before opening it!  */
             total_sectors = 4200 * 8;
-            status =  fx_media_format(&ram_disk, 
-                                     _fx_ram_driver,         // Driver entry            
+            status =  fx_media_format(&ram_disk,
+                                     _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     total_sectors,          // Total sectors 
-                                     512,                    // Sector size   
+                                     total_sectors,          // Total sectors
+                                     512,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
-        }  
+                                     1);                     // Sectors per track
+        }
         else if (i == 2)
         {
             /* Format the media with FAT32.  This needs to be done before opening it!  */
             total_sectors = 70000 * 8;
-            status =  fx_media_format(&ram_disk, 
-                                     _fx_ram_driver,         // Driver entry            
+            status =  fx_media_format(&ram_disk,
+                                     _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     total_sectors,          // Total sectors 
-                                     512,                    // Sector size   
+                                     total_sectors,          // Total sectors
+                                     512,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
+                                     1);                     // Sectors per track
         }
         else if (i == 3)
         {
             /* Format the media with FAT12.  This needs to be done before opening it!  */
             total_sectors = 256;
-            status =  fx_media_format(&ram_disk, 
+            status =  fx_media_format(&ram_disk,
                                      _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     total_sectors,          // Total sectors 
-                                     128,                    // Sector size   
+                                     total_sectors,          // Total sectors
+                                     128,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
-        }  
+                                     1);                     // Sectors per track
+        }
         else if (i == 4)
         {
             /* Format the media with FAT12.  This needs to be done before opening it!  */
             total_sectors = 256;
-            status =  fx_media_format(&ram_disk, 
+            status =  fx_media_format(&ram_disk,
                                      _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     total_sectors,          // Total sectors 
-                                     1024,                   // Sector size   
+                                     total_sectors,          // Total sectors
+                                     1024,                   // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
+                                     1);                     // Sectors per track
         }
         return_if_fail( status == FX_SUCCESS);
 
@@ -395,7 +395,7 @@ ULONG       temp6;
 
     /* Restore buffer */
     partition_sector[0] = partition_sector_value;
-    
+
     partition_sector_value = partition_sector[0];
     temp = partition_sector[2];
 
@@ -438,7 +438,7 @@ ULONG       temp6;
     partition_sector[0] = partition_sector_value;
     partition_sector[2] = temp;
 
-    /* Test to check the partition_sector values, if there are good values for sectors per FAT. 
+    /* Test to check the partition_sector values, if there are good values for sectors per FAT.
        We want the test code to return FX_NOT_FOUND after _fx_utility_partition_get() is called */
 
     /* Set real boot sector check to true */
@@ -459,7 +459,7 @@ ULONG       temp6;
     partition_sector[0x25] = 0;
     partition_sector[0x26] = 0;
     partition_sector[0x27] = 0;
-    
+
     status = _fx_partition_offset_calculate(partition_sector, 100, &partition_start, &partition_size);
 
     /* Check for the error.  */
@@ -484,7 +484,7 @@ ULONG       temp6;
     partition_sector[0x25] = 0;
     partition_sector[0x26] = 0;
     partition_sector[0x27] = 0;
-    
+
     status = _fx_partition_offset_calculate(partition_sector, 0, &partition_start, &partition_size);
 
     /* Check for the error.  */
@@ -508,7 +508,7 @@ ULONG       temp6;
     partition_sector[0x25] = 0;
     partition_sector[0x26] = 0;
     partition_sector[0x27] = 0;
-    
+
     status = _fx_partition_offset_calculate(partition_sector, 0, &partition_start, &partition_size);
 
     /* Check for the error.  */
@@ -532,7 +532,7 @@ ULONG       temp6;
     partition_sector[0x25] = 0;
     partition_sector[0x26] = 0;
     partition_sector[0x27] = 0;
-    
+
     status = _fx_partition_offset_calculate(partition_sector, 0, &partition_start, &partition_size);
 
     /* Check for the error.  */
@@ -556,7 +556,7 @@ ULONG       temp6;
     partition_sector[0x24] = 0;
     partition_sector[0x26] = 0;
     partition_sector[0x27] = 0;
-    
+
     status = _fx_partition_offset_calculate(partition_sector, 0, &partition_start, &partition_size);
 
     /* Check for the error.  */
@@ -580,7 +580,7 @@ ULONG       temp6;
     partition_sector[0x24] = 0;
     partition_sector[0x25] = 0;
     partition_sector[0x27] = 0;
-    
+
     status = _fx_partition_offset_calculate(partition_sector, 0, &partition_start, &partition_size);
 
     /* Check for the error.  */
@@ -604,7 +604,7 @@ ULONG       temp6;
     partition_sector[0x24] = 0;
     partition_sector[0x25] = 0;
     partition_sector[0x26] = 0;
-    
+
     status = _fx_partition_offset_calculate(partition_sector, 0, &partition_start, &partition_size);
 
     /* Check for the error.  */
@@ -694,7 +694,7 @@ ULONG       temp6;
     partition_sector[0x20] = temp;
     partition_sector[0x22] = temp2;
     partition_sector[0x23] = temp3;
-    
+
     /* Induce error in buffer */
     partition_sector[0x20] = 0;
     partition_sector[0x21] = 0;
@@ -714,7 +714,7 @@ ULONG       temp6;
     partition_sector[0x20] = temp;
     partition_sector[0x21] = temp1;
     partition_sector[0x23] = temp3;
-    
+
     /* Induce error in buffer */
     partition_sector[0x20] = 0;
     partition_sector[0x21] = 0;
@@ -729,7 +729,7 @@ ULONG       temp6;
         printf("Error in checking of _fx_partition_offset_calculate! %d\n",status);
         test_control_return(18);
     }
-    
+
     /* Check for partition_start and partition_size to be NULL */
     status = _fx_partition_offset_calculate(partition_sector, 0,  FX_NULL, FX_NULL);
 
@@ -740,7 +740,7 @@ ULONG       temp6;
         printf("Error in checking of _fx_partition_offset_calculate! %d\n",status);
         test_control_return(19);
     }
-    
+
     /* Restore buffer */
     partition_sector[0x20] = temp;
     partition_sector[0x21] = temp1;

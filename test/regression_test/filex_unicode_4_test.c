@@ -110,19 +110,19 @@ FX_FILE my_file;
 
     /* Format the media.  This needs to be done before opening it!  */
     status = fx_media_format(&ram_disk,
-        _fx_ram_driver,         // Driver entry            
+        _fx_ram_driver,         // Driver entry
         ram_disk_memory_large,  // RAM disk memory pointer
         cache_buffer,           // Media buffer pointer
-        128,                    // Media buffer size 
+        128,                    // Media buffer size
         "MY_RAM_DISK",          // Volume Name
         1,                      // Number of FATs
         32,                     // Directory Entries
         0,                      // Hidden sectors
-        70000,                   // Total sectors 
-        128,                    // Sector size   
+        70000,                   // Total sectors
+        128,                    // Sector size
         1,                      // Sectors per cluster
         1,                      // Heads
-        1);                     // Sectors per track 
+        1);                     // Sectors per track
 
     return_value_if_fail(status == FX_SUCCESS, 2);
     status = fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
@@ -139,7 +139,7 @@ FX_FILE my_file;
     status = fx_unicode_file_create(&ram_disk, long_unicode_name1, length, (CHAR *)destination_name);
     return_value_if_fail(status == FX_SUCCESS, 5);
 
-    // Attempt to create two 8.3 format file by both fx_file_create and fx_unicode_file_create to cover the branch at Line 324 in fx_unicode_directory_search.c 
+    // Attempt to create two 8.3 format file by both fx_file_create and fx_unicode_file_create to cover the branch at Line 324 in fx_unicode_directory_search.c
     status = fx_file_create(&ram_disk, (CHAR *)specified_ascii_file_name);
     return_value_if_fail(status == FX_SUCCESS, 6);
 
@@ -338,19 +338,19 @@ FX_FILE my_file;
 
     /* Format the media.  This needs to be done before opening it!  */
     status = fx_media_format(&ram_disk,
-        _fx_ram_driver,         // Driver entry            
+        _fx_ram_driver,         // Driver entry
         ram_disk_memory_large,  // RAM disk memory pointer
         cache_buffer,           // Media buffer pointer
-        128,                    // Media buffer size 
+        128,                    // Media buffer size
         "MY_RAM_DISK",          // Volume Name
         1,                      // Number of FATs
         32,                     // Directory Entries
         0,                      // Hidden sectors
-        70000,                   // Total sectors 
-        128,                    // Sector size   
+        70000,                   // Total sectors
+        128,                    // Sector size
         1,                      // Sectors per cluster
         1,                      // Heads
-        1);                     // Sectors per track 
+        1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Backup the data which will be modified later. */
@@ -377,19 +377,19 @@ FX_FILE my_file;
 
     /* Format the media.  This needs to be done before opening it!  */
     status = fx_media_format(&ram_disk,
-        _fx_ram_driver,         // Driver entry            
+        _fx_ram_driver,         // Driver entry
         ram_disk_memory_large,  // RAM disk memory pointer
         cache_buffer,           // Media buffer pointer
-        128,                    // Media buffer size 
+        128,                    // Media buffer size
         "MY_RAM_DISK",          // Volume Name
         1,                      // Number of FATs
         32,                     // Directory Entries
         0,                      // Hidden sectors
-        70000,                   // Total sectors 
-        128,                    // Sector size   
+        70000,                   // Total sectors
+        128,                    // Sector size
         1,                      // Sectors per cluster
         1,                      // Heads
-        1);                     // Sectors per track 
+        1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Backup the data which will be modified later. */
@@ -425,19 +425,19 @@ FX_FILE my_file;
 
     /* Format the media.  This needs to be done before opening it!  */
     status = fx_media_format(&ram_disk,
-        _fx_ram_driver,         // Driver entry            
+        _fx_ram_driver,         // Driver entry
         ram_disk_memory_large,  // RAM disk memory pointer
         cache_buffer,           // Media buffer pointer
-        128,                    // Media buffer size 
+        128,                    // Media buffer size
         "MY_RAM_DISK",          // Volume Name
         1,                      // Number of FATs
         32,                     // Directory Entries
         0,                      // Hidden sectors
-        70000,                   // Total sectors 
-        128,                    // Sector size   
+        70000,                   // Total sectors
+        128,                    // Sector size
         1,                      // Sectors per cluster
         1,                      // Heads
-        1);                     // Sectors per track 
+        1);                     // Sectors per track
     return_if_fail( status == FX_SUCCESS);
 
     /* Backup the data which will be modified later. */
@@ -473,19 +473,19 @@ FX_FILE my_file;
     return_if_fail( status == FX_SUCCESS);
 
     status = fx_media_format(&ram_disk,
-        _fx_ram_driver,         // Driver entry            
+        _fx_ram_driver,         // Driver entry
         ram_disk_memory_large,  // RAM disk memory pointer
         cache_buffer,           // Media buffer pointer
-        128,                    // Media buffer size 
+        128,                    // Media buffer size
         "MY_RAM_DISK",          // Volume Name
         1,                      // Number of FATs
         32,                     // Directory Entries
         0,                      // Hidden sectors
-        70000,                   // Total sectors 
-        128,                    // Sector size   
+        70000,                   // Total sectors
+        128,                    // Sector size
         1,                      // Sectors per cluster
         1,                      // Heads
-        1);                     // Sectors per track 
+        1);                     // Sectors per track
     status += fx_media_open( &ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 

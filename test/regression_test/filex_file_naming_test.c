@@ -51,13 +51,13 @@ void    filex_file_naming_application_define(void *first_unused_memory)
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -93,20 +93,20 @@ CHAR        special_name[10];
     printf("FileX Test:   File naming test.......................................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -186,7 +186,7 @@ CHAR        special_name[10];
         /* Error creating special name.  Return to caller.  */
         printf("ERROR!\n");
         test_control_return(5);
-    } 
+    }
 
     /* Create another special file name.  */
     special_name[0] =  (CHAR)0xE5;
@@ -207,7 +207,7 @@ CHAR        special_name[10];
         /* Error creating special name.  Return to caller.  */
         printf("ERROR!\n");
         test_control_return(6);
-    } 
+    }
 
     /* Create the next level of sub-directories.... with the interesting names...  */
     status =   fx_directory_default_set(&ram_disk, "/A0");
@@ -223,7 +223,7 @@ CHAR        special_name[10];
     status +=  fx_file_create(&ram_disk, "/.d0.dir/test.txt");
     status +=  fx_file_create(&ram_disk, "/.b0/TEST.TXT");
     status +=  fx_media_flush(&ram_disk);
-    
+
     /* Check for errors.  */
     if (status != FX_SUCCESS)
     {
@@ -231,7 +231,7 @@ CHAR        special_name[10];
         /* Error creating interesting file names.  Return to caller.  */
         printf("ERROR!\n");
         test_control_return(7);
-    } 
+    }
 
     /* Now attempt to delete the files in each of these sub-directories.  */
     status =   fx_file_delete(&ram_disk, "/A0/.a.a.a.");
@@ -258,7 +258,7 @@ CHAR        special_name[10];
         /* Error deleting test files in the interesting sub-directories.  Return to caller.  */
         printf("ERROR!\n");
         test_control_return(8);
-    } 
+    }
 
     /* Set default to root directory.  */
     status =   fx_directory_default_set(&ram_disk, "/");
@@ -266,7 +266,7 @@ CHAR        special_name[10];
     /* Flush the media... should be empty at this point.  */
     status += fx_media_flush(&ram_disk);
 
-    /* Now fill the media's root directory until we get an error...  We will use 8.3 names 
+    /* Now fill the media's root directory until we get an error...  We will use 8.3 names
        to attempt to create 32 names.    */
     status +=  fx_file_create(&ram_disk, "A01");
     status +=  fx_file_create(&ram_disk, "A02");
@@ -360,7 +360,7 @@ CHAR        special_name[10];
     status +=  fx_file_delete(&ram_disk, "A30");
     status +=  fx_file_delete(&ram_disk, "A31");
     status +=  fx_file_delete(&ram_disk, "A32");
-    
+
     /* Check for errors...  */
     if (status != FX_SUCCESS)
     {
@@ -372,7 +372,7 @@ CHAR        special_name[10];
 
     /* Flush the media.  */
     status =  fx_media_flush(&ram_disk);
-    
+
     /* Now do the same thing, except with 2 entry long names.  */
     status +=  fx_file_create(&ram_disk, "b01");
     status +=  fx_file_create(&ram_disk, "b02");
@@ -432,7 +432,7 @@ CHAR        special_name[10];
     status +=  fx_file_delete(&ram_disk, "b14");
     status +=  fx_file_delete(&ram_disk, "b15");
     status +=  fx_file_delete(&ram_disk, "b16");
-    
+
     /* Check for errors...  */
     if (status != FX_SUCCESS)
     {
@@ -447,7 +447,7 @@ CHAR        special_name[10];
 
     /* Now delete this file.  */
     status +=  fx_file_delete(&ram_disk, "TEST.T~ ");
-    
+
     /* Check for errors...  */
     if (status != FX_SUCCESS)
     {
@@ -456,7 +456,7 @@ CHAR        special_name[10];
         printf("ERROR!\n");
         test_control_return(14);
     }
-    
+
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
 

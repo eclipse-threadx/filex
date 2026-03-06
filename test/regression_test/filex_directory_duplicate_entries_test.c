@@ -35,10 +35,10 @@ static CHAR                     name[256];
 #ifndef FX_STANDALONE_ENABLE
 static UCHAR                    ram_disk_memory[1024 * 1024];
 static UCHAR                    *cache_buffer;
-static UCHAR                    *fault_tolerant_buffer;   
+static UCHAR                    *fault_tolerant_buffer;
 #else
 static UCHAR                    cache_buffer[CACHE_SIZE];
-static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE]; 
+static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE];
 #endif
 
 extern ULONG   _fx_ram_driver_copy_default_format;

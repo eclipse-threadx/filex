@@ -52,13 +52,13 @@ void    filex_system_date_time_application_define(void *first_unused_memory)
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -96,20 +96,20 @@ UINT        i;
     printf("FileX Test:   System date/time get/set test..........................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            256,                    // Total sectors 
-                            128,                    // Sector size   
+                            256,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -130,10 +130,10 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(3);
     }
-    
+
 /* test for error checking by sending bad information */
 #ifndef FX_DISABLE_ERROR_CHECKING
-    
+
     /* check system date get pointer error */
     status = fx_system_date_get(FX_NULL, FX_NULL, FX_NULL);
     if (status != FX_PTR_ERROR)
@@ -141,15 +141,15 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(4);
     }
-    
+
     /* check system time get pointer error */
     status = fx_system_time_get(FX_NULL, FX_NULL, FX_NULL);
     if (status != FX_PTR_ERROR)
     {
         printf("ERROR!\n");
         test_control_return(5);
-    }    
-    
+    }
+
     /* check system time set bad hours */
     status = fx_system_time_set(99, 0, 0);
     if (status != FX_INVALID_HOUR)
@@ -157,7 +157,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(6);
     }
-    
+
     /* check system time set bad minutes */
     status = fx_system_time_set(0, 99, 0);
     if (status != FX_INVALID_MINUTE)
@@ -165,7 +165,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(7);
     }
-    
+
     /* check system time set bad seconds */
     status = fx_system_time_set(0, 0, 99);
     if (status != FX_INVALID_SECOND)
@@ -173,7 +173,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(8);
     }
-    
+
     /* check system date set bad year */
     status = fx_system_date_set(99, 6, 6);
     if (status != FX_INVALID_YEAR)
@@ -181,7 +181,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(9);
     }
-    
+
     /* check system date set bad month */
     status = fx_system_date_set(2015, 99, 6);
     if (status != FX_INVALID_MONTH)
@@ -189,7 +189,7 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(10);
     }
-    
+
     /* check good and bad inputs for each month */
     for (i = 1; i <= 12; i++)
     {
@@ -200,7 +200,7 @@ UINT        i;
             printf("ERROR!\n");
             test_control_return(11);
         }
-        
+
         /* invalid input for month i */
         status = fx_system_date_set(2015, i, 99);
         if (status != FX_INVALID_DAY)
@@ -209,7 +209,7 @@ UINT        i;
             test_control_return(12);
         }
     }
-    
+
     /* check bad input for feb on a leap year */
     status = fx_system_date_set(2016, 2, 99);
     if (status != FX_INVALID_DAY)
@@ -217,14 +217,14 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(13);
     }
-    
-    
+
+
 #endif
 
     /* Set the date and time.  */
-    status =  fx_system_date_set(1999, 12, 31); 
-   
-    /* Check for successful date set.  */  
+    status =  fx_system_date_set(1999, 12, 31);
+
+    /* Check for successful date set.  */
     if (status != FX_SUCCESS)
     {
 
@@ -232,10 +232,10 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(4);
     }
-    
+
     status =  fx_system_time_set(23, 59, 58);
 
-    /* Check for successful time set.  */  
+    /* Check for successful time set.  */
     if (status != FX_SUCCESS)
     {
 
@@ -243,14 +243,14 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(14);
     }
-    
+
     /* Call the internal system date get with NULL values.  */
     status =  _fx_system_date_get(FX_NULL, FX_NULL, FX_NULL);
-    
+
     /* Get the date.  */
     status +=  fx_system_date_get(&year, &month, &day);
-    
-    /* Check for successful date get.  */  
+
+    /* Check for successful date get.  */
     if ((status != FX_SUCCESS) ||
         (year != 1999) ||
         (month != 12) ||
@@ -261,10 +261,10 @@ UINT        i;
         printf("ERROR!\n");
         test_control_return(15);
     }
-    
+
     /* Call the internal system time get.  */
     status =  _fx_system_time_get(FX_NULL, FX_NULL, FX_NULL);
-    
+
     /* Get the time.  */
     status +=  fx_system_time_get(&hour, &minute, &second);
 
@@ -380,20 +380,20 @@ UINT        i;
     status =  fx_media_close(&ram_disk);
 
     /* Drive the system time logic.  */
-    
+
     /* Save the system date/time.  */
     save_date =  _fx_system_date;
     save_time =  _fx_system_time;
-    
+
     /* First call the system timer entry function with an invalid ID.  */
     _fx_system_timer_entry(0);
-    
+
     /* Now setup an invalid month to cause the error logic to hit.  */
     _fx_system_date =  _fx_system_date | 0x1E0;  /* Set month to all ones - invalid > 12  */
-    
+
     /* Now loop for the amount of updates (10 seconds per update) to cause the day to wrap.  */
     for (i = 0; i < 86400; i++)
-    {   
+    {
         /* Adjust the time by calling the time update function.  */
         _fx_system_timer_entry(FX_TIMER_ID);
     }
@@ -405,7 +405,7 @@ UINT        i;
     /* Now call the system timer entry to walk through the maximum system time.  */
     for (i = 0; i < 315360000; i++)
     {
-    
+
         /* Adjust the time by calling the time update function.  */
         _fx_system_timer_entry(FX_TIMER_ID);
     }

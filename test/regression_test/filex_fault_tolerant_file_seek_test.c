@@ -1,21 +1,21 @@
 /* This FileX test concentrates on the Fault-Tolerant file seek operation.  */
 /*
-1. Format and open the media; 
-2. Enable fault tolerant feature;     
-3. Create and write 1024 bytes into TEST.TXT; 
+1. Format and open the media;
+2. Enable fault tolerant feature;
+3. Create and write 1024 bytes into TEST.TXT;
 4. Seek to the beginning of the file;
 5. Write 640 bytes into TEST.TXT;
 6. Verify the data;
-*/                                     
+*/
 
 #ifndef FX_STANDALONE_ENABLE
 #include   "tx_api.h"
 #endif
-#include   "fx_api.h"  
+#include   "fx_api.h"
 #include   "fx_system.h"
 #include   "fx_fault_tolerant.h"
 #include   <stdio.h>
-#include   "fx_ram_driver_test.h"               
+#include   "fx_ram_driver_test.h"
 extern void    test_control_return(UINT status);
 void    filex_fault_tolerant_file_seek_test_application_define(void *first_unused_memory);
 
@@ -33,27 +33,27 @@ void    filex_fault_tolerant_file_seek_test_application_define(void *first_unuse
 /* Define the ThreadX and FileX object control blocks...  */
 
 #ifndef FX_STANDALONE_ENABLE
-static TX_THREAD                ftest_0;  
+static TX_THREAD                ftest_0;
 #endif
 static FX_MEDIA                 ram_disk;
 static FX_FILE                  my_file;
 static UCHAR                    *pointer;
 
 /* Define the counters used in the test application...  */
-                                                         
-static UCHAR                    cache_buffer[CACHE_SIZE];       
-static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE];  
+
+static UCHAR                    cache_buffer[CACHE_SIZE];
+static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE];
 static UCHAR                    *thread_buffer;
-static CHAR                     write_buffer[2][TOTAL_SIZE];          
-static CHAR                     read_buffer[TOTAL_SIZE];          
-                                                         
+static CHAR                     write_buffer[2][TOTAL_SIZE];
+static CHAR                     read_buffer[TOTAL_SIZE];
+
 #define TEST_COUNT              3            /* FAT12, 16, 32.  */
 
 /* Define thread prototypes.  */
 
-static void    ftest_0_entry(ULONG thread_input);  
+static void    ftest_0_entry(ULONG thread_input);
 extern void    _fx_ram_driver(FX_MEDIA *media_ptr);
-extern void    test_control_return(UINT status);     
+extern void    test_control_return(UINT status);
 
 
 
@@ -65,15 +65,15 @@ void test_application_define(void *first_unused_memory)
 void    filex_fault_tolerant_file_seek_test_application_define(void *first_unused_memory)
 #endif
 {
-                        
-#ifndef FX_STANDALONE_ENABLE    
+
+#ifndef FX_STANDALONE_ENABLE
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
 
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -98,7 +98,7 @@ static void    ftest_0_entry(ULONG thread_input)
 {
 
 UINT        status;
-ULONG       actual;  
+ULONG       actual;
 UINT        i;
 UINT        j;
 
@@ -106,7 +106,7 @@ UINT        j;
 
     /* Print out some test information banners.  */
     printf("FileX Test:   Fault Tolerant File Seek Test..........................");
-               
+
     /* Loop to test FAT 12, 16, 32.   */
     for (i = 0; i < TEST_COUNT; i ++)
     {
@@ -121,64 +121,64 @@ UINT        j;
         if (i == 0)
         {
             /* Format the media with FAT12.  This needs to be done before opening it!  */
-            status =  fx_media_format(&ram_disk, 
+            status =  fx_media_format(&ram_disk,
                                      _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     256,                    // Total sectors 
-                                     512,                    // Sector size   
+                                     256,                    // Total sectors
+                                     512,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
-        }     
+                                     1);                     // Sectors per track
+        }
         else if (i == 1)
         {
             /* Format the media with FAT16.  This needs to be done before opening it!  */
-            status =  fx_media_format(&ram_disk, 
-                                     _fx_ram_driver,         // Driver entry            
+            status =  fx_media_format(&ram_disk,
+                                     _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     4200 * 8,               // Total sectors 
-                                     512,                    // Sector size   
+                                     4200 * 8,               // Total sectors
+                                     512,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
-        }  
+                                     1);                     // Sectors per track
+        }
         else if (i == 2)
         {
             /* Format the media with FAT32.  This needs to be done before opening it!  */
-            status =  fx_media_format(&ram_disk, 
-                                     _fx_ram_driver,         // Driver entry            
+            status =  fx_media_format(&ram_disk,
+                                     _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     70000 * 8,              // Total sectors 
-                                     512,                    // Sector size   
+                                     70000 * 8,              // Total sectors
+                                     512,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
-        }  
+                                     1);                     // Sectors per track
+        }
         return_if_fail(status == FX_SUCCESS);
 
         /* Open the ram_disk.  */
         status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory_large, cache_buffer, CACHE_SIZE);
         return_if_fail(status == FX_SUCCESS);
 
-        /* Enable the Fault-tolerant feature.  */                             
+        /* Enable the Fault-tolerant feature.  */
         status = fx_fault_tolerant_enable(&ram_disk, fault_tolerant_buffer, FAULT_TOLERANT_SIZE);
         return_if_fail(status == FX_SUCCESS);
 
@@ -227,13 +227,13 @@ UINT        j;
         /* Close the media.  */
         status =  fx_media_close(&ram_disk);
         return_if_fail(status == FX_SUCCESS);
-    }      
+    }
 
-    /* Output successful.  */     
+    /* Output successful.  */
     printf("SUCCESS!\n");
     test_control_return(0);
-}         
-#else  
+}
+#else
 
 #ifdef CTEST
 void test_application_define(void *first_unused_memory)
@@ -241,7 +241,7 @@ void test_application_define(void *first_unused_memory)
 void    filex_fault_tolerant_file_seek_test_application_define(void *first_unused_memory)
 #endif
 {
-    
+
     FX_PARAMETER_NOT_USED(first_unused_memory);
 
     /* Print out some test information banners.  */

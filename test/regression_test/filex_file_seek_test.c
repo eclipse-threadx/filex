@@ -52,13 +52,13 @@ void    filex_file_seek_application_define(void *first_unused_memory)
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -97,20 +97,20 @@ ULONG       i;
     printf("FileX Test:   File seek test.........................................");
 
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -119,7 +119,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(2);
     }
-    
+
     /* Attempt to seek before the media is opened to generate an error */
     status = fx_file_extended_seek(&my_file, 0);
     if (status != FX_NOT_OPEN)
@@ -127,7 +127,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(2);
     }
-    
+
     /* Attempt to seek before the media is opened to generate an error */
     status = fx_file_extended_relative_seek(&my_file, 0, 0);
     if (status != FX_NOT_OPEN)
@@ -169,7 +169,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(6);
     }
-    
+
     /* Attempt to seek before the media is opened to generate an error */
     status = fx_file_extended_relative_seek(&my_file, 0xFFFFFFFFFFFFFFFF, FX_SEEK_BACK);
     if (status != FX_SUCCESS)
@@ -177,7 +177,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(7);
     }
-    
+
 /* test error checking */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
@@ -187,7 +187,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(8);
     }
-    
+
     /* send an invalid option to generate an error */
     status = fx_file_relative_seek(&my_file, 0xFFFFFFFF, 4);
     if (status != FX_INVALID_OPTION)
@@ -195,7 +195,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(9);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_file_extended_seek(FX_NULL, 0xFF);
     if (status != FX_PTR_ERROR)
@@ -203,7 +203,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(10);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_file_extended_relative_seek(FX_NULL, 0xFF, FX_SEEK_BEGIN);
     if (status != FX_PTR_ERROR)
@@ -211,7 +211,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(11);
     }
-    
+
     /* send null pointer to generate an error */
     status = fx_file_extended_relative_seek(&my_file, 0xFF, 4);
     if (status != FX_INVALID_OPTION)
@@ -219,12 +219,12 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(12);
     }
-    
+
 #endif /* FX_DISABLE_ERROR_CHECKING */
 
     /* Pickup the available bytes in the media.  */
     status =  fx_media_space_available(&ram_disk, &available_bytes);
-    
+
     /* Check for available bytes error.  */
     if ((status != FX_SUCCESS) || (available_bytes < sizeof(ULONG)))
     {
@@ -238,7 +238,7 @@ ULONG       i;
     write_value =  0;
     while (i < available_bytes)
     {
-    
+
         /* Write 4 bytes to the file.  */
         status =  fx_file_write(&my_file, (void *) &write_value, sizeof(ULONG));
 
@@ -249,17 +249,17 @@ ULONG       i;
             printf("ERROR!\n");
             test_control_return(14);
         }
-        
+
         /* Increment byte count.  */
         i =  i + sizeof(ULONG);
-        
+
         /* Increment write value.  */
         write_value++;
     }
-    
+
     /* Pickup the available bytes in the media again.  */
     status =  fx_media_space_available(&ram_disk, &i);
-    
+
     /* Check for available bytes error.  */
     if ((status != FX_SUCCESS) || (i != 0))
     {
@@ -267,12 +267,12 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(15);
     }
-    
+
 #ifndef FX_DISABLE_CACHE
-    /* At this point, we should invalidate the (which also flushes the cache) media to ensure that all 
+    /* At this point, we should invalidate the (which also flushes the cache) media to ensure that all
        dirty sectors are written.  */
     status =  fx_media_cache_invalidate(&ram_disk);
-    
+
     /* Check for invalidate errors.  */
     if ((status != FX_SUCCESS) || (ram_disk.fx_media_sector_cache_dirty_count))
     {
@@ -280,21 +280,21 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(16);
     }
-    
+
     /* See if any sectors are still valid in the cache.  */
     for (i = 0; i < FX_MAX_SECTOR_CACHE; i++)
     {
-    
+
         /* Determine if this cache entry is still valid.  */
         if (ram_disk.fx_media_sector_cache[i].fx_cached_sector_valid)
         {
-        
+
             printf("ERROR!\n");
             test_control_return(17);
         }
     }
 #endif
-    
+
     /* Seek to the beginning of the test file.  */
     status =  fx_file_seek(&my_file, 0);
 
@@ -308,61 +308,61 @@ ULONG       i;
 
     /* Read the 4 bytes at the front of the file... should be 0!  */
     status =  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if ((status) || (read_value != 0) || (actual != sizeof(ULONG)))
     {
-    
+
         printf("ERROR!\n");
         test_control_return(19);
     }
 
     /* Read the next 4 bytes at the front of the file... should be 1!  */
     status =  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if ((status) || (read_value != 1) || (actual != sizeof(ULONG)))
     {
-    
+
         printf("ERROR!\n");
         test_control_return(20);
     }
 
     /* Seek to near the last 4 bytes of the file.  */
     status =  fx_file_seek(&my_file, available_bytes - 4);
-    
+
     /* Read the last 4 bytes of the file...  should be available_bytes/sizeof(ULONG)!  */
     status +=  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if ((status) || (read_value != (available_bytes/sizeof(ULONG) - 1)) || (actual != sizeof(ULONG)))
     {
-    
+
         printf("ERROR!\n");
         test_control_return(21);
     }
-    
+
     /* Read the past the end of the file...  should get an error in this case.   */
     status =  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if (status != FX_END_OF_FILE)
     {
-    
+
         printf("ERROR!\n");
         test_control_return(22);
     }
 
     /* Seek to the middle of the file.  */
     status =  fx_file_seek(&my_file, available_bytes/2);
-    
+
     /* Read the middle 4 bytes of the file...  should be (available_bytes/2)/sizeof(ULONG)!  */
     status +=  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if ((status) || (read_value != (available_bytes/(2*sizeof(ULONG)))) || (actual != sizeof(ULONG)))
     {
-    
+
         printf("ERROR!\n");
         test_control_return(23);
     }
@@ -373,7 +373,7 @@ ULONG       i;
     /* Determine if it is correct.  */
     if (status != FX_SUCCESS)
     {
-    
+
         printf("ERROR!\n");
         test_control_return(24);
     }
@@ -394,61 +394,61 @@ ULONG       i;
 
     /* Read the 4 bytes at the front of the file... should be 0!  */
     status =  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if ((status) || (read_value != 0) || (actual != sizeof(ULONG)))
     {
-    
+
         printf("ERROR!\n");
         test_control_return(26);
     }
 
     /* Read the next 4 bytes at the front of the file... should be 1!  */
     status =  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if ((status) || (read_value != 1) || (actual != sizeof(ULONG)))
     {
-    
+
         printf("ERROR!\n");
         test_control_return(27);
     }
 
     /* Seek to near the last 4 bytes of the file.  */
     status =  fx_file_seek(&my_file, available_bytes - 4);
-    
+
     /* Read the last 4 bytes of the file...  should be available_bytes/sizeof(ULONG)!  */
     status +=  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if ((status) || (read_value != (available_bytes/sizeof(ULONG) - 1)) || (actual != sizeof(ULONG)))
     {
-    
+
         printf("ERROR!\n");
         test_control_return(28);
     }
-    
+
     /* Read the past the end of the file...  should get an error in this case.   */
     status =  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if (status != FX_END_OF_FILE)
     {
-    
+
         printf("ERROR!\n");
         test_control_return(29);
     }
 
     /* Seek to the middle of the file.  */
     status =  fx_file_seek(&my_file, available_bytes/2);
-    
+
     /* Read the middle 4 bytes of the file...  should be (available_bytes/2)/sizeof(ULONG)!  */
     status +=  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if ((status) || (read_value != (available_bytes/(2*sizeof(ULONG)))) || (actual != sizeof(ULONG)))
     {
-    
+
         printf("ERROR!\n");
         test_control_return(30);
     }
@@ -459,7 +459,7 @@ ULONG       i;
     /* Determine if it is correct.  */
     if (status != FX_SUCCESS)
     {
-    
+
         printf("ERROR!\n");
         test_control_return(31);
     }
@@ -477,7 +477,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(32);
     }
-    
+
 /* Only run this if error checking is enabled */
 #ifndef FX_DISABLE_ERROR_CHECKING
     /* send null pointer to generate an error */
@@ -492,22 +492,22 @@ ULONG       i;
     /* Read the 4 bytes at the front of the file... should be 0!  */
     status =  fx_file_relative_seek(&my_file, 0, FX_SEEK_BEGIN);
     status +=  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if ((status) || (read_value != 0) || (actual != sizeof(ULONG)))
     {
-    
+
         printf("ERROR!\n");
         test_control_return(34);
     }
 
     /* Read the next 4 bytes at the front of the file... should be 1!  */
     status =  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if ((status) || (read_value != 1) || (actual != sizeof(ULONG)))
     {
-    
+
         printf("ERROR!\n");
         test_control_return(35);
     }
@@ -515,25 +515,25 @@ ULONG       i;
     /* Seek to near the last 4 bytes of the file.  */
     status =  fx_file_relative_seek(&my_file, 0xFFFFFFFF, FX_SEEK_BEGIN);
     status += fx_file_relative_seek(&my_file, 4, FX_SEEK_BACK);
-    
+
     /* Read the last 4 bytes of the file...  should be available_bytes/sizeof(ULONG)!  */
     status +=  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if ((status) || (read_value != (available_bytes/sizeof(ULONG) - 1)) || (actual != sizeof(ULONG)))
     {
-    
+
         printf("ERROR!\n");
         test_control_return(36);
     }
-    
+
     /* Read the past the end of the file...  should get an error in this case.   */
     status =  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if (status != FX_END_OF_FILE)
     {
-    
+
         printf("ERROR!\n");
         test_control_return(37);
     }
@@ -541,25 +541,25 @@ ULONG       i;
     /* Seek to the middle of the file.  */
     status =  fx_file_relative_seek(&my_file, 0xFFFFFFFF, FX_SEEK_END);
     status += fx_file_relative_seek(&my_file, available_bytes/2, FX_SEEK_FORWARD);
-    
+
     /* Read the middle 4 bytes of the file...  should be (available_bytes/2)/sizeof(ULONG)!  */
     status +=  fx_file_read(&my_file, (void *) &read_value, sizeof(ULONG), &actual);
-    
+
     /* Determine if it is correct.  */
     if ((status) || (read_value != (available_bytes/(2*sizeof(ULONG)))) || (actual != sizeof(ULONG)))
     {
-    
+
         printf("ERROR!\n");
         test_control_return(38);
     }
 
     /* Seek to the end of the file.  */
     status =  fx_file_relative_seek(&my_file, 0, FX_SEEK_END);
- 
+
     /* Determine if it is correct.  */
     if (status != FX_SUCCESS)
     {
-    
+
         printf("ERROR!\n");
         test_control_return(39);
     }
@@ -568,7 +568,7 @@ ULONG       i;
     status +=  fx_file_close(&my_file);
 
     /* Close the media.  */
-    status +=  fx_media_close(&ram_disk);   
+    status +=  fx_media_close(&ram_disk);
 
     /* Determine if the test was successful.  */
     if (status != FX_SUCCESS)
@@ -577,24 +577,24 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(40);
     }
-    
-    /* Test corner cases of extended seek.  */    
-    
+
+    /* Test corner cases of extended seek.  */
+
     /* Format the media.  This needs to be done before opening it!  */
-    status =  fx_media_format(&ram_disk, 
+    status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
                             cache_buffer,           // Media buffer pointer
-                            CACHE_SIZE,             // Media buffer size 
+                            CACHE_SIZE,             // Media buffer size
                             "MY_RAM_DISK",          // Volume Name
                             1,                      // Number of FATs
                             32,                     // Directory Entries
                             0,                      // Hidden sectors
-                            512,                    // Total sectors 
-                            128,                    // Sector size   
+                            512,                    // Total sectors
+                            128,                    // Sector size
                             1,                      // Sectors per cluster
                             1,                      // Heads
-                            1);                     // Sectors per track 
+                            1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)
@@ -713,7 +713,7 @@ ULONG       i;
         printf("ERROR!\n");
         test_control_return(51);
     }
-    
+
     /* Close the file and the media.  */
     status =  fx_file_close(&my_file);
     status += fx_media_close(&ram_disk);
@@ -729,16 +729,16 @@ ULONG       i;
         _fx_ram_driver,         // Driver entry
         ram_disk_memory,        // RAM disk memory pointer
         cache_buffer,           // Media buffer pointer
-        CACHE_SIZE,             // Media buffer size 
+        CACHE_SIZE,             // Media buffer size
         "MY_RAM_DISK",          // Volume Name
         1,                      // Number of FATs
         32,                     // Directory Entries
         0,                      // Hidden sectors
-        512,                    // Total sectors 
-        128,                    // Sector size   
+        512,                    // Total sectors
+        128,                    // Sector size
         1,                      // Sectors per cluster
         1,                      // Heads
-        1);                     // Sectors per track 
+        1);                     // Sectors per track
 
     /* Determine if the format had an error.  */
     if (status)

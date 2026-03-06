@@ -27,17 +27,17 @@ static UCHAR                    *cache_buffer;
 static UCHAR                     cache_buffer[CACHE_SIZE];
 #endif
 /* Notice that old_file_name is the same as new_file_name1.  */
-static UCHAR                    old_file_name[]  =  {3, 0, 4, 0, 5, 0, 6, 0, 0, 0}; 
+static UCHAR                    old_file_name[]  =  {3, 0, 4, 0, 5, 0, 6, 0, 0, 0};
 static UCHAR                    new_file_name1[] =  {3, 0, 4, 0, 5, 0, 6, 0, 0, 0};
 static UCHAR                    new_file_name2[] =  {3, 0, 4, 0, 5, 0, 0, 0};
 static UCHAR                    new_file_name3[] =  {3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 0, 0};
-static UCHAR                    new_file_name4[] =  {2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 9, 0, 10, 0, 11, 0, 12, 0, 13, 0, 14, 0, 15, 0, 0, 0}; 
-static UCHAR                    new_file_name5[] =  {'a', 0, 'b', 0, 'c', 0, 0, 0}; 
-static UCHAR                    new_file_name5_bak[] =  {'a', 0, 'b', 0, 'c', 0, 0, 0}; 
-static UCHAR                    new_file_name6[] =  {'a', 0, 'y', 0, 'c', 0, 0, 0}; 
-static UCHAR                    new_file_name7[] =  {'a', 1, 'z', 0, 'c', 0, 0, 0}; 
-static UCHAR                    new_file_name8[] =  {'z' + 1, 0, 'z', 0, 'c', 0, 'd', 0, 0, 0}; 
-static UCHAR                    new_file_name9[] =  {'z' + 1, 1, 'z', 0, 'c', 0, 'd', 0, 0, 0}; 
+static UCHAR                    new_file_name4[] =  {2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 9, 0, 10, 0, 11, 0, 12, 0, 13, 0, 14, 0, 15, 0, 0, 0};
+static UCHAR                    new_file_name5[] =  {'a', 0, 'b', 0, 'c', 0, 0, 0};
+static UCHAR                    new_file_name5_bak[] =  {'a', 0, 'b', 0, 'c', 0, 0, 0};
+static UCHAR                    new_file_name6[] =  {'a', 0, 'y', 0, 'c', 0, 0, 0};
+static UCHAR                    new_file_name7[] =  {'a', 1, 'z', 0, 'c', 0, 0, 0};
+static UCHAR                    new_file_name8[] =  {'z' + 1, 0, 'z', 0, 'c', 0, 'd', 0, 0, 0};
+static UCHAR                    new_file_name9[] =  {'z' + 1, 1, 'z', 0, 'c', 0, 'd', 0, 0, 0};
 static UCHAR                    destination_name[100];
 
 #define TEST_COUNT              3
@@ -64,13 +64,13 @@ void    filex_unicode_file_rename_application_define(void *first_unused_memory)
 #ifndef FX_STANDALONE_ENABLE
 UCHAR    *pointer;
 
-    
+
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
 
     /* Create the main thread.  */
-    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,  
-            pointer, DEMO_STACK_SIZE, 
+    tx_thread_create(&ftest_0, "thread 0", ftest_0_entry, 0,
+            pointer, DEMO_STACK_SIZE,
             4, 4, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     pointer =  pointer + DEMO_STACK_SIZE;
@@ -99,71 +99,71 @@ static void    ftest_0_entry(ULONG thread_input)
 UINT        i;
 UINT        status, count;
 ULONG       length;
-ULONG       old_length; 
+ULONG       old_length;
 ULONG       new_length;
 
     FX_PARAMETER_NOT_USED(thread_input);
 
     /* Print out some test information banners.  */
     printf("FileX Test:   Unicode File Rename Test...............................");
-                      
+
     /* Loop to test FAT 12, 16, 32.   */
     for (i = 0; i < TEST_COUNT; i ++)
     {
         if (i == 0)
         {
             /* Format the media with FAT12.  This needs to be done before opening it!  */
-            status =  fx_media_format(&ram_disk, 
+            status =  fx_media_format(&ram_disk,
                                      _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     256,                    // Total sectors 
-                                     256,                    // Sector size   
+                                     256,                    // Total sectors
+                                     256,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
-        }     
+                                     1);                     // Sectors per track
+        }
         else if (i == 1)
         {
             /* Format the media with FAT16.  This needs to be done before opening it!  */
-            status =  fx_media_format(&ram_disk, 
-                                     _fx_ram_driver,         // Driver entry            
+            status =  fx_media_format(&ram_disk,
+                                     _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     4200 * 8,               // Total sectors 
-                                     256,                    // Sector size   
+                                     4200 * 8,               // Total sectors
+                                     256,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
-        }  
+                                     1);                     // Sectors per track
+        }
         else if (i == 2)
         {
             /* Format the media with FAT32.  This needs to be done before opening it!  */
-            status =  fx_media_format(&ram_disk, 
-                                     _fx_ram_driver,         // Driver entry            
+            status =  fx_media_format(&ram_disk,
+                                     _fx_ram_driver,         // Driver entry
                                      ram_disk_memory_large,  // RAM disk memory pointer
                                      cache_buffer,           // Media buffer pointer
-                                     CACHE_SIZE,             // Media buffer size 
+                                     CACHE_SIZE,             // Media buffer size
                                      "MY_RAM_DISK",          // Volume Name
                                      1,                      // Number of FATs
                                      32,                     // Directory Entries
                                      0,                      // Hidden sectors
-                                     70000 * 8,              // Total sectors 
-                                     256,                    // Sector size   
+                                     70000 * 8,              // Total sectors
+                                     256,                    // Sector size
                                      8,                      // Sectors per cluster
                                      1,                      // Heads
-                                     1);                     // Sectors per track 
-        }  
+                                     1);                     // Sectors per track
+        }
 
         /* Determine if the format had an error.  */
         if (status)
@@ -172,7 +172,7 @@ ULONG       new_length;
             printf("ERROR!\n");
             test_control_return(1);
         }
-        
+
         /* Attempt to rename a file before the media has been opened */
         status = fx_unicode_file_rename(&ram_disk, (UCHAR *)"name", 1, (UCHAR *)"name", 1, (CHAR *) destination_name);
         if (status != FX_MEDIA_NOT_OPEN)
@@ -270,7 +270,7 @@ ULONG       new_length;
             test_control_return(9);
         }
 
-        /* Attempt to create the old_file_name again.  */  
+        /* Attempt to create the old_file_name again.  */
         length =  fx_unicode_length_get(old_file_name);
         status =  fx_unicode_file_create(&ram_disk,  old_file_name, length, (CHAR *) destination_name);
 
@@ -283,7 +283,7 @@ ULONG       new_length;
             test_control_return(10);
         }
 
-        /* Attempt to create the new_file_name1 same as old_file_name again.  */  
+        /* Attempt to create the new_file_name1 same as old_file_name again.  */
         length =  fx_unicode_length_get(new_file_name1);
         status =  fx_unicode_file_create(&ram_disk,  new_file_name1, length, (CHAR *) destination_name);
 
@@ -297,7 +297,7 @@ ULONG       new_length;
         }
 
 
-        /* Attempt to create the new_file_name2 again.  */  
+        /* Attempt to create the new_file_name2 again.  */
         length =  fx_unicode_length_get(new_file_name2);
         status =  fx_unicode_file_create(&ram_disk,  new_file_name2, length, (CHAR *) destination_name);
 
@@ -310,7 +310,7 @@ ULONG       new_length;
             test_control_return(12);
         }
 
-        /* Attempt to create the new_file_name1 again.  */  
+        /* Attempt to create the new_file_name1 again.  */
         length =  fx_unicode_length_get(new_file_name3);
         status =  fx_unicode_file_create(&ram_disk,  new_file_name3, length, (CHAR *) destination_name);
 
@@ -323,7 +323,7 @@ ULONG       new_length;
             test_control_return(13);
         }
 
-        /* Attempt to create the new_file_name4 again.  */  
+        /* Attempt to create the new_file_name4 again.  */
         length =  fx_unicode_length_get(new_file_name4);
         status =  fx_unicode_file_create(&ram_disk,  new_file_name4, length, (CHAR *) destination_name);
 
@@ -335,7 +335,7 @@ ULONG       new_length;
             printf("ERROR!\n");
             test_control_return(14);
         }
-        
+
 #ifndef FX_DISABLE_ERROR_CHECKING
         /* send a null pointer to generate an error */
         status = fx_unicode_file_rename(FX_NULL, old_file_name, old_length, new_file_name1, new_length, (CHAR *) destination_name);
