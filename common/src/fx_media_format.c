@@ -669,6 +669,26 @@ UINT   sectors_per_fat, f, s;
         }
     }
 
+#ifndef FX_MEDIA_STATISTICS_DISABLE
+    /* Increment the number of driver flush requests.  */
+    media_ptr -> fx_media_driver_flush_requests++;
+#endif
+
+    /* Build the "flush" I/O driver request.  */
+    media_ptr -> fx_media_driver_request =      FX_DRIVER_FLUSH;
+    media_ptr -> fx_media_driver_status =       FX_IO_ERROR;
+
+    /* If trace is enabled, insert this event into the trace buffer.  */
+    FX_TRACE_IN_LINE_INSERT(FX_TRACE_INTERNAL_IO_DRIVER_FLUSH, media_ptr, 0, 0, 0, FX_TRACE_INTERNAL_EVENTS, 0, 0)
+
+    /* Call the specified I/O driver with the flush request.  */
+    (media_ptr -> fx_media_driver_entry) (media_ptr);
+
+    if (media_ptr -> fx_media_driver_status != FX_SUCCESS)
+    {
+        return(media_ptr -> fx_media_driver_status);
+    }
+
     /* Build the "uninitialize" I/O driver request.  */
     media_ptr -> fx_media_driver_request =      FX_DRIVER_UNINIT;
     media_ptr -> fx_media_driver_status =       FX_IO_ERROR;
