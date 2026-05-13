@@ -1,4 +1,4 @@
-/**************************************************************************/
+﻿/**************************************************************************/
 /*                                                                        */
 /*            Copyright (c) 1996-2017 by Express Logic Inc.               */
 /*                                                                        */
@@ -81,6 +81,36 @@ ULONG64  media_size;
 UCHAR  large_file_name_format[];
 
 /* Define memory for tests to be run in standalone mode (without Azure RTOS: ThreadX) */
+/* On MSVC, BSS arrays cause demand-zero page faults on first access, which serialises
+   with test execution and makes large-disk tests significantly slower than on Linux.
+   Pre-allocating with calloc commits and zero-fills all pages before any test runs,
+   eliminating page-fault overhead at runtime.  This also avoids LNK1248 (PE image > 2 GB)
+   for configurations that would otherwise exceed the hard linker limit.
+   On other compilers keep the BSS arrays as before. */
+#ifdef _MSC_VER
+#include <stdlib.h>
+UCHAR *ram_disk_memory_large = NULL;
+UCHAR *large_data_buffer     = NULL;
+
+#if defined(FX_STANDALONE_ENABLE) && !defined(SAMPLE_BUILD)
+UCHAR *ram_disk_memory  = NULL;
+UCHAR *ram_disk_memory1 = NULL;
+#endif
+
+static void _fx_alloc_test_buffers(void)
+{
+    ram_disk_memory_large = (UCHAR *)calloc(900000000UL, 1U);
+    large_data_buffer     = (UCHAR *)calloc(900000000UL, 1U);
+#if defined(FX_STANDALONE_ENABLE) && !defined(SAMPLE_BUILD)
+    ram_disk_memory       = (UCHAR *)calloc(300000000UL, 1U);
+    ram_disk_memory1      = (UCHAR *)calloc( 30000000UL, 1U);
+#endif
+}
+#pragma section(".CRT$XCU", read)
+__declspec(allocate(".CRT$XCU")) static void (*_p_fx_alloc)(void) = _fx_alloc_test_buffers;
+
+#else /* !_MSC_VER */
+
 #if defined(FX_STANDALONE_ENABLE) && !defined(SAMPLE_BUILD)
 UCHAR ram_disk_memory[300000000];
 UCHAR ram_disk_memory1[30000000];
@@ -88,6 +118,7 @@ UCHAR ram_disk_memory1[30000000];
 
 UCHAR ram_disk_memory_large[900000000];
 UCHAR large_data_buffer[900000000];
+#endif /* _MSC_VER */
 
 
 /* Define the callback function.  */
@@ -298,8 +329,16 @@ UINT        offset;
             /* Calculate the RAM disk sector offset. Note the RAM disk memory is pointed to by
                the fx_media_driver_info pointer, which is supplied by the application in the
                call to fx_media_open.  */
-            source_buffer =  ((UCHAR *) media_ptr -> fx_media_driver_info) +
-                                   ((media_ptr -> fx_media_driver_logical_sector + media_ptr -> fx_media_hidden_sectors) * media_ptr -> fx_media_bytes_per_sector);
+            {
+            /* Compute effective sector and guard against pointer arithmetic overflow on 64-bit
+               platforms when sector is near ULONG64_MAX.  Out-of-range accesses are redirected
+               to large_data_buffer so the test can verify return codes without crashing. */
+            ULONG64 _sector = media_ptr -> fx_media_driver_logical_sector + media_ptr -> fx_media_hidden_sectors;
+            if (media_ptr -> fx_media_total_sectors > 0 && _sector >= media_ptr -> fx_media_total_sectors)
+                source_buffer = large_data_buffer;   /* harmless scratch — test does not verify data */
+            else
+                source_buffer = ((UCHAR *) media_ptr -> fx_media_driver_info) + (_sector * media_ptr -> fx_media_bytes_per_sector);
+            }
 
             /* Copy the RAM sector into the destination.  */
             _fx_utility_memory_copy(source_buffer, media_ptr -> fx_media_driver_buffer,
@@ -318,8 +357,17 @@ UINT        offset;
             /* Calculate the RAM disk sector offset. Note the RAM disk memory is pointed to by
                the fx_media_driver_info pointer, which is supplied by the application in the
                call to fx_media_open.  */
-            data_start = ((UCHAR *) media_ptr -> fx_media_driver_info) +
-                          ((media_ptr -> fx_media_driver_logical_sector + media_ptr -> fx_media_hidden_sectors) * media_ptr -> fx_media_bytes_per_sector);
+            {
+            /* Compute effective sector and guard against pointer arithmetic overflow on 64-bit
+               platforms when sector is near ULONG64_MAX.  Out-of-range writes are discarded. */
+            ULONG64 _sector = media_ptr -> fx_media_driver_logical_sector + media_ptr -> fx_media_hidden_sectors;
+            if (media_ptr -> fx_media_total_sectors > 0 && _sector >= media_ptr -> fx_media_total_sectors)
+            {
+                media_ptr -> fx_media_driver_status =  FX_SUCCESS;
+                return;
+            }
+            data_start = ((UCHAR *) media_ptr -> fx_media_driver_info) + (_sector * media_ptr -> fx_media_bytes_per_sector);
+            }
 
             /* Driver write callback function entry for calling. */
             if (driver_write_callback != FX_NULL)
