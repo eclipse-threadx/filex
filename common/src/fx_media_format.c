@@ -670,6 +670,7 @@ UINT   sectors_per_fat, f, s;
     }
 
 #ifndef FX_MEDIA_STATISTICS_DISABLE
+
     /* Increment the number of driver flush requests.  */
     media_ptr -> fx_media_driver_flush_requests++;
 #endif
@@ -682,12 +683,7 @@ UINT   sectors_per_fat, f, s;
     FX_TRACE_IN_LINE_INSERT(FX_TRACE_INTERNAL_IO_DRIVER_FLUSH, media_ptr, 0, 0, 0, FX_TRACE_INTERNAL_EVENTS, 0, 0)
 
     /* Call the specified I/O driver with the flush request.  */
-    (media_ptr -> fx_media_driver_entry) (media_ptr);
-
-    if (media_ptr -> fx_media_driver_status != FX_SUCCESS)
-    {
-        return(media_ptr -> fx_media_driver_status);
-    }
+    (driver)(media_ptr);
 
     /* Build the "uninitialize" I/O driver request.  */
     media_ptr -> fx_media_driver_request =      FX_DRIVER_UNINIT;
