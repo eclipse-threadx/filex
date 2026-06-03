@@ -196,7 +196,7 @@ typedef unsigned long long                      ULONG64;
 
 #ifdef FX_SYSTEM_INIT
 CHAR                            _fx_version_id[] =
-                                    "Copyright (c) 2024 Microsoft Corporation.  *  FileX Win32/Version 6.4.1 *";
+                                    "Copyright (c) 2024 Microsoft Corporation.  *  FileX Win32/Version 6.5.1.202602 *";
  * Copyright (c) 2026-present Eclipse ThreadX contributors
 #else
 extern  CHAR                    _fx_version_id[];
