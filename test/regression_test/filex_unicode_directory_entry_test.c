@@ -1,3 +1,14 @@
+/***************************************************************************/
+/* Copyright (c) 2024 Microsoft Corporation                                */
+/* Copyright (c) 2026 Eclipse ThreadX contributors                         */
+/*                                                                         */
+/* This program and the accompanying materials are made available under    */
+/* the terms of the MIT License which is available at                      */
+/* https://opensource.org/licenses/MIT.                                    */
+/*                                                                         */
+/* SPDX-License-Identifier: MIT                                            */
+/***************************************************************************/
+
 /* This test is determined to cover lines in fx_unicode_directory_entry_read.c.                 */
 /* We need a dir_entry whose first byte, ordinal number byte, is big enoutgh to exceed the the  */
 /* limit of FX_MAX_LONG_NAME_LEN, so we created a disk with a corrupt dir_entry.                */
