@@ -29,6 +29,17 @@
 #include "fx_unicode.h"
 
 
+/* DEPRECATION NOTICE
+ * fx_unicode_length_get() is deprecated. Do not use it in new code.
+ *
+ * WHY: Does not accept a buffer length; scans up to 256 bytes regardless of the actual buffer size, risking an overread.
+ *
+ * WHAT TO DO: replace calls with fx_unicode_length_get_extended(), passing the actual
+ * destination buffer size as an additional argument.
+ */
+#pragma message("fx_unicode_length_get() is deprecated. " \
+                "Use fx_unicode_length_get_extended() and pass the actual buffer size.")
+
 /**************************************************************************/
 /*                                                                        */
 /*  FUNCTION                                               RELEASE        */
@@ -43,7 +54,8 @@
 /*                                                                        */
 /*    This function returns the length of the supplied unicode name.      */
 /*                                                                        */
-/*    Note, this API is deprecated as _fx_unicode_length_get_extended     */
+/*    DEPRECATED. Use fx_unicode_length_get_extended() instead, passing the actual
+    destination buffer length. Does not accept a buffer length; scans up to 256 bytes regardless of the actual buffer size, risking an overread.
 /*    should be used. The maximum buffer size of unicode_name is 256.     */
 /*                                                                        */
 /*  INPUT                                                                 */
