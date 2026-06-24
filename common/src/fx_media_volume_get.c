@@ -32,6 +32,17 @@
 #include "fx_utility.h"
 
 
+/* DEPRECATION NOTICE
+ * fx_media_volume_get() is deprecated. Do not use it in new code.
+ *
+ * WHY: Does not accept a volume-name buffer length; writes up to 12 bytes regardless of the caller's buffer size, risking a buffer overrun.
+ *
+ * WHAT TO DO: replace calls with fx_media_volume_get_extended(), passing the actual
+ * destination buffer size as an additional argument.
+ */
+#pragma message("fx_media_volume_get() is deprecated. " \
+                "Use fx_media_volume_get_extended() and pass the actual buffer size.")
+
 /**************************************************************************/
 /*                                                                        */
 /*  FUNCTION                                               RELEASE        */
@@ -47,7 +58,8 @@
 /*    This function reads the volume name stored in the media's boot      */
 /*    record or root directory.                                           */
 /*                                                                        */
-/*    Note, this API is deprecated as fx_media_volume_get_extended should */
+/*    DEPRECATED. Use fx_media_volume_get_extended() instead, passing the actual
+    destination buffer length. Does not accept a volume-name buffer length; writes up to 12 bytes regardless of the caller's buffer size, risking a buffer overrun.
 /*    be used. The maximum written size to volume_name could be 12.       */
 /*                                                                        */
 /*  INPUT                                                                 */
