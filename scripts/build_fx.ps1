@@ -28,7 +28,7 @@ if (-not $BuildDir) {
 }
 
 if (-not $ThreadXDir) {
-    $ThreadXDir = Join-Path (Split-Path -Parent $repoRoot) 'threadx-fd-codex'
+    $ThreadXDir = Join-Path (Split-Path -Parent $repoRoot) 'threadx-fd'
 }
 
 $selectedConfigurations = Resolve-RegressionConfigurations -RequestedConfigurations $Configuration

@@ -51,7 +51,13 @@ set(standalone_no_cache_fault_tolerant_build ${no_cache_build} ${FX_FAULT_TOLERA
 
 if(MSVC)
   add_compile_options(/W3 /Zi)
-  add_link_options(/DEBUG /INCREMENTAL:NO)
+  # /LARGEADDRESSAWARE lets the 32-bit (win32) test executables use the full
+  # 4 GB user address space available to a 32-bit process on 64-bit Windows,
+  # instead of the default 2 GB.  The large-media regression tests allocate
+  # ~1.7 GB of RAM-disk + data buffers (e.g. filex_file_allocate_test), which
+  # overflows the 2 GB limit and makes calloc return NULL -> crash.  This flag
+  # is the default for x64, so it is a no-op for the win64 build.
+  add_link_options(/DEBUG /INCREMENTAL:NO /LARGEADDRESSAWARE)
   # Both cl.exe and gcc accept -DFOO; use it to keep the per-configuration
   # definitions consistent with the Linux path.
   add_compile_options(-DFX_REGRESSION_TEST ${${CMAKE_BUILD_TYPE}})

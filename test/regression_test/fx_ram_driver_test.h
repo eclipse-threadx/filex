@@ -24,14 +24,27 @@
 
 
 /* Define the memory buffer to format the media if enable fault tolerant feature.*/
+/* On MSVC these are heap-allocated (see fx_ram_driver_test.c) to avoid committing
+   huge BSS arrays and exceeding the 2 GB PE image limit, so declare them as
+   pointers there; other compilers keep them as BSS arrays.  */
+#ifdef _MSC_VER
+extern UCHAR *ram_disk_memory_large;
+extern UCHAR *large_data_buffer;
+#else
 extern UCHAR ram_disk_memory_large[900000000];
 extern UCHAR large_data_buffer[900000000];
+#endif
 #define large_data_buffer_size 900000000
 
 /* Define memory for tests to be run in standalone mode (without Azure RTOS: ThreadX) */
 #ifdef FX_STANDALONE_ENABLE
+#ifdef _MSC_VER
+extern UCHAR *ram_disk_memory;
+extern UCHAR *ram_disk_memory1;
+#else
 extern UCHAR ram_disk_memory[300000000];
 extern UCHAR ram_disk_memory1[30000000];
+#endif
 #endif
 
 /* Define a macro for test. */
