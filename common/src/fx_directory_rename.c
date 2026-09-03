@@ -51,6 +51,8 @@
 /*    If found, the rename request is valid and the directory will be     */
 /*    changed to the new name.  Otherwise, if the directory is not found, */
 /*    the appropriate error code is returned to the caller.               */
+/*    If the directory is moved under a different parent, the ".."        */
+/*    entry inside the directory is updated to name the new parent.       */
 /*                                                                        */
 /*  INPUT                                                                 */
 /*                                                                        */
@@ -64,6 +66,7 @@
 /*                                                                        */
 /*  CALLS                                                                 */
 /*                                                                        */
+/*    _fx_directory_entry_read              Read entries from directory   */
 /*    _fx_directory_entry_write             Write the new directory entry */
 /*    _fx_directory_free_search             Search for a free directory   */
 /*                                            entry                       */
@@ -90,6 +93,7 @@ FX_DIR_ENTRY new_dir_entry;
 FX_DIR_ENTRY search_directory;
 CHAR        *new_name_ptr;
 ULONG        i;
+ULONG        parent_cluster;
 CHAR        *work_ptr;
 CHAR         alpha, beta;
 #ifdef FX_RENAME_PATH_INHERIT
@@ -451,20 +455,97 @@ UINT         j;
     /* Now wipe out the old directory entry.  */
     status =  _fx_directory_entry_write(media_ptr, &old_dir_entry);
 
-#ifdef FX_ENABLE_FAULT_TOLERANT
-    /* Check for a bad status.  */
+    /* Determine if the write was successful.  */
     if (status != FX_SUCCESS)
     {
 
+#ifdef FX_ENABLE_FAULT_TOLERANT
         FX_FAULT_TOLERANT_TRANSACTION_FAIL(media_ptr);
+#endif /* FX_ENABLE_FAULT_TOLERANT */
 
         /* Release media protection.  */
         FX_UNPROTECT
 
-        /* Return the bad status.  */
+        /* Return the error code.  */
         return(status);
     }
 
+    /* The renamed directory itself contains a ".." entry, which stores
+       the starting cluster of its parent directory. If the rename moved
+       the directory under a different parent, that stored cluster is
+       stale now: ".." inside the renamed directory would still lead to
+       the old parent and, once the old parent's cluster is reused, to an
+       unrelated place. Update it in place.  */
+
+    /* Determine the starting cluster of the new parent directory.
+       An empty name in the search directory marks the root
+       directory - the name is the only root indication, the other
+       fields keep earlier values in that case. A ".." entry stores
+       its parent's starting cluster; when the parent is the root
+       directory, it stores cluster 0.  */
+    if (search_directory.fx_dir_entry_name[0])
+    {
+
+        /* New parent is a sub-directory.  */
+        parent_cluster =  search_directory.fx_dir_entry_cluster;
+    }
+    else
+    {
+
+        /* New parent is the root directory.  */
+        parent_cluster =  0;
+    }
+
+    /* old_dir_entry is no longer needed and still holds the starting
+       cluster of the renamed directory - reuse it to address that
+       directory as the one to read from. Ensure the cluster chain is
+       walked from the start.  */
+    old_dir_entry.fx_dir_entry_last_search_cluster =  0;
+
+    /* Read the second directory entry of the renamed directory - its
+       ".." entry, created together with the directory. new_dir_entry
+       is no longer needed either and serves as the destination.  */
+    i =  1;
+    status =  _fx_directory_entry_read(media_ptr, &old_dir_entry, &i, &new_dir_entry);
+
+    /* Update the entry only if it is the ".." entry the FAT format
+       places at this position - on a non-conformant media the rename
+       result is left as it is - and only if the stored cluster does
+       not match the new parent already. A rename inside one parent
+       ends here without an additional write.  */
+    if ((status == FX_SUCCESS) &&
+        (new_dir_entry.fx_dir_entry_name[0] == '.') &&
+        (new_dir_entry.fx_dir_entry_name[1] == '.') &&
+        (new_dir_entry.fx_dir_entry_name[2] == 0) &&
+        (new_dir_entry.fx_dir_entry_cluster != parent_cluster))
+    {
+
+        /* Update the stored parent cluster. Everything else of the
+           entry - its position included - stays untouched: the first
+           two entries of a directory are a format invariant other
+           services rely on.  */
+        new_dir_entry.fx_dir_entry_cluster =  parent_cluster;
+
+        /* Write the updated ".." entry back.  */
+        status =  _fx_directory_entry_write(media_ptr, &new_dir_entry);
+    }
+
+    /* Determine if the ".." update was successful.  */
+    if (status != FX_SUCCESS)
+    {
+
+#ifdef FX_ENABLE_FAULT_TOLERANT
+        FX_FAULT_TOLERANT_TRANSACTION_FAIL(media_ptr);
+#endif /* FX_ENABLE_FAULT_TOLERANT */
+
+        /* Release media protection.  */
+        FX_UNPROTECT
+
+        /* Return the error code.  */
+        return(status);
+    }
+
+#ifdef FX_ENABLE_FAULT_TOLERANT
     /* End transaction. */
     status = _fx_fault_tolerant_transaction_end(media_ptr);
 #endif /* FX_ENABLE_FAULT_TOLERANT */
