@@ -61,6 +61,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_LIST_DIR}/src/fx_file_extended_seek.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fx_file_extended_truncate.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fx_file_extended_truncate_release.c
+	${CMAKE_CURRENT_LIST_DIR}/src/fx_file_flush.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fx_file_open.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fx_file_read.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fx_file_relative_seek.c
@@ -175,6 +176,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_LIST_DIR}/src/fxe_file_extended_seek.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fxe_file_extended_truncate.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fxe_file_extended_truncate_release.c
+	${CMAKE_CURRENT_LIST_DIR}/src/fxe_file_flush.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fxe_file_open.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fxe_file_read.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fxe_file_relative_seek.c
