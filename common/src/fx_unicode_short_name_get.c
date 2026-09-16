@@ -9,6 +9,8 @@
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
+// Portions of this file were generated with AI assistance.
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -55,10 +57,10 @@
 /*    This function finds the short name associated with the supplied     */
 /*    unicode name.                                                       */
 /*                                                                        */
-/*    DEPRECATED. Use fx_unicode_short_name_get_extended() instead, passing the actual
-    destination buffer length. Does not accept a destination buffer length; writes up to 13 bytes regardless of the caller's buffer size, risking a buffer overrun.
-/*    should be used. The maximum written size to destination_short_name  */
-/*    could be 13.                                                        */
+/*    DEPRECATED. Use fx_unicode_short_name_get_extended() instead,       */
+/*    passing the actual destination buffer length. It takes no buffer    */
+/*    length and writes up to 13 bytes whatever the size of the caller's  */
+/*    buffer, risking an overrun.                                         */
 /*                                                                        */
 /*  INPUT                                                                 */
 /*                                                                        */
