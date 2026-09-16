@@ -9,6 +9,8 @@
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
+// Portions of this file were generated with AI assistance.
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -56,10 +58,10 @@
 /*    name. If there is no long file name, the short file name will be    */
 /*    returned.                                                           */
 /*                                                                        */
-/*    DEPRECATED. Use fx_directory_long_name_get_extended() instead, passing the actual
-    destination buffer length. Does not accept a destination buffer length; writes up to FX_MAX_LONG_NAME_LEN bytes regardless of the caller's buffer size, risking a buffer overrun.
-/*    should be used. The maximum written size to long_file_name could be */
-/*    FX_MAX_LONG_NAME_LEN.                                               */
+/*    DEPRECATED. Use fx_directory_long_name_get_extended() instead,      */
+/*    passing the actual destination buffer length. It takes no buffer    */
+/*    length and writes up to FX_MAX_LONG_NAME_LEN bytes whatever the size*/
+/*    of the caller's buffer, risking an overrun.                         */
 /*                                                                        */
 /*  INPUT                                                                 */
 /*                                                                        */

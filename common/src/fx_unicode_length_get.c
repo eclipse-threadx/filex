@@ -9,6 +9,8 @@
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
+// Portions of this file were generated with AI assistance.
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -54,9 +56,10 @@
 /*                                                                        */
 /*    This function returns the length of the supplied unicode name.      */
 /*                                                                        */
-/*    DEPRECATED. Use fx_unicode_length_get_extended() instead, passing the actual
-    destination buffer length. Does not accept a buffer length; scans up to 256 bytes regardless of the actual buffer size, risking an overread.
-/*    should be used. The maximum buffer size of unicode_name is 256.     */
+/*    DEPRECATED. Use fx_unicode_length_get_extended() instead, passing   */
+/*    the actual buffer length. It takes no buffer length and scans       */
+/*    up to 256 bytes whatever the size of the actual buffer, risking an  */
+/*    over-read.                                                          */
 /*                                                                        */
 /*  INPUT                                                                 */
 /*                                                                        */
