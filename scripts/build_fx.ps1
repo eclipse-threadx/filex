@@ -1,3 +1,5 @@
+# Portions of this file were generated with AI assistance.
+
 [CmdletBinding()]
 param(
     [ValidateSet('win64', 'win32')]
@@ -28,7 +30,7 @@ if (-not $BuildDir) {
 }
 
 if (-not $ThreadXDir) {
-    $ThreadXDir = Join-Path (Split-Path -Parent $repoRoot) 'threadx-fd-codex'
+    $ThreadXDir = Join-Path (Split-Path -Parent $repoRoot) 'threadx-fd'
 }
 
 $selectedConfigurations = Resolve-RegressionConfigurations -RequestedConfigurations $Configuration
