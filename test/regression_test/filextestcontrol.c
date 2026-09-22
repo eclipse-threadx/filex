@@ -1,5 +1,7 @@
 /* This is the test control routine for the FileX FAT file system.  All tests are dispatched from this routine.  */
 
+// Portions of this file were generated with AI assistance.
+
 #ifndef FX_STANDALONE_ENABLE
 #include "tx_api.h"
 #else
@@ -6294,6 +6296,22 @@ UCHAR   fault_tolerant_buffer[FAULT_TOLERANT_SIZE];
 
 
 
+/* Map the run's outcome onto the process exit status.  A failure wins over an N/A, and
+   255 is the sentinel a test already returns when the feature it covers is compiled out
+   of this build - it is what ctest is told to read as a skip.  */
+
+static INT  test_control_exit_status(void)
+{
+
+    if (test_control_failed_tests)
+        return((INT)test_control_failed_tests);
+    else if (test_control_na_tests)
+        return(255);
+    else
+        return(0);
+}
+
+
 /* Define the test control thread.  This thread is responsible for dispatching all of the 
    tests in the ThreadX test suite.  */
 
@@ -6339,7 +6357,7 @@ UINT    i;
     printf("**** Test Summary:  Tests Passed:  %lu   Tests Failed:  %lu\n", test_control_successful_tests, test_control_failed_tests);
 
 #ifdef BATCH_TEST
-    exit((INT)test_control_failed_tests);
+    exit(test_control_exit_status());
 #endif
 }
 
@@ -6389,7 +6407,7 @@ UINT    old_posture =  TX_INT_ENABLE;
     printf("**** Testing Complete ****\n");
     printf("**** Test Summary:  Tests Passed:  %lu   Tests Failed:  %lu\n", test_control_successful_tests, test_control_failed_tests);
     
-    pthread_exit(NULL);
+    exit(test_control_exit_status());
 #endif
 }
 
