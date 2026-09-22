@@ -1,3 +1,13 @@
+/***************************************************************************
+ * Copyright (c) 2024 Microsoft Corporation 
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the MIT License which is available at
+ * https://opensource.org/licenses/MIT.
+ * 
+ * SPDX-License-Identifier: MIT
+ **************************************************************************/
+
 /* This FileX test concentrates on the Fault-Tolerant redo log write interrupt operation.
  * The available bytes before/after file write should be decreased write_buffer_size only. */
 

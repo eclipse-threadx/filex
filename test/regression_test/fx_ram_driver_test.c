@@ -1,25 +1,12 @@
-/**************************************************************************/ 
-/*                                                                        */ 
-/*            Copyright (c) 1996-2017 by Express Logic Inc.               */ 
-/*                                                                        */ 
-/*  This software is copyrighted by and is the sole property of Express   */ 
-/*  Logic, Inc.  All rights, title, ownership, or other interests         */ 
-/*  in the software remain the property of Express Logic, Inc.  This      */ 
-/*  software may only be used in accordance with the corresponding        */ 
-/*  license agreement.  Any unauthorized use, duplication, transmission,  */ 
-/*  distribution, or disclosure of this software is expressly forbidden.  */ 
-/*                                                                        */
-/*  This Copyright notice may not be removed or modified without prior    */ 
-/*  written consent of Express Logic, Inc.                                */ 
-/*                                                                        */ 
-/*  Express Logic, Inc. reserves the right to modify this software        */ 
-/*  without notice.                                                       */ 
-/*                                                                        */ 
-/*  Express Logic, Inc.                     info@expresslogic.com         */
-/*  11423 West Bernardo Court               http://www.expresslogic.com   */
-/*  San Diego, CA  92127                                                  */
-/*                                                                        */
-/**************************************************************************/
+/***************************************************************************
+ * Copyright (c) 2024 Microsoft Corporation 
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the MIT License which is available at
+ * https://opensource.org/licenses/MIT.
+ * 
+ * SPDX-License-Identifier: MIT
+ **************************************************************************/
 
 
 /**************************************************************************/
@@ -141,7 +128,7 @@ ULONG   _fx_utility_logical_sector_read_1_error_request;
 /*                                                           5.5          */ 
 /*  AUTHOR                                                                */ 
 /*                                                                        */ 
-/*    William E. Lamie, Express Logic, Inc.                               */ 
+/*    William E. Lamie, Microsoft Corporation                             */ 
 /*                                                                        */ 
 /*  DESCRIPTION                                                           */ 
 /*                                                                        */ 
@@ -627,7 +614,7 @@ UINT        offset;
 /*                                                           5.5          */ 
 /*  AUTHOR                                                                */ 
 /*                                                                        */ 
-/*    William E. Lamie, Express Logic, Inc.                               */ 
+/*    William E. Lamie, Microsoft Corporation                             */ 
 /*                                                                        */ 
 /*  DESCRIPTION                                                           */ 
 /*                                                                        */ 
