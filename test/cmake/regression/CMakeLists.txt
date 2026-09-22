@@ -117,6 +117,7 @@ set(regression_test_cases
     ${SOURCE_DIR}/filex_media_format_open_close_test.c
     ${SOURCE_DIR}/filex_media_multiple_open_close_test.c
     ${SOURCE_DIR}/filex_media_read_write_sector_test.c
+    ${SOURCE_DIR}/filex_media_driver_io_error_test.c
     ${SOURCE_DIR}/filex_media_volume_directory_entry_test.c
     ${SOURCE_DIR}/filex_media_volume_get_set_test.c
     ${SOURCE_DIR}/filex_media_hidden_sectors_test.c

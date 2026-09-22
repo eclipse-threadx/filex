@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (c) 2024 Microsoft Corporation 
+ * Copyright (c) 2026 Eclipse ThreadX contributors
  * 
  * This program and the accompanying materials are made available under the
  * terms of the MIT License which is available at
@@ -7,6 +8,8 @@
  * 
  * SPDX-License-Identifier: MIT
  **************************************************************************/
+
+// Portions of this file were generated with AI assistance.
 
 #ifndef _FX_RAM_DRIVER_TEST_H_
 #define _FX_RAM_DRIVER_TEST_H_
@@ -32,6 +35,28 @@ extern UCHAR large_data_buffer[900000000];
 extern UCHAR ram_disk_memory[300000000];
 extern UCHAR ram_disk_memory1[30000000];
 #endif
+
+/* Selective I/O error injection in the RAM driver.  Set the request code and the sector,
+   then set _fx_ram_driver_io_error_select, and the next matching driver request returns
+   FX_IO_ERROR.  The driver clears the flag as it fires and counts the failure, so a test
+   asserts on the count rather than trusting that the request reached the driver at all --
+   a cached sector is served without any driver request, and a count of zero is how that
+   shows up.
+
+   The declarations sit beside the driver that defines them rather than with the older
+   error flags in the port header, because the selector is a property of this test driver
+   rather than of the port.
+
+   _fx_ram_driver_io_error_select_sector is set to FX_RAM_DRIVER_ANY_SECTOR to fail the
+   nominated request wherever it lands.  */
+
+#define FX_RAM_DRIVER_ANY_SECTOR            ((ULONG64) ~((ULONG64) 0))
+
+extern  ULONG   _fx_ram_driver_io_error_select;
+extern  ULONG   _fx_ram_driver_io_error_select_request;
+extern  ULONG64 _fx_ram_driver_io_error_select_sector;
+extern  ULONG   _fx_ram_driver_io_error_select_count;
+
 
 /* Define a macro for test. */
 /* We do not need error code anymore but still define return_value_if_fail for compatibility backward. */

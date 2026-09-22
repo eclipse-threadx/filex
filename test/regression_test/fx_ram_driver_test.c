@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (c) 2024 Microsoft Corporation 
+ * Copyright (c) 2026 Eclipse ThreadX contributors
  * 
  * This program and the accompanying materials are made available under the
  * terms of the MIT License which is available at
@@ -7,6 +8,8 @@
  * 
  * SPDX-License-Identifier: MIT
  **************************************************************************/
+
+// Portions of this file were generated with AI assistance.
 
 
 /**************************************************************************/
@@ -98,6 +101,23 @@ VOID  _fx_ram_driver(FX_MEDIA *media_ptr);
 ULONG   _fx_ram_driver_io_error_request;
 ULONG   _fx_ram_driver_io_request_count;
 ULONG   _fx_ram_driver_copy_default_format;
+
+
+/* Define the selective I/O error injection.  The countdown above fails the Nth request of
+   any kind at any sector; this fails the first request of a nominated kind at a nominated
+   sector, which is what a medium with one unreadable or unwritable sector looks like from
+   the driver.  Both are states a real driver reports, so neither manufactures a condition
+   the file system could not meet in service.
+
+   It is inert until _fx_ram_driver_io_error_select is set, and it disarms itself as it
+   fires, so the media can still be flushed and closed afterwards.  The countdown above is
+   untouched and runs first: the two are independent, and a test arming neither sees the
+   driver it always had.  */
+
+ULONG   _fx_ram_driver_io_error_select;
+ULONG   _fx_ram_driver_io_error_select_request;
+ULONG64 _fx_ram_driver_io_error_select_sector;
+ULONG   _fx_ram_driver_io_error_select_count;
 
 ULONG   _fx_file_open_max_file_size_request;
 
@@ -288,6 +308,23 @@ UINT        offset;
         }
     }
     /* Error generation logic end.  */
+
+    /* Selective error generation logic start.  */
+    if (_fx_ram_driver_io_error_select)
+    {
+        if (((ULONG) media_ptr -> fx_media_driver_request == _fx_ram_driver_io_error_select_request) &&
+            ((_fx_ram_driver_io_error_select_sector == FX_RAM_DRIVER_ANY_SECTOR) ||
+             ((ULONG64) media_ptr -> fx_media_driver_logical_sector == _fx_ram_driver_io_error_select_sector)))
+        {
+
+            /* Disarm first, so the failure is a single event and the media remains usable.  */
+            _fx_ram_driver_io_error_select =  FX_FALSE;
+            _fx_ram_driver_io_error_select_count++;
+            media_ptr -> fx_media_driver_status =  FX_IO_ERROR;
+            return;
+        }
+    }
+    /* Selective error generation logic end.  */
 
     /* Process the driver request specified in the media control block.  */
     switch(media_ptr -> fx_media_driver_request)
