@@ -22,15 +22,42 @@ filter=$repo_root/common/src
 # common/src has "driver" in its name.
 exclude=".*driver.*"
 
-# The coverage gate. No threshold is set yet: the figures these configurations
-# reach are being measured for the first time, and a gate invented ahead of the
-# measurement is a gate that either blocks a green tree or passes a regression.
-# The thresholds are set from the set of lines and branch outcomes covered in
-# *every* run of a sample taken on a clean runner, less a margin -- not from the
-# lowest total any single run happened to report, which is a statistic about the
-# sample rather than a statement about the tree.
-min_line=${FX_COVERAGE_MIN_LINE:-0}
-min_branch=${FX_COVERAGE_MIN_BRANCH:-0}
+# The coverage gate, set from the set of lines and branch outcomes covered in
+# *every* run of a sample taken on a clean runner -- not from the lowest total
+# any single run happened to report, which is a statistic about the sample
+# rather than a statement about the tree.
+#
+# The sample is four runs of all eleven configurations on the certification
+# branch, each 136/136. All four cover the same 7736 of 7816 lines and the same
+# 4734 of 4838 branch outcomes, key by key, so the unstable set is empty and the
+# always-covered set is the whole covered set. The values below are that
+# measurement truncated to the two decimal places the report prints, which still
+# fails on a single line or a single outcome going missing.
+#
+# There is no margin below the measurement, and that is a property of this tree
+# rather than a preference. 7568 of the 7736 covered lines and 4717 of the 4734
+# covered outcomes are reached by two or more configurations, so a miss in one is
+# absorbed by a sibling. Of the remainder, 167 lines and 17 outcomes are compiled
+# by exactly one configuration, where coverage is deterministic: the code exists
+# there or nowhere. Exactly one line is compiled by more than one configuration
+# and covered by only one -- fx_file_write.c:886, the unprotect on the sector
+# write error path, held by no_cache_fault_tolerant_build -- and it did not move
+# across the sample.
+#
+# The gate reads the union figure from coverage_union.py, not the percentage in
+# the merged report. gcovr's merge keys each branch by the basic-block pair gcov
+# gave it, and those numbers shift when a file compiles to a different amount of
+# code, so the same source branch is counted once per configuration that
+# renumbers it. Here that inflates the merged branch denominator from 4838 to
+# 10109. Both figures are produced and the merged report is published unchanged;
+# the gate uses the union because it is the one that counts branches in the
+# source, and therefore the one that does not lurch when a configuration is
+# added.
+#
+# This is a ratchet on today's figure and not the target. The target is 100% line
+# and branch, and the value is raised as the coverage work closes gaps.
+min_line=${FX_COVERAGE_MIN_LINE:-98.97}
+min_branch=${FX_COVERAGE_MIN_BRANCH:-97.85}
 
 # --merge unions the per-configuration reports into the one number that means
 # something. Each configuration writes an intermediate JSON beside its XML, and
