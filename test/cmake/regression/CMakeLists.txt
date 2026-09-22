@@ -122,6 +122,7 @@ set(regression_test_cases
     ${SOURCE_DIR}/filex_media_volume_get_set_test.c
     ${SOURCE_DIR}/filex_media_hidden_sectors_test.c
     ${SOURCE_DIR}/filex_system_date_time_test.c
+    ${SOURCE_DIR}/filex_trace_enable_test.c
     ${SOURCE_DIR}/filex_unicode_directory_rename_test.c
     ${SOURCE_DIR}/filex_unicode_file_directory_rename_extra_test.c
     ${SOURCE_DIR}/filex_unicode_file_directory_rename_extra_2_test.c
