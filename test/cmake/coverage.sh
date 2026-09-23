@@ -27,22 +27,26 @@ exclude=".*driver.*"
 # any single run happened to report, which is a statistic about the sample
 # rather than a statement about the tree.
 #
-# The sample is four runs of all eleven configurations on the certification
-# branch, each 136/136. All four cover the same 7736 of 7816 lines and the same
-# 4734 of 4838 branch outcomes, key by key, so the unstable set is empty and the
-# always-covered set is the whole covered set. The values below are that
-# measurement truncated to the two decimal places the report prints, which still
-# fails on a single line or a single outcome going missing.
+# The unstable set on this tree is empty. Four runs of all eleven configurations
+# on the certification branch covered the same 7736 of 7816 lines and the same
+# 4734 of 4838 branch outcomes, key by key, so the always-covered set is the
+# whole covered set and the values below are simply the current measurement,
+# truncated to the two decimal places the report prints. That still fails on a
+# single line or a single outcome going missing.
+#
+# The figure is now 7746 of 7816 lines and 4749 of 4838 branch outcomes: the
+# coverage work has closed 10 lines and 15 outcomes since the gate was first set,
+# and the gate is raised with it rather than left behind as slack.
 #
 # There is no margin below the measurement, and that is a property of this tree
-# rather than a preference. 7568 of the 7736 covered lines and 4717 of the 4734
+# rather than a preference. 7571 of the 7746 covered lines and 4717 of the 4749
 # covered outcomes are reached by two or more configurations, so a miss in one is
-# absorbed by a sibling. Of the remainder, 167 lines and 17 outcomes are compiled
+# absorbed by a sibling. Of the remainder, 174 lines and 32 outcomes are compiled
 # by exactly one configuration, where coverage is deterministic: the code exists
 # there or nowhere. Exactly one line is compiled by more than one configuration
 # and covered by only one -- fx_file_write.c:886, the unprotect on the sector
-# write error path, held by no_cache_fault_tolerant_build -- and it did not move
-# across the sample.
+# write error path, held by no_cache_fault_tolerant_build -- and it has not moved
+# across any sample taken.
 #
 # The gate reads the union figure from coverage_union.py, not the percentage in
 # the merged report. gcovr's merge keys each branch by the basic-block pair gcov
@@ -56,8 +60,8 @@ exclude=".*driver.*"
 #
 # This is a ratchet on today's figure and not the target. The target is 100% line
 # and branch, and the value is raised as the coverage work closes gaps.
-min_line=${FX_COVERAGE_MIN_LINE:-98.97}
-min_branch=${FX_COVERAGE_MIN_BRANCH:-97.85}
+min_line=${FX_COVERAGE_MIN_LINE:-99.10}
+min_branch=${FX_COVERAGE_MIN_BRANCH:-98.16}
 
 # --merge unions the per-configuration reports into the one number that means
 # something. Each configuration writes an intermediate JSON beside its XML, and

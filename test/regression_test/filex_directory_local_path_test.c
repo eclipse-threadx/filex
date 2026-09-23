@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (c) 2024 Microsoft Corporation 
+ * Copyright (c) 2026 Eclipse ThreadX contributors
  * 
  * This program and the accompanying materials are made available under the
  * terms of the MIT License which is available at
@@ -7,6 +8,8 @@
  * 
  * SPDX-License-Identifier: MIT
  **************************************************************************/
+
+// Portions of this file were generated with AI assistance.
 
 /* This FileX test concentrates on the local path operations.  */
 
@@ -786,12 +789,28 @@ FX_LOCAL_PATH root_path, test1_path, test2_path;
 
 #else
 
-#include "fx_api.h"
+#include   "fx_api.h"
 #include   "fx_ram_driver_test.h"
 #include   <stdio.h>
 
+#define     CACHE_SIZE              16*128
 
+
+/* Define the FileX object control blocks...  */
+
+static FX_MEDIA                 ram_disk;
+static UCHAR                    cache_buffer[CACHE_SIZE];
+
+
+/* Define thread prototypes.  */
+
+void    filex_directory_local_path_application_define(void *first_unused_memory);
+static void    ftest_0_entry(ULONG thread_input);
+
+VOID  _fx_ram_driver(FX_MEDIA *media_ptr);
 void  test_control_return(UINT status);
+
+
 
 /* Define what the initial system looks like.  */
 
@@ -804,10 +823,131 @@ void    filex_directory_local_path_application_define(void *first_unused_memory)
 
     FX_PARAMETER_NOT_USED(first_unused_memory);
 
-    /* Print out some test information banners.  */
-    printf("FileX Test:   Directory local path test..............................N/A\n");
+    /* Initialize the FileX system.  */
+    fx_system_initialize();
 
-    test_control_return(255);
+    /* There is no ThreadX in a standalone build, so run the test inline.  */
+    ftest_0_entry(0);
+}
+
+
+
+/* Define the test threads.  */
+
+static void    ftest_0_entry(ULONG thread_input)
+{
+
+UINT            status;
+FX_LOCAL_PATH   local_path;
+CHAR           *path_name;
+
+    FX_PARAMETER_NOT_USED(thread_input);
+
+    /* Print out some test information banners.  */
+    printf("FileX Test:   Directory local path test..............................");
+
+    /* Format the media.  This needs to be done before opening it!  */
+    status =  fx_media_format(&ram_disk, 
+                            _fx_ram_driver,         // Driver entry
+                            ram_disk_memory,        // RAM disk memory pointer
+                            cache_buffer,           // Media buffer pointer
+                            CACHE_SIZE,             // Media buffer size 
+                            "MY_RAM_DISK",          // Volume Name
+                            1,                      // Number of FATs
+                            32,                     // Directory Entries
+                            0,                      // Hidden sectors
+                            512,                    // Total sectors 
+                            128,                    // Sector size   
+                            1,                      // Sectors per cluster
+                            1,                      // Heads
+                            1);                     // Sectors per track 
+
+    /* Determine if the format had an error.  */
+    if (status)
+    {
+
+        printf("ERROR!\n");
+        test_control_return(1);
+    }
+
+    /* Each service reports the media state before it reports that local paths are absent,
+       so each one is called with the media closed first.  That is what separates the two
+       returns from each other.  */
+
+    /* Attempt to clear the local path before the media has been opened to generate an error */
+    status =  fx_directory_local_path_clear(&ram_disk);
+    if (status != FX_MEDIA_NOT_OPEN)
+    {
+        printf("ERROR!\n");
+        test_control_return(2);
+    }
+
+    /* Attempt to read the local path before the media has been opened to generate an error */
+    status =  fx_directory_local_path_get(&ram_disk, &path_name);
+    if (status != FX_MEDIA_NOT_OPEN)
+    {
+        printf("ERROR!\n");
+        test_control_return(3);
+    }
+
+    /* Attempt to restore the local path before the media has been opened to generate an error */
+    status =  fx_directory_local_path_restore(&ram_disk, &local_path);
+    if (status != FX_MEDIA_NOT_OPEN)
+    {
+        printf("ERROR!\n");
+        test_control_return(4);
+    }
+
+    /* Open the ram_disk.  */
+    status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
+
+    /* Check the status.  */
+    if (status != FX_SUCCESS)
+    {
+
+        /* Error, return error code.  */
+        printf("ERROR!\n");
+        test_control_return(5);
+    }
+
+    /* A standalone build has no thread to hang a local path on, so the three services are
+       compiled down to a not-implemented return that the open media now reaches.  */
+
+    /* Attempt to clear the local path on an open media.  */
+    status =  fx_directory_local_path_clear(&ram_disk);
+    if (status != FX_NOT_IMPLEMENTED)
+    {
+        printf("ERROR!\n");
+        test_control_return(6);
+    }
+
+    /* Attempt to read the local path on an open media.  */
+    status =  fx_directory_local_path_get(&ram_disk, &path_name);
+    if (status != FX_NOT_IMPLEMENTED)
+    {
+        printf("ERROR!\n");
+        test_control_return(7);
+    }
+
+    /* Attempt to restore the local path on an open media.  */
+    status =  fx_directory_local_path_restore(&ram_disk, &local_path);
+    if (status != FX_NOT_IMPLEMENTED)
+    {
+        printf("ERROR!\n");
+        test_control_return(8);
+    }
+
+    /* The media is still usable after the three rejections.  */
+    status =  fx_media_close(&ram_disk);
+    if (status != FX_SUCCESS)
+    {
+        printf("ERROR!\n");
+        test_control_return(9);
+    }
+
+    /* Output successful completion.  */
+    printf("SUCCESS!\n");
+    test_control_return(0);
 }
 
 #endif
