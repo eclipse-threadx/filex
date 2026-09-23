@@ -898,6 +898,14 @@ CHAR           *path_name;
         test_control_return(4);
     }
 
+    /* Attempt to set the local path before the media has been opened to generate an error */
+    status =  fx_directory_local_path_set(&ram_disk, &local_path, "/A0");
+    if (status != FX_MEDIA_NOT_OPEN)
+    {
+        printf("ERROR!\n");
+        test_control_return(5);
+    }
+
     /* Open the ram_disk.  */
     status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
 
@@ -907,10 +915,10 @@ CHAR           *path_name;
 
         /* Error, return error code.  */
         printf("ERROR!\n");
-        test_control_return(5);
+        test_control_return(6);
     }
 
-    /* A standalone build has no thread to hang a local path on, so the three services are
+    /* A standalone build has no thread to hang a local path on, so all four services are
        compiled down to a not-implemented return that the open media now reaches.  */
 
     /* Attempt to clear the local path on an open media.  */
@@ -918,7 +926,7 @@ CHAR           *path_name;
     if (status != FX_NOT_IMPLEMENTED)
     {
         printf("ERROR!\n");
-        test_control_return(6);
+        test_control_return(7);
     }
 
     /* Attempt to read the local path on an open media.  */
@@ -926,7 +934,7 @@ CHAR           *path_name;
     if (status != FX_NOT_IMPLEMENTED)
     {
         printf("ERROR!\n");
-        test_control_return(7);
+        test_control_return(8);
     }
 
     /* Attempt to restore the local path on an open media.  */
@@ -934,15 +942,23 @@ CHAR           *path_name;
     if (status != FX_NOT_IMPLEMENTED)
     {
         printf("ERROR!\n");
-        test_control_return(8);
+        test_control_return(9);
     }
 
-    /* The media is still usable after the three rejections.  */
+    /* Attempt to set the local path on an open media.  */
+    status =  fx_directory_local_path_set(&ram_disk, &local_path, "/A0");
+    if (status != FX_NOT_IMPLEMENTED)
+    {
+        printf("ERROR!\n");
+        test_control_return(10);
+    }
+
+    /* The media is still usable after the four rejections.  */
     status =  fx_media_close(&ram_disk);
     if (status != FX_SUCCESS)
     {
         printf("ERROR!\n");
-        test_control_return(9);
+        test_control_return(11);
     }
 
     /* Output successful completion.  */
