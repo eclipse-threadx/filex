@@ -65,6 +65,7 @@ set(regression_test_cases
     ${SOURCE_DIR}/filex_fault_tolerant_file_write_data_interrupt_test.c
     ${SOURCE_DIR}/filex_fault_tolerant_file_write_directory_interrupt_test.c
     ${SOURCE_DIR}/filex_fault_tolerant_file_write_fat_interrupt_test.c
+    ${SOURCE_DIR}/filex_fault_tolerant_file_write_fat_read_error_test.c
     ${SOURCE_DIR}/filex_fault_tolerant_file_write_redo_log_interrupt_test.c
     ${SOURCE_DIR}/filex_fault_tolerant_file_write_undo_log_interrupt_test.c
     ${SOURCE_DIR}/filex_fault_tolerant_file_corruption_test.c

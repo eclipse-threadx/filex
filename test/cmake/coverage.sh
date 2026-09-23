@@ -27,26 +27,33 @@ exclude=".*driver.*"
 # any single run happened to report, which is a statistic about the sample
 # rather than a statement about the tree.
 #
-# The unstable set on this tree is empty. Four runs of all eleven configurations
-# on the certification branch covered the same 7736 of 7816 lines and the same
-# 4734 of 4838 branch outcomes, key by key, so the always-covered set is the
-# whole covered set and the values below are simply the current measurement,
-# truncated to the two decimal places the report prints. That still fails on a
-# single line or a single outcome going missing.
+# The union now measures 7749 of 7816 lines and 4751 of 4838 branch outcomes, and
+# the branch threshold is set one outcome below that, because one outcome is
+# unstable and an unstable outcome is not part of the always-covered set.
+# fx_utility_logical_sector_read.c:346 ordinal 3 -- the multi-sector arm of a read
+# starting at the sector already in the media memory buffer -- has been covered in
+# one of nine observations, once in no_cache_fault_tolerant_build, with a count of
+# 1 against 161 million executions of the line. The other eight, including five
+# further runs of that configuration taken afterwards on the same tree and both of
+# the serial ones among them, have it at zero. It is the first key on this tree
+# that is not either always covered or never covered, and it belongs to a
+# construct the coverage work has still to close deliberately.
 #
-# The figure is now 7746 of 7816 lines and 4749 of 4838 branch outcomes: the
-# coverage work has closed 10 lines and 15 outcomes since the gate was first set,
-# and the gate is raised with it rather than left behind as slack.
+# The always-covered set is therefore 7749 lines and 4750 outcomes, and the values
+# below are those figures truncated to the two decimal places the report prints.
+# The coverage work has closed 13 lines and 16 outcomes since the gate was first
+# set, and the gate is raised with it rather than left behind as slack. It still
+# fails on a single line or a single outcome going missing.
 #
-# There is no margin below the measurement, and that is a property of this tree
-# rather than a preference. 7571 of the 7746 covered lines and 4717 of the 4749
-# covered outcomes are reached by two or more configurations, so a miss in one is
-# absorbed by a sibling. Of the remainder, 174 lines and 32 outcomes are compiled
-# by exactly one configuration, where coverage is deterministic: the code exists
-# there or nowhere. Exactly one line is compiled by more than one configuration
-# and covered by only one -- fx_file_write.c:886, the unprotect on the sector
-# write error path, held by no_cache_fault_tolerant_build -- and it has not moved
-# across any sample taken.
+# There is no margin below that, and that is a property of this tree rather than a
+# preference. 7574 of the 7749 covered lines and 4718 of the 4751 covered outcomes
+# are reached by two or more configurations, so a miss in one is absorbed by a
+# sibling. Of the remainder, 174 lines and 32 outcomes are compiled by exactly one
+# configuration, where coverage is deterministic: the code exists there or
+# nowhere. Two keys are compiled by more than one configuration and covered by
+# only one: fx_file_write.c:886, the unprotect on the sector write error path,
+# held by no_cache_fault_tolerant_build, which has not moved across any sample
+# taken; and the unstable outcome above, held by the same configuration.
 #
 # The gate reads the union figure from coverage_union.py, not the percentage in
 # the merged report. gcovr's merge keys each branch by the basic-block pair gcov
@@ -60,8 +67,8 @@ exclude=".*driver.*"
 #
 # This is a ratchet on today's figure and not the target. The target is 100% line
 # and branch, and the value is raised as the coverage work closes gaps.
-min_line=${FX_COVERAGE_MIN_LINE:-99.10}
-min_branch=${FX_COVERAGE_MIN_BRANCH:-98.16}
+min_line=${FX_COVERAGE_MIN_LINE:-99.14}
+min_branch=${FX_COVERAGE_MIN_BRANCH:-98.18}
 
 # --merge unions the per-configuration reports into the one number that means
 # something. Each configuration writes an intermediate JSON beside its XML, and
