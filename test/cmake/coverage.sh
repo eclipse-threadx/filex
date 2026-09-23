@@ -32,11 +32,12 @@ exclude=".*driver.*"
 # unstable and an unstable outcome is not part of the always-covered set.
 # fx_utility_logical_sector_read.c:346 ordinal 3 -- the multi-sector arm of a read
 # starting at the sector already in the media memory buffer -- has been covered in
-# one of nine observations, once in no_cache_fault_tolerant_build, with a count of
-# 1 against 161 million executions of the line. The other eight, including five
-# further runs of that configuration taken afterwards on the same tree and both of
-# the serial ones among them, have it at zero. It is the first key on this tree
-# that is not either always covered or never covered, and it belongs to a
+# one of ten observations, once in no_cache_fault_tolerant_build, where it was taken
+# a single time against the 161,868,846 evaluations of the operand it belongs to.
+# The other nine have it at zero, among them five further runs of that
+# configuration taken afterwards on the same tree, both of the serial ones among
+# those, and the CI run of the commit that raised this gate. It is the first key on
+# this tree that is neither always covered nor never covered, and it belongs to a
 # construct the coverage work has still to close deliberately.
 #
 # The always-covered set is therefore 7749 lines and 4750 outcomes, and the values
