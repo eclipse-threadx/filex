@@ -46,11 +46,21 @@ exclude=".*driver.*"
 # set, and the gate is raised with it rather than left behind as slack. It still
 # fails on a single line or a single outcome going missing.
 #
-# There is no margin below that, and that is a property of this tree rather than a
-# preference. 7574 of the 7749 covered lines and 4718 of the 4751 covered outcomes
-# are reached by two or more configurations, so a miss in one is absorbed by a
-# sibling. Of the remainder, 174 lines and 32 outcomes are compiled by exactly one
-# configuration, where coverage is deterministic: the code exists there or
+# There is no margin below that, and a non-empty unstable set is not by itself a
+# reason to add one. What a margin protects against is an outcome moving from
+# *always covered* to *unstable*, which is the only movement that can fail this
+# gate on a run in which nothing regressed. The movement seen here is the other
+# one: a key that was covered in no observation is now covered in one, and a key
+# arriving from *never* can only add coverage above the floor. The gate is set
+# below the floor either way, so it is unaffected. If a key on this tree is ever
+# observed leaving the always-covered set, that is the point at which this
+# paragraph has to be rewritten and a margin measured.
+#
+# The rest is redundancy depth, and it is why the floor sits where it does.
+# 7574 of the 7749 covered lines and 4718 of the 4751 covered outcomes are
+# reached by two or more configurations, so a miss in one is absorbed by a
+# sibling. Of the remainder, 174 lines and 32 outcomes are compiled by exactly
+# one configuration, where coverage is deterministic: the code exists there or
 # nowhere. Two keys are compiled by more than one configuration and covered by
 # only one: fx_file_write.c:886, the unprotect on the sector write error path,
 # held by no_cache_fault_tolerant_build, which has not moved across any sample
