@@ -27,9 +27,11 @@ exclude=".*driver.*"
 # any single run happened to report, which is a statistic about the sample
 # rather than a statement about the tree.
 #
-# The union now measures 7749 of 7816 lines and 4751 of 4838 branch outcomes, and
-# the branch threshold is set one outcome below that, because one outcome is
-# unstable and an unstable outcome is not part of the always-covered set.
+# The union measures 7749 of 7816 lines, and either 4750 or 4751 of 4838
+# branch outcomes depending on whether one unstable outcome happens to fire in
+# the run being read. The branch threshold is the lower of the two, because an
+# unstable outcome is not part of the always-covered set. Every run on a clean
+# runner so far has read 4750.
 # fx_utility_logical_sector_read.c:346 ordinal 3 -- the multi-sector arm of a
 # read starting at the sector already in the media memory buffer -- has been
 # seen covered exactly once, in a single local run of all eleven
