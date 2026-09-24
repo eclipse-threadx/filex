@@ -27,11 +27,11 @@ exclude=".*driver.*"
 # any single run happened to report, which is a statistic about the sample
 # rather than a statement about the tree.
 #
-# The union measures 7749 of 7816 lines, and either 4750 or 4751 of 4838
+# The union measures 7810 of 7816 lines, and either 4817 or 4818 of 4838
 # branch outcomes depending on whether one unstable outcome happens to fire in
 # the run being read. The branch threshold is the lower of the two, because an
 # unstable outcome is not part of the always-covered set. Every run on a clean
-# runner so far has read 4750.
+# runner so far has read the lower of the two.
 # fx_utility_logical_sector_read.c:346 ordinal 3 -- the multi-sector arm of a
 # read starting at the sector already in the media memory buffer -- has been
 # seen covered exactly once, in a single local run of all eleven
@@ -42,11 +42,19 @@ exclude=".*driver.*"
 # first key on this tree that is neither always covered nor never covered, and
 # it belongs to a construct the coverage work has still to close deliberately.
 #
-# The always-covered set is therefore 7749 lines and 4750 outcomes, and the values
-# below are those figures truncated to the two decimal places the report prints.
-# The coverage work has closed 13 lines and 16 outcomes since the gate was first
-# set, and the gate is raised with it rather than left behind as slack. It still
-# fails on a single line or a single outcome going missing.
+# The always-covered set is therefore 7810 lines and 4817 outcomes, and the values
+# below are those figures truncated to two decimal places. The coverage work has
+# closed 74 lines and 83 outcomes since the gate was first set, and the gate is
+# raised with it rather than left behind as slack. It still fails on a single
+# line or a single outcome going missing.
+#
+# Truncated, and not what the report prints -- and for the first time on this
+# tree the two disagree. The comparison below is made at full precision while
+# the figure beside it is printed to two places with rounding, so 4817 of 4838,
+# which is 99.565936%, appears in the report as 99.57 and has to be gated at
+# 99.56. A gate set to the printed figure fails a run in which nothing has
+# regressed. Take the threshold from the ratio rather than from the line the
+# report writes.
 #
 # There is no margin below that, and a non-empty unstable set is not by itself a
 # reason to add one. What a margin protects against is an outcome moving from
@@ -59,14 +67,17 @@ exclude=".*driver.*"
 # paragraph has to be rewritten and a margin measured.
 #
 # The rest is redundancy depth, and it is why the floor sits where it does.
-# 7574 of the 7749 covered lines and 4718 of the 4751 covered outcomes are
+# 7635 of the 7810 covered lines and 4785 of the 4817 covered outcomes are
 # reached by two or more configurations, so a miss in one is absorbed by a
-# sibling. Of the remainder, 174 lines and 32 outcomes are compiled by exactly
-# one configuration, where coverage is deterministic: the code exists there or
-# nowhere. Two keys are compiled by more than one configuration and covered by
-# only one: fx_file_write.c:886, the unprotect on the sector write error path,
-# held by no_cache_fault_tolerant_build, which has not moved across any sample
-# taken; and the unstable outcome above, held by the same configuration.
+# sibling. The remaining 175 lines and 32 outcomes are covered by exactly one
+# configuration, and for 174 of those lines and all 32 outcomes that
+# configuration is also the only one that compiles the key, where coverage is
+# deterministic: the code exists there or nowhere. That leaves exactly one key
+# compiled by more than one configuration and covered by only one --
+# fx_file_write.c:886, the unprotect on the sector write error path, held by
+# no_cache_fault_tolerant_build, which has not moved across any sample taken.
+# The unstable outcome above joins that set in a run where it fires and is
+# absent from it otherwise.
 #
 # The gate reads the union figure from coverage_union.py, not the percentage in
 # the merged report. gcovr's merge keys each branch by the basic-block pair gcov
@@ -80,8 +91,8 @@ exclude=".*driver.*"
 #
 # This is a ratchet on today's figure and not the target. The target is 100% line
 # and branch, and the value is raised as the coverage work closes gaps.
-min_line=${FX_COVERAGE_MIN_LINE:-99.14}
-min_branch=${FX_COVERAGE_MIN_BRANCH:-98.18}
+min_line=${FX_COVERAGE_MIN_LINE:-99.92}
+min_branch=${FX_COVERAGE_MIN_BRANCH:-99.56}
 
 # --merge unions the per-configuration reports into the one number that means
 # something. Each configuration writes an intermediate JSON beside its XML, and
