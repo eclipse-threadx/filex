@@ -10,6 +10,8 @@ endif()
 
 project(filex_test LANGUAGES C)
 
+option(FX_COVERAGE "Instrument FileX in every Linux test configuration" OFF)
+
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -92,15 +94,19 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../.. filex)
 add_subdirectory(regression)
 add_subdirectory(samples)
 
-# Coverage instrumentation (GCC/Clang only — not supported by MSVC)
-if(NOT MSVC AND CMAKE_BUILD_TYPE MATCHES ".*_coverage")
+# TX_COVERAGE is supplied by the ThreadX regression runner.
+if(NOT MSVC AND (FX_COVERAGE OR TX_COVERAGE OR CMAKE_BUILD_TYPE MATCHES ".*_coverage"))
   target_compile_options(filex PRIVATE -fprofile-arcs -ftest-coverage)
   target_link_options(filex PRIVATE -fprofile-arcs -ftest-coverage)
 endif()
 
 # Build ThreadX shared library for Linux
 if(NOT MSVC AND NOT FX_STANDALONE_ENABLE)
-    execute_process(COMMAND ${CMAKE_CURRENT_LIST_DIR}/run.sh build_libs)
+    execute_process(COMMAND ${CMAKE_CURRENT_LIST_DIR}/run.sh build_libs
+                    RESULT_VARIABLE threadx_build_result)
+    if(NOT threadx_build_result STREQUAL "0")
+      message(FATAL_ERROR "ThreadX dependency build failed: ${threadx_build_result}")
+    endif()
     add_custom_target(build_libs ALL COMMAND ${CMAKE_CURRENT_LIST_DIR}/run.sh
                                              build_libs)
     add_dependencies(filex build_libs)
@@ -135,4 +141,3 @@ else()
             -Waggregate-return
             -Wfloat-equal)
 endif()
-
