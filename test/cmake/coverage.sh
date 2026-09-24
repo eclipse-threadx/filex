@@ -30,15 +30,15 @@ exclude=".*driver.*"
 # The union now measures 7749 of 7816 lines and 4751 of 4838 branch outcomes, and
 # the branch threshold is set one outcome below that, because one outcome is
 # unstable and an unstable outcome is not part of the always-covered set.
-# fx_utility_logical_sector_read.c:346 ordinal 3 -- the multi-sector arm of a read
-# starting at the sector already in the media memory buffer -- has been covered in
-# one of ten observations, once in no_cache_fault_tolerant_build, where it was taken
-# a single time against the 161,868,846 evaluations of the operand it belongs to.
-# The other nine have it at zero, among them five further runs of that
-# configuration taken afterwards on the same tree, both of the serial ones among
-# those, and the CI run of the commit that raised this gate. It is the first key on
-# this tree that is neither always covered nor never covered, and it belongs to a
-# construct the coverage work has still to close deliberately.
+# fx_utility_logical_sector_read.c:346 ordinal 3 -- the multi-sector arm of a
+# read starting at the sector already in the media memory buffer -- has been
+# seen covered exactly once, in a single local run of all eleven
+# configurations, in no_cache_fault_tolerant_build, where it was taken one
+# time against the 161,868,846 evaluations of the operand it belongs to. Every
+# observation since reads zero: repeated runs of that configuration's own
+# suite, parallel and serial alike, and every CI run of this branch. It is the
+# first key on this tree that is neither always covered nor never covered, and
+# it belongs to a construct the coverage work has still to close deliberately.
 #
 # The always-covered set is therefore 7749 lines and 4750 outcomes, and the values
 # below are those figures truncated to the two decimal places the report prints.
