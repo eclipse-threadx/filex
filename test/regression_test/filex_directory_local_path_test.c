@@ -9,6 +9,8 @@
 /* SPDX-License-Identifier: MIT                                            */
 /***************************************************************************/
 
+/* Portions of this file were generated with AI assistance. */
+
 /* This FileX test concentrates on the local path operations.  */
 
 #ifndef FX_STANDALONE_ENABLE
@@ -803,12 +805,36 @@ void    filex_directory_local_path_application_define(void *first_unused_memory)
 #endif
 {
 
+FX_MEDIA      media = {0};
+FX_LOCAL_PATH local_path = {0};
+CHAR         *path_name = FX_NULL;
+UINT          status;
+
     FX_PARAMETER_NOT_USED(first_unused_memory);
 
-    /* Print out some test information banners.  */
-    printf("FileX Test:   Directory local path test..............................N/A\n");
+    /* Local paths are unavailable in standalone mode.  */
+    media.fx_media_id = FX_MEDIA_ID;
+    status = fx_directory_local_path_clear(&media);
+    if (status != FX_NOT_IMPLEMENTED)
+    {
+        test_control_return(1);
+        return;
+    }
+    status = fx_directory_local_path_get(&media, &path_name);
+    if (status != FX_NOT_IMPLEMENTED)
+    {
+        test_control_return(2);
+        return;
+    }
+    status = fx_directory_local_path_restore(&media, &local_path);
+    if (status != FX_NOT_IMPLEMENTED)
+    {
+        test_control_return(3);
+        return;
+    }
 
-    test_control_return(255);
+    printf("FileX Test:   Directory local path test..............................SUCCESS\n");
+    test_control_return(0);
 }
 
 #endif

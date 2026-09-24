@@ -141,6 +141,7 @@ set(regression_test_cases
     ${SOURCE_DIR}/filex_file_write_notify_test.c
     ${SOURCE_DIR}/filex_file_write_available_cluster_test.c
     ${SOURCE_DIR}/filex_utility_test.c
+    ${SOURCE_DIR}/filex_partition_offset_extended_test.c
     ${SOURCE_DIR}/filex_utility_fat_flush_test.c)
 
 add_library(test_utility ${SOURCE_DIR}/fx_ram_driver_test.c
