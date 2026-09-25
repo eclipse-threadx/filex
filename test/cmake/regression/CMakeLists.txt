@@ -145,7 +145,10 @@ set(regression_test_cases
     ${SOURCE_DIR}/filex_file_write_available_cluster_test.c
     ${SOURCE_DIR}/filex_utility_test.c
     ${SOURCE_DIR}/filex_utility_fat_flush_test.c
-    ${SOURCE_DIR}/filex_partition_offset_extended_test.c)
+    ${SOURCE_DIR}/filex_partition_offset_extended_test.c
+    ${SOURCE_DIR}/filex_trace_shim_coverage_test.c
+    ${SOURCE_DIR}/filex_utility_no_cache_sector_test.c
+    ${SOURCE_DIR}/filex_fault_tolerant_no_cache_directory_log_error_test.c)
 
 add_library(test_utility ${SOURCE_DIR}/fx_ram_driver_test.c
                          ${SOURCE_DIR}/filextestcontrol.c)

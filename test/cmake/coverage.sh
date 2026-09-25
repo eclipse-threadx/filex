@@ -27,59 +27,62 @@ exclude=".*driver.*"
 # any single run happened to report, which is a statistic about the sample
 # rather than a statement about the tree.
 #
-# The union measures 7810 of 7816 lines, and either 4817 or 4818 of 4838
-# branch outcomes depending on whether one unstable outcome happens to fire in
-# the run being read. The branch threshold is the lower of the two, because an
-# unstable outcome is not part of the always-covered set. Every run on a clean
-# runner so far has read the lower of the two.
-# fx_utility_logical_sector_read.c:346 ordinal 3 -- the multi-sector arm of a
-# read starting at the sector already in the media memory buffer -- has been
-# seen covered exactly once, in a single local run of all eleven
-# configurations, in no_cache_fault_tolerant_build, where it was taken one
-# time against the 161,868,846 evaluations of the operand it belongs to. Every
-# observation since reads zero: repeated runs of that configuration's own
-# suite, parallel and serial alike, and every CI run of this branch. It is the
-# first key on this tree that is neither always covered nor never covered, and
-# it belongs to a construct the coverage work has still to close deliberately.
+# The union measures 7816 of 7816 lines and 4837 of 4838 branch outcomes, and
+# the values below are those figures truncated to two decimal places. Line
+# coverage is at 100.00%: every line of the certified source is reached in at
+# least one supported configuration, and the gate holds it there. The single
+# uncovered branch outcome is fx_partition_offset_calculate.c:520 ordinal 1, the
+# one construct carried as a deviation with its attempt log; it is reachable
+# only by a caller that no partition table can produce.
 #
-# The always-covered set is therefore 7810 lines and 4817 outcomes, and the values
-# below are those figures truncated to two decimal places. The coverage work has
-# closed 74 lines and 83 outcomes since the gate was first set, and the gate is
-# raised with it rather than left behind as slack. It still fails on a single
-# line or a single outcome going missing.
+# The unstable set is empty. It has had exactly one member in the life of this
+# branch -- fx_utility_logical_sector_read.c:346 ordinal 3, the multi-sector arm
+# of a read starting at the sector already in the media memory buffer, which was
+# seen covered once by no test that was aiming at it and in no observation
+# since. It is now covered deliberately, by a test that reaches it in all four
+# configurations that compile it, so it is part of the always-covered set on the
+# same terms as every other key rather than by luck. No key on this tree has
+# ever been observed leaving that set.
+#
+# The coverage work has closed 80 lines and 103 outcomes since the gate was
+# first set, and the gate is raised with it rather than left behind as slack. It
+# still fails on a single line or a single outcome going missing.
 #
 # Truncated rather than rounded, and the report truncates with it, so the two
 # now agree by construction. The comparison is made against the full-precision
 # ratio, so a threshold taken from a figure rounded *up* fails a run in which
-# nothing has regressed. That has been reachable twice: 7736 of 7816 lines is
-# 98.976459%, which read as 98.98 when the gate was first set at 98.97, and 4817
-# of 4838 outcomes is 99.565936%, which read as 99.57 against this 99.56. Both
-# were caught by hand. coverage_union.py now rounds its own output down, so the
-# printed figure is one a threshold can be set to directly and never overstates
-# the coverage it reports.
+# nothing has regressed. That has now been reachable three times: 7736 of 7816
+# lines is 98.976459%, which read as 98.98 when the gate was first set at 98.97;
+# 4817 of 4838 outcomes is 99.565936%, which read as 99.57 against a gate of
+# 99.56; and 4837 of 4838 is 99.979330%, which reads as 99.98 against the 99.97
+# below. The first two were caught by hand. The third was not reachable by hand
+# at all, because coverage_union.py now rounds its own output down and printed
+# the figure the gate takes -- which is what the change was for.
 #
-# There is no margin below that, and a non-empty unstable set is not by itself a
-# reason to add one. What a margin protects against is an outcome moving from
-# *always covered* to *unstable*, which is the only movement that can fail this
-# gate on a run in which nothing regressed. The movement seen here is the other
-# one: a key that was covered in no observation is now covered in one, and a key
-# arriving from *never* can only add coverage above the floor. The gate is set
-# below the floor either way, so it is unaffected. If a key on this tree is ever
-# observed leaving the always-covered set, that is the point at which this
-# paragraph has to be rewritten and a margin measured.
+# There is no margin below that, and an empty unstable set is what a zero margin
+# rests on. What a margin protects against is an outcome moving from *always
+# covered* to *unstable*, which is the only movement that can fail this gate on
+# a run in which nothing regressed. Neither movement seen on this tree is that
+# one: a key went from *never* to *unstable*, which can only add coverage above
+# the floor, and then from *unstable* to *always* when a test closed it. If a
+# key on this tree is ever observed leaving the always-covered set, that is the
+# point at which this paragraph has to be rewritten and a margin measured.
 #
 # The rest is redundancy depth, and it is why the floor sits where it does.
-# 7635 of the 7810 covered lines and 4785 of the 4817 covered outcomes are
+# 7637 of the 7816 covered lines and 4787 of the 4837 covered outcomes are
 # reached by two or more configurations, so a miss in one is absorbed by a
-# sibling. The remaining 175 lines and 32 outcomes are covered by exactly one
-# configuration, and for 174 of those lines and all 32 outcomes that
+# sibling. The remaining 179 lines and 50 outcomes are covered by exactly one
+# configuration, and for 178 of those lines and all 50 outcomes that
 # configuration is also the only one that compiles the key, where coverage is
 # deterministic: the code exists there or nowhere. That leaves exactly one key
 # compiled by more than one configuration and covered by only one --
 # fx_file_write.c:886, the unprotect on the sector write error path, held by
 # no_cache_fault_tolerant_build, which has not moved across any sample taken.
-# The unstable outcome above joins that set in a run where it fires and is
-# absent from it otherwise.
+#
+# The outcome count in that single-configuration set grew from 32 to 50 with the
+# trace shim coverage, and the growth is not fragility. Those 18 outcomes are
+# the arms of the two trace shims and of the two system getters' trace guard,
+# and trace_build_coverage is the only configuration that compiles any of them.
 #
 # The gate reads the union figure from coverage_union.py, not the percentage in
 # the merged report. gcovr's merge keys each branch by the basic-block pair gcov
@@ -91,10 +94,11 @@ exclude=".*driver.*"
 # source, and therefore the one that does not lurch when a configuration is
 # added.
 #
-# This is a ratchet on today's figure and not the target. The target is 100% line
-# and branch, and the value is raised as the coverage work closes gaps.
-min_line=${FX_COVERAGE_MIN_LINE:-99.92}
-min_branch=${FX_COVERAGE_MIN_BRANCH:-99.56}
+# The line axis is now at the target rather than on the way to it, and the
+# branch axis is one deviation short of it. A line gate of 100.00 passes only
+# while nothing regresses at all, which is the point of setting it there.
+min_line=${FX_COVERAGE_MIN_LINE:-100.00}
+min_branch=${FX_COVERAGE_MIN_BRANCH:-99.97}
 
 # --merge unions the per-configuration reports into the one number that means
 # something. Each configuration writes an intermediate JSON beside its XML, and
