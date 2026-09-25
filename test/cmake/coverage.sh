@@ -27,13 +27,21 @@ exclude=".*driver.*"
 # any single run happened to report, which is a statistic about the sample
 # rather than a statement about the tree.
 #
-# The union measures 7816 of 7816 lines and 4837 of 4838 branch outcomes, and
+# The union measures 7805 of 7805 lines and 4797 of 4798 branch outcomes, and
 # the values below are those figures truncated to two decimal places. Line
 # coverage is at 100.00%: every line of the certified source is reached in at
 # least one supported configuration, and the gate holds it there. The single
 # uncovered branch outcome is fx_partition_offset_calculate.c:520 ordinal 1, the
 # one construct carried as a deviation with its attempt log; it is reachable
 # only by a caller that no partition table can produce.
+#
+# The denominator is common/src over every build configuration, less the media
+# driver above and less the code the regression-test hook macros inject into it
+# -- 11 lines and 40 branch outcomes at 11 sites, all of them covered, which an
+# application does not compile at all. coverage_union.py holds the list and
+# prints it with the figure. Removing it moves neither threshold: 4797 of 4798
+# is 99.979158% where 4837 of 4838 was 99.979330%, and both truncate to the
+# 99.97 below, so the exclusion and the gate are independent of each other.
 #
 # The unstable set is empty. It has had exactly one member in the life of this
 # branch -- fx_utility_logical_sector_read.c:346 ordinal 3, the multi-sector arm
@@ -54,10 +62,12 @@ exclude=".*driver.*"
 # nothing has regressed. That has now been reachable three times: 7736 of 7816
 # lines is 98.976459%, which read as 98.98 when the gate was first set at 98.97;
 # 4817 of 4838 outcomes is 99.565936%, which read as 99.57 against a gate of
-# 99.56; and 4837 of 4838 is 99.979330%, which reads as 99.98 against the 99.97
-# below. The first two were caught by hand. The third was not reachable by hand
-# at all, because coverage_union.py now rounds its own output down and printed
-# the figure the gate takes -- which is what the change was for.
+# 99.56; and the branch figure here is 99.979158%, which reads as 99.98 against
+# the 99.97 below -- as did the 99.979330% it replaced, so the hook exclusion
+# changes nothing about this. The first two were caught by hand. The third was
+# not reachable by hand at all, because coverage_union.py now rounds its own
+# output down and printed the figure the gate takes -- which is what the change
+# was for.
 #
 # There is no margin below that, and an empty unstable set is what a zero margin
 # rests on. What a margin protects against is an outcome moving from *always
@@ -69,15 +79,18 @@ exclude=".*driver.*"
 # point at which this paragraph has to be rewritten and a margin measured.
 #
 # The rest is redundancy depth, and it is why the floor sits where it does.
-# 7637 of the 7816 covered lines and 4787 of the 4837 covered outcomes are
+# 7626 of the 7805 covered lines and 4747 of the 4797 covered outcomes are
 # reached by two or more configurations, so a miss in one is absorbed by a
-# sibling. The remaining 179 lines and 50 outcomes are covered by exactly one
-# configuration, and for 178 of those lines and all 50 outcomes that
-# configuration is also the only one that compiles the key, where coverage is
-# deterministic: the code exists there or nowhere. That leaves exactly one key
-# compiled by more than one configuration and covered by only one --
-# fx_file_write.c:886, the unprotect on the sector write error path, held by
-# no_cache_fault_tolerant_build, which has not moved across any sample taken.
+# sibling. Every excluded hook site was in that set -- each is covered by every
+# configuration that compiles it -- so the exclusion came out of the redundant
+# share and left the counts below untouched. The remaining 179 lines and 50
+# outcomes are covered by exactly one configuration, and for 178 of those lines
+# and all 50 outcomes that configuration is also the only one that compiles the
+# key, where coverage is deterministic: the code exists there or nowhere. That
+# leaves exactly one key compiled by more than one configuration and covered by
+# only one -- fx_file_write.c:886, the unprotect on the sector write error path,
+# held by no_cache_fault_tolerant_build, which has not moved across any sample
+# taken.
 #
 # The outcome count in that single-configuration set grew from 32 to 50 with the
 # trace shim coverage, and the growth is not fragility. Those 18 outcomes are
