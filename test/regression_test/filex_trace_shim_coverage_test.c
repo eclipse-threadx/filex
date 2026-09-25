@@ -52,9 +52,9 @@
    called it would suspend itself.
 
    The second is the direct call, which DEC-governed practice on this branch allows for a
-   certified internal function whose shipped callers never present the case under test.
-   Three functions are called directly here and the sentence differs for each, so each is
-   stated where it is used.  All three are declared by a header -- _fx_trace_event_insert
+   certified internal function where the shipped callers do not reach the case under test.
+   Three functions are called directly here.  What the shipped callers do and do not supply
+   differs for each, so each is disclosed where it is used.  All three are declared by a header -- _fx_trace_event_insert
    and _fx_trace_event_update by common/inc/fx_api.h under FX_SOURCE_CODE, which is why the
    prototypes are repeated below, and _fx_system_date_get and _fx_system_time_get by
    common/inc/fx_system.h, which this file includes.  None of them is undeclared.
@@ -507,15 +507,28 @@ ULONG                    first_timestamp;
 
     /* ---- The entry was overwritten by an event of the same id -----------------------
        The remaining arm is the one where the log wrapped a whole lap and the entry carries
-       the caller's own event id again, with a later timestamp.  No FileX operation can
-       present it: an operation inserts its event once and updates it once, so whatever
-       lands on the entry in between always carries a different id -- measured, not
-       assumed, with a one-entry log driven by fx_media_read and fx_media_write alone,
-       where the different-id arm is taken every time and this one is never reached at all.
+       the caller's own event id again, with a later timestamp.
 
-       The two inserts below are ordinary calls to the certified insert, which is what
-       every FileX trace call site invokes; they produce the entry, both event ids and both
-       timestamps.  The test writes nothing into the trace buffer itself.  */
+       No single-threaded sequence of FileX calls can present it.  An operation inserts its
+       event once and updates it once, so whatever lands on the entry in between always
+       carries a different id -- measured with a one-entry log driven by fx_media_read and
+       fx_media_write alone, where the different-id arm above is taken every time and this
+       one is not reached at all.
+
+       It is reachable in service, and by concurrency rather than by any call sequence.  The
+       trace buffer is global across every media and every ThreadX object, so two threads
+       reading two different media share it while taking no common FileX protection mutex,
+       and one thread's event can land on the other's entry between its insert and its
+       update.  Measured: one to two occurrences per 390,000 updates with a log of four
+       entries or more, and none at all below four, because every context switch on this
+       port carries ISR enter and exit inserts that land on the entry first.
+
+       That rate is why the state is constructed here rather than raced for.  A test that
+       had to win that race would cover this arm in some runs and not others, and a
+       coverage figure that does not reproduce on a clean run is worth less than the arm it
+       reports.  The two inserts below are ordinary calls to the certified insert, which is
+       what every FileX trace call site invokes; they produce the entry, both event ids and
+       both timestamps.  The test writes nothing into the trace buffer itself.  */
 
     _fx_trace_event_insert((ULONG) FX_TRACE_MEDIA_READ, 0, 0, 0, 0,
                            (ULONG) FX_TRACE_MEDIA_EVENTS, &event, &timestamp);
