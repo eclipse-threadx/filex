@@ -1,5 +1,6 @@
 /***************************************************************************
  * Copyright (c) 2024 Microsoft Corporation 
+ * Copyright (c) 2026 Eclipse ThreadX contributors
  * 
  * This program and the accompanying materials are made available under the
  * terms of the MIT License which is available at
@@ -7,6 +8,8 @@
  * 
  * SPDX-License-Identifier: MIT
  **************************************************************************/
+
+// Portions of this file were generated with AI assistance.
 
 /* This test case is design to reproduce file corruption bug.
  * https://expresslogic.zendesk.com/agent/tickets/1252 */
@@ -57,6 +60,11 @@ static TX_THREAD    ftest_1;
 static FX_MEDIA     ram_disk;
 static UINT         loop;
 static UINT         restart;
+#ifndef DEBUG
+/* When the run began.  Thread 0 is terminated and re-entered throughout the test, so
+   the cutoff below has to be measured from here rather than from its entry.  */
+static LONG         start;
+#endif /* DEBUG */
 static UCHAR        file_created[NO_OF_FILES];
 static UCHAR        write_buffer[1024 * 1024];
 static UCHAR        read_buffer[1024 * 1024];
@@ -96,6 +104,9 @@ UINT status;
 
     loop = 0;
     restart = 0;
+#ifndef DEBUG
+    start = (LONG)time(NULL);
+#endif /* DEBUG */
 
     /* Setup the working pointer.  */
     pointer =  (UCHAR *) first_unused_memory;
@@ -147,9 +158,6 @@ UINT        status;
 UINT        i;
 UINT        itr;
 UCHAR       first_boot = FX_TRUE;
-#ifndef DEBUG
-LONG        start = (LONG)time(NULL);
-#endif /* DEBUG */
 
     FX_PARAMETER_NOT_USED(thread_input);
 
