@@ -29,6 +29,7 @@ moves the number only by the code it actually brings in.
 
 import glob
 import json
+import math
 import os
 import sys
 
@@ -55,6 +56,24 @@ def union(tracefiles):
                     branches[key] = branches.get(key, 0) or (1 if branch["count"] > 0 else 0)
 
     return lines, branches
+
+
+def truncate(rate):
+    """Round a percentage down to the two decimal places the report prints.
+
+    Rounding to nearest would print a figure above the ratio it stands for: 7736 of
+    7816 lines is 98.976459%, which reads as 98.98, and 4817 of 4838 branch outcomes
+    is 99.565936%, which reads as 99.57. A coverage report that overstates coverage,
+    even by a hundredth, is the wrong error for certification evidence to make.
+
+    It also keeps the report and the gate in step. The threshold in coverage.sh is
+    compared against the full-precision ratio, so a gate set to a rounded-up figure
+    fails a tree in which nothing has regressed -- which is what both figures above
+    would have caused, and what each cost a reader's attention to catch by hand.
+    Truncating here makes the printed figure the one a threshold can safely be set to.
+    """
+
+    return math.floor(rate * 100) / 100
 
 
 def main():
@@ -84,17 +103,17 @@ def main():
     print("coverage_union.py: unioned over %d configuration(s):" % len(tracefiles))
     for path in tracefiles:
         print("    %s" % os.path.basename(path)[:-len(".json")])
-    print("    lines    %d/%d - %.2f%%" % (line_covered, line_total, line_rate))
-    print("    branches %d/%d - %.2f%%" % (branch_covered, branch_total, branch_rate))
+    print("    lines    %d/%d - %.2f%%" % (line_covered, line_total, truncate(line_rate)))
+    print("    branches %d/%d - %.2f%%" % (branch_covered, branch_total, truncate(branch_rate)))
 
     status = 0
     if line_rate < min_line:
         print("coverage_union.py: failed minimum line coverage (got %.2f%%, minimum %.2f%%)"
-              % (line_rate, min_line), file=sys.stderr)
+              % (truncate(line_rate), min_line), file=sys.stderr)
         status = 1
     if branch_rate < min_branch:
         print("coverage_union.py: failed minimum branch coverage (got %.2f%%, minimum %.2f%%)"
-              % (branch_rate, min_branch), file=sys.stderr)
+              % (truncate(branch_rate), min_branch), file=sys.stderr)
         status = 1
 
     return status

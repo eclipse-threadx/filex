@@ -48,13 +48,15 @@ exclude=".*driver.*"
 # raised with it rather than left behind as slack. It still fails on a single
 # line or a single outcome going missing.
 #
-# Truncated, and not what the report prints -- and for the first time on this
-# tree the two disagree. The comparison below is made at full precision while
-# the figure beside it is printed to two places with rounding, so 4817 of 4838,
-# which is 99.565936%, appears in the report as 99.57 and has to be gated at
-# 99.56. A gate set to the printed figure fails a run in which nothing has
-# regressed. Take the threshold from the ratio rather than from the line the
-# report writes.
+# Truncated rather than rounded, and the report truncates with it, so the two
+# now agree by construction. The comparison is made against the full-precision
+# ratio, so a threshold taken from a figure rounded *up* fails a run in which
+# nothing has regressed. That has been reachable twice: 7736 of 7816 lines is
+# 98.976459%, which read as 98.98 when the gate was first set at 98.97, and 4817
+# of 4838 outcomes is 99.565936%, which read as 99.57 against this 99.56. Both
+# were caught by hand. coverage_union.py now rounds its own output down, so the
+# printed figure is one a threshold can be set to directly and never overstates
+# the coverage it reports.
 #
 # There is no margin below that, and a non-empty unstable set is not by itself a
 # reason to add one. What a margin protects against is an outcome moving from
