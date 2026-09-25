@@ -73,17 +73,17 @@ For more information, please see the Eclipse Committer Handbook: https://www.ecl
 
 Build and test FileX with CMake and Ninja. The root and regression projects require CMake 3.13 or later. The regression CMake project sets C99 with compiler extensions off. GCC 14 is the project reference compiler on Linux. The Windows simulator uses MSVC from the Visual Studio Build Tools; it does not require the Visual Studio IDE.
 
-On Ubuntu, `scripts/install.sh` installs the host test tools and currently pins `gcovr` 4.1 for coverage reports. Embedded ports use the appropriate target compiler and toolchain file. Use GCC syntax for assembly built with GNU toolchains.
+On Ubuntu, `scripts/install.sh` installs the host test tools and pins `gcovr` 8.6 in a Python virtual environment; activate that environment before collecting coverage locally. Use GCC 14 with matching gcov for the Linux regression suite. Embedded ports use the appropriate target compiler and toolchain file. Use GCC syntax for assembly built with GNU toolchains.
 
-A non-standalone FileX build links ThreadX. The Linux regression runner obtains a ThreadX checkout under `test/cmake/threadx/` when needed. On Windows, pass the checkout explicitly to `scripts/build_fx.ps1` with `-ThreadXDir`.
+A non-standalone FileX build links ThreadX. The Linux regression runner obtains the pinned ThreadX revision under `test/cmake/threadx/` when needed and checks an existing checkout against that pin. On Windows, pass the checkout explicitly to `scripts/build_fx.ps1` with `-ThreadXDir`.
 
 ## Building and testing
 
 The regression suite lives under `test/cmake/` and defines nine configurations covering the normal build, disabled cache, disabled error checking, fault tolerance, and standalone combinations. The Linux wrapper scripts build and test all configurations:
 
 ```sh
-scripts/build.sh
-scripts/test.sh
+CC=gcc-14 GCOV=gcov-14 TX_COVERAGE=ON scripts/build.sh
+CC=gcc-14 GCOV=gcov-14 TX_COVERAGE=ON scripts/test.sh
 ```
 
 For a focused Linux run, call the CMake suite runner with the same configuration for the build and test steps:
@@ -100,15 +100,15 @@ scripts/build_fx.ps1 -Arch win64 -ThreadXDir 'path/to/threadx'
 scripts/test_fx.ps1 -Arch win64
 ```
 
-Both PowerShell scripts accept `-Configuration` to select configurations; the Windows tests run serially because the simulator is timing-sensitive. The Linux test wrapper uses the repository's CTest runner. Report the architecture, configurations, and results that exercised your change.
+Use `-Arch win32` for the 32-bit simulator. Both PowerShell scripts accept `-Configuration` to select configurations; the Windows tests run serially because the simulator is timing-sensitive. The Linux test wrapper uses the repository's CTest runner. Report the architecture, configurations, and results that exercised your change.
 
-The `_coverage` configurations instrument the FileX library on Linux. `test/cmake/coverage.sh` writes XML and HTML reports and excludes driver files from its report. Coverage is not collected by the MSVC Windows build. The project goal is 100% test coverage: add or update regression tests for new behaviour and explain any relevant gaps. File-system changes involving a media driver also need testing on the affected media or hardware when available.
+With `TX_COVERAGE=ON`, all nine Linux configurations instrument the FileX library. `test/cmake/coverage.sh` writes per-configuration JSON, XML and HTML reports and merges them across the full suite. The merged report excludes the sample RAM driver and must meet 99.9% line and 99.4% branch coverage in CI. Coverage is not collected by the MSVC Windows build. The project goal is 100% test coverage: add or update regression tests for new behaviour and explain any relevant gaps. File-system changes involving a media driver also need testing on the affected media or hardware when available.
 
 ## Continuous integration
 
-`regression_test.yml` is the repository's GitHub Actions regression workflow. It runs on pushes and pull requests to `master`, and by manual dispatch. It calls the ThreadX reusable regression workflow, which uses the FileX build and test scripts.
+`regression_test.yml` runs on pushes and pull requests to `dev` and `master`, and by manual dispatch. Its Linux job builds and tests all nine configurations and merges their coverage through the pinned ThreadX reusable regression workflow. A separate Win64 job builds and tests all nine configurations with the PowerShell scripts. The workflow does not run Win32 or hardware tests.
 
-**A pull request to `dev` does not trigger this workflow.** Run the relevant Linux or Windows regression configurations locally and report their results in the pull request. Do not describe an unrun configuration or hardware target as verified.
+Run relevant Win32 or hardware tests locally and report their results in the pull request. Do not describe an unrun configuration or hardware target as verified.
 
 ## Pull request acceptance criteria
 
@@ -138,7 +138,7 @@ Before requesting a review, check your contribution against this list.
 
 **Verification**
 
-* All applicable CI checks are green. The `master` workflow does not run automatically for a pull request to `dev`.
+* All applicable CI checks are green, including the Linux and Win64 regression jobs on a pull request to `dev`.
 * The change builds without new warnings on the reference toolchains.
 * Regression tests covering the change are added or updated. The project targets 100% test coverage; a pull request that lowers coverage needs a stated reason. State which FileX configurations ran and any relevant coverage gap.
 * API or behaviour changes come with a matching documentation pull request against [rtos-docs-asciidoc](https://github.com/eclipse-threadx/rtos-docs-asciidoc).
