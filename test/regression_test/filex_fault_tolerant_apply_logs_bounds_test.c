@@ -38,6 +38,7 @@ void    filex_fault_tolerant_apply_logs_bounds_test_application_define(void *fir
 #define DEMO_STACK_SIZE         4096
 #define CACHE_SIZE              2048
 #define FAULT_TOLERANT_SIZE     FX_FAULT_TOLERANT_MINIMAL_BUFFER_SIZE
+#define FAULT_TOLERANT_BUFFER   (FX_FAULT_TOLERANT_MAXIMUM_LOG_FILE_SIZE + 1024)
 #define BYTES_PER_SECTOR        256
 
 
@@ -49,7 +50,7 @@ static UCHAR                    *cache_buffer;
 static UCHAR                    *fault_tolerant_buffer;
 #else
 static UCHAR                    cache_buffer[CACHE_SIZE];
-static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_SIZE];
+static UCHAR                    fault_tolerant_buffer[FAULT_TOLERANT_BUFFER];
 #endif
 static FX_MEDIA                 ram_disk;
 static UCHAR                    *pointer;
@@ -173,6 +174,34 @@ UINT        payload = 0;
     }
 
     ram_disk.fx_media_fault_tolerant_file_size -= shortfall;
+
+    return(_fx_fault_tolerant_transaction_end(&ram_disk));
+}
+
+
+/* Stage one directory log entry, then record a log size that leaves no room for
+   the entries at all, and replay the log.  */
+static UINT    replay_dir_log_recording(ULONG recorded)
+{
+
+UINT        status;
+UINT        payload = 0;
+
+    status =  media_prepare();
+    if (status != FX_SUCCESS)
+    {
+        return(status);
+    }
+
+    _fx_fault_tolerant_transaction_start(&ram_disk);
+
+    status =  _fx_fault_tolerant_add_dir_log(&ram_disk, log_data_sector(), 1, (UCHAR *)&payload, 1);
+    if (status != FX_SUCCESS)
+    {
+        return(status);
+    }
+
+    ram_disk.fx_media_fault_tolerant_file_size = recorded;
 
     return(_fx_fault_tolerant_transaction_end(&ram_disk));
 }
@@ -307,7 +336,7 @@ void    filex_fault_tolerant_apply_logs_bounds_test_application_define(void *fir
     cache_buffer =  pointer;
     pointer += CACHE_SIZE;
     fault_tolerant_buffer = pointer;
-    pointer += FAULT_TOLERANT_SIZE;
+    pointer += FAULT_TOLERANT_BUFFER;
 #endif
 
     /* Initialize the FileX system.  */
@@ -393,6 +422,31 @@ USHORT      total_size;
        public API, and everything past this point indexes the buffer by the
        recorded size.  */
     status =  enable_over_log_recording(FX_FAULT_TOLERANT_MAXIMUM_LOG_FILE_SIZE, BYTES_PER_SECTOR * 2);
+    return_if_fail( status == FX_FILE_CORRUPT);
+
+    status =  fx_media_close(&ram_disk);
+    return_if_fail( status == FX_SUCCESS);
+
+    /* A log file that records less than the header, the FAT chain and the content
+       header together leaves no room for any entry, and the replay has to refuse it
+       before subtracting them from the recorded size.  */
+    status =  replay_dir_log_recording(FX_FAULT_TOLERANT_LOG_CONTENT_OFFSET + 2);
+    return_if_fail( status == FX_FILE_CORRUPT);
+
+    status =  fx_media_close(&ram_disk);
+    return_if_fail( status == FX_SUCCESS);
+
+    /* A log recording less than a reset one writes is corrupt whatever the buffer.  */
+    status =  enable_over_log_recording(FX_FAULT_TOLERANT_LOG_CONTENT_OFFSET - 1, FAULT_TOLERANT_SIZE);
+    return_if_fail( status == FX_FILE_CORRUPT);
+
+    status =  fx_media_close(&ram_disk);
+    return_if_fail( status == FX_SUCCESS);
+
+    /* So is one recording more than the format allows.  The buffer here is larger
+       than the maximum on purpose: with a smaller one the buffer test refuses the
+       log first and this condition is never reached.  */
+    status =  enable_over_log_recording(FX_FAULT_TOLERANT_MAXIMUM_LOG_FILE_SIZE + 1, FAULT_TOLERANT_BUFFER);
     return_if_fail( status == FX_FILE_CORRUPT);
 
     status =  fx_media_close(&ram_disk);
