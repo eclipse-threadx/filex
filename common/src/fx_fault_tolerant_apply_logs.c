@@ -9,6 +9,8 @@
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
+// Portions of this file were generated with AI assistance.
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -101,7 +103,16 @@ FX_FAULT_TOLERANT_DIR_LOG     *dir_log;
     /* Extended port-specific processing macro, which is by default defined to white space.  */
     FX_FAULT_TOLERANT_APPLY_LOGS_EXTENSION
 
-    size -= FX_FAULT_TOLERANT_LOG_CONTENT_HEADER_SIZE;
+    /* The log entries start after the header, the FAT chain and the content header,
+       so only the bytes past all three are available to them.  */
+    if (size < (FX_FAULT_TOLERANT_LOG_CONTENT_OFFSET + FX_FAULT_TOLERANT_LOG_CONTENT_HEADER_SIZE))
+    {
+
+        /* Something wrong with log file. */
+        return(FX_FILE_CORRUPT);
+    }
+
+    size -= (FX_FAULT_TOLERANT_LOG_CONTENT_OFFSET + FX_FAULT_TOLERANT_LOG_CONTENT_HEADER_SIZE);
 
     /* Find the number of log entries. */
     remaining_logs = _fx_utility_16_unsigned_read((UCHAR *)&log_content -> fx_fault_tolerant_log_content_count);
@@ -121,7 +132,11 @@ FX_FAULT_TOLERANT_DIR_LOG     *dir_log;
 
 
         /* Validate log entry size. */
-        if (log_len > size)
+        if (((log_type == FX_FAULT_TOLERANT_FAT_LOG_TYPE) &&
+             (log_len < FX_FAULT_TOLERANT_FAT_LOG_ENTRY_SIZE)) ||
+            ((log_type == FX_FAULT_TOLERANT_DIR_LOG_TYPE) &&
+             (log_len < FX_FAULT_TOLERANT_DIR_LOG_ENTRY_SIZE)) ||
+            (log_len > size))
         {
 
             /* Something wrong with log file. */
@@ -178,7 +193,7 @@ FX_FAULT_TOLERANT_DIR_LOG     *dir_log;
 
             copy_size = log_len - FX_FAULT_TOLERANT_DIR_LOG_ENTRY_SIZE;
 
-            if (((ULONG64)copy_offset + (ULONG64)copy_size) > (ULONG64)(media_ptr -> fx_media_memory_size))
+            if (((ULONG64)copy_offset + (ULONG64)copy_size) > (ULONG64)(media_ptr -> fx_media_bytes_per_sector))
             {
                 return(FX_FILE_CORRUPT);
             }

@@ -9,7 +9,7 @@
 /* SPDX-License-Identifier: MIT                                            */
 /***************************************************************************/
 
-/* Portions of this file were generated with AI assistance. */
+// Portions of this file were generated with AI assistance.
 
 /* This FileX test concentrates on the basic directory create/delete operations.  */
 
