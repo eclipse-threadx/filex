@@ -1,0 +1,22 @@
+# Commits that changed file headers, copyright lines or version constants across
+# the whole tree. They carry no behavioural change, so `git blame` should look
+# through them to the commit that last touched the code itself.
+#
+# GitHub applies this file automatically. To use it locally, run once:
+#
+#     git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# Add a commit here only when it is mechanical and repository-wide. A commit
+# that changes behaviour does not belong in this file, however large it is.
+
+# 2024-01-29  Update copyright.
+# 229 files
+8c3b71832c6650e022cac3c824b8cda4b728248e
+
+# 2026-03-05  Updated copyright headers and removed revision history
+# 372 files
+61b0b06c3eca2690c2b80cadb09321d1479bd013
+
+# 2026-06-06  Added copyright headers to files missing them
+# 143 files
+30e1d491a92c03cf8f52d1ef28fd017eb9bfb268
