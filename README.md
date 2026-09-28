@@ -12,7 +12,7 @@ FileX as part of Eclipse ThreadX has been integrated to the semiconductor's SDKs
 
 We also provide [samples](https://github.com/eclipse-threadx/samples) using hero development boards from semiconductors you can build and test with.
 
-See [Overview of Eclipse ThreadX FileX](https://github.com/eclipse-threadx/rtos-docs/blob/main/rtos-docs/filex/overview-filex.md) for the high-level overview.
+See [Overview of Eclipse ThreadX FileX](https://threadx.io/releases/6.5.1/filex/main/overview-filex.html) for the high-level overview.
 
 ## Repository Structure and Usage
 
@@ -129,7 +129,7 @@ License terms for using Eclipse ThreadX are defined in the LICENSE.txt file of t
 
 The following are references to additional Eclipse ThreadX resources:
 
-- **Product introduction**: https://github.com/eclipse-threadx/rtos-docs
+- **Product introduction**: https://threadx.io/releases/latest
 - **Product issues and bugs, or feature requests**: https://github.com/eclipse-threadx/filex/issues
 - **TraceX Installer**: https://aka.ms/azrtos-tracex-installer
 
