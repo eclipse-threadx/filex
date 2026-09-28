@@ -9,12 +9,15 @@
 /* SPDX-License-Identifier: MIT                                            */
 /***************************************************************************/
 
+/* Portions of this file were generated with AI assistance. */
+
 /* This FileX test concentrates on the basic media format, open, close operation.  */
 
 #ifndef FX_STANDALONE_ENABLE
 #include   "tx_api.h"
 #endif
 #include   "fx_api.h"
+#include   "fx_utility.h"
 #include   <stdio.h>
 #include   "fx_ram_driver_test.h"
 
@@ -29,6 +32,12 @@ static TX_THREAD               ftest_0;
 #endif
 static FX_MEDIA                ram_disk;
 static FX_FILE                 my_file;
+#ifdef FX_STANDALONE_ENABLE
+static UINT                    fat32_test_write_protect;
+static UINT                    fat32_test_fail_flush_at;
+static UINT                    fat32_test_flush_count;
+static UINT                    fat32_test_fail_secondary_write;
+#endif
 
 
 /* Define the counters used in the test application...  */
@@ -47,6 +56,9 @@ void    filex_media_format_open_close_application_define(void *first_unused_memo
 static void    ftest_0_entry(ULONG thread_input);
 
 VOID  _fx_ram_driver(FX_MEDIA *media_ptr);
+#ifdef FX_STANDALONE_ENABLE
+static VOID  fat32_test_driver(FX_MEDIA *media_ptr);
+#endif
 void  test_control_return(UINT status);
 
 
@@ -98,6 +110,13 @@ static void    ftest_0_entry(ULONG thread_input)
 UINT        status;
 ULONG       actual;
 UCHAR       local_buffer[32];
+#ifdef FX_STANDALONE_ENABLE
+UCHAR      *fat_sector;
+UCHAR      *info_sector;
+ULONG       free_clusters;
+ULONG       fat_start;
+ULONG       info_start;
+#endif
 
     FX_PARAMETER_NOT_USED(thread_input);
 
@@ -922,6 +941,180 @@ UCHAR       local_buffer[32];
         test_control_return(28);
     }
 
+#ifdef FX_STANDALONE_ENABLE
+    /* Exercise FAT32 FSInfo recovery and clean-shutdown markers.  */
+    status =  fx_media_format(&ram_disk, _fx_ram_driver, ram_disk_memory, cache_buffer,
+                              CACHE_SIZE, "MY_RAM_DISK", 2, 32, 0, 70665, 512, 1, 1, 1);
+    if (status != FX_SUCCESS)
+    {
+        printf("ERROR! FAT32 format failed\n");
+        test_control_return(41);
+    }
+
+    fat_start =  (ULONG)(ram_disk_memory[14] | ((ULONG)ram_disk_memory[15] << 8)) * 512UL;
+    info_start =  (ULONG)(ram_disk_memory[48] | ((ULONG)ram_disk_memory[49] << 8)) * 512UL;
+    fat_sector =  &ram_disk_memory[fat_start];
+    info_sector =  &ram_disk_memory[info_start];
+    free_clusters =  _fx_utility_32_unsigned_read(&info_sector[488]);
+
+    /* A dirty FAT invalidates a plausible FSInfo count and hint.  */
+    fat_sector[7] =  (UCHAR)(fat_sector[7] & (UCHAR)~0x08U);
+    _fx_utility_32_unsigned_write(&info_sector[488], free_clusters + 1UL);
+    _fx_utility_32_unsigned_write(&info_sector[492], 5UL);
+    status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory,
+                             cache_buffer, CACHE_SIZE);
+    if ((status != FX_SUCCESS) || (ram_disk.fx_media_available_clusters != free_clusters) ||
+        (ram_disk.fx_media_cluster_search_start != 3UL))
+    {
+        printf("ERROR! dirty FAT count was trusted\n");
+        test_control_return(42);
+    }
+    status =  fx_media_close(&ram_disk);
+    if ((status != FX_SUCCESS) ||
+        (_fx_utility_32_unsigned_read(&info_sector[488]) != free_clusters) ||
+        (_fx_utility_32_unsigned_read(&info_sector[492]) != 3UL) ||
+        ((fat_sector[7] & 0x08U) != 0U))
+    {
+        printf("ERROR! dirty FAT recovery was not persisted\n");
+        test_control_return(43);
+    }
+
+    /* A dirty boot marker also invalidates FSInfo.  */
+    fat_sector[7] =  (UCHAR)(fat_sector[7] | 0x08U);
+    ram_disk_memory[65] =  (UCHAR)(ram_disk_memory[65] | 1U);
+    _fx_utility_32_unsigned_write(&info_sector[488], free_clusters + 1UL);
+    status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory,
+                             cache_buffer, CACHE_SIZE);
+    if ((status != FX_SUCCESS) || (ram_disk.fx_media_available_clusters != free_clusters))
+    {
+        printf("ERROR! dirty boot count was trusted\n");
+        test_control_return(44);
+    }
+    status =  fx_media_close(&ram_disk);
+    if ((status != FX_SUCCESS) || ((ram_disk_memory[65] & 1U) == 0U))
+    {
+        printf("ERROR! pre-existing dirty marker was cleared\n");
+        test_control_return(45);
+    }
+
+    /* A clean writable volume stays dirty until close has flushed it.  */
+    ram_disk_memory[65] =  (UCHAR)(ram_disk_memory[65] & (UCHAR)~1U);
+    fat_sector[7] =  (UCHAR)(fat_sector[7] & (UCHAR)~0x04U);
+    _fx_utility_32_unsigned_write(&info_sector[492], 1UL);
+    status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory,
+                             cache_buffer, CACHE_SIZE);
+    if ((status != FX_SUCCESS) || (ram_disk.fx_media_cluster_search_start != 3UL))
+    {
+        printf("ERROR! invalid free-cluster hint was trusted\n");
+        test_control_return(57);
+    }
+    status =  fx_media_close(&ram_disk);
+    if ((status != FX_SUCCESS) || (_fx_utility_32_unsigned_read(&info_sector[492]) != 3UL))
+    {
+        printf("ERROR! invalid free-cluster hint was not repaired\n");
+        test_control_return(58);
+    }
+
+    status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory,
+                             cache_buffer, CACHE_SIZE);
+    if ((status != FX_SUCCESS) || ((fat_sector[7] & 0x08U) != 0U) ||
+        ((ram_disk_memory[65] & 1U) == 0U))
+    {
+        printf("ERROR! writable media was not marked dirty\n");
+        test_control_return(46);
+    }
+    status =  fx_media_close(&ram_disk);
+    if ((status != FX_SUCCESS) || ((fat_sector[7] & 0x08U) == 0U) ||
+        ((ram_disk_memory[65] & 1U) != 0U) || ((fat_sector[7] & 0x04U) != 0U))
+    {
+        printf("ERROR! clean close left dirty markers\n");
+        test_control_return(47);
+    }
+
+    /* The optional setting recounts even a clean volume.  */
+    _fx_utility_32_unsigned_write(&info_sector[488], free_clusters + 1UL);
+    status =  fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory,
+                             cache_buffer, CACHE_SIZE);
+#ifdef FX_FAT32_FORCE_RECOUNT
+    if ((status != FX_SUCCESS) || (ram_disk.fx_media_available_clusters != free_clusters))
+#else
+    if ((status != FX_SUCCESS) || (ram_disk.fx_media_available_clusters != free_clusters + 1UL))
+#endif
+    {
+        printf("ERROR! clean volume recount setting failed\n");
+        test_control_return(48);
+    }
+    status =  fx_media_close(&ram_disk);
+    if (status != FX_SUCCESS)
+    {
+        printf("ERROR! FAT32 close failed\n");
+        test_control_return(49);
+    }
+
+    /* Read-only opens leave clean markers untouched.  */
+    fat32_test_write_protect =  FX_TRUE;
+    status =  fx_media_open(&ram_disk, "RAM DISK", fat32_test_driver, ram_disk_memory,
+                             cache_buffer, CACHE_SIZE);
+    if ((status != FX_SUCCESS) || ((fat_sector[7] & 0x08U) == 0U) ||
+        ((ram_disk_memory[65] & 1U) != 0U))
+    {
+        printf("ERROR! read-only open modified markers\n");
+        test_control_return(50);
+    }
+    status =  fx_media_close(&ram_disk);
+    fat32_test_write_protect =  FX_FALSE;
+    if (status != FX_SUCCESS)
+    {
+        printf("ERROR! read-only close failed\n");
+        test_control_return(51);
+    }
+
+    /* A failed data flush must leave the volume marked dirty.  */
+    fat32_test_flush_count =  0;
+    fat32_test_fail_flush_at =  2;
+    status =  fx_media_open(&ram_disk, "RAM DISK", fat32_test_driver, ram_disk_memory,
+                             cache_buffer, CACHE_SIZE);
+    if (status != FX_SUCCESS)
+    {
+        printf("ERROR! fault-injection open failed\n");
+        test_control_return(52);
+    }
+    status =  fx_media_close(&ram_disk);
+    fat32_test_fail_flush_at =  0;
+    if ((status != FX_IO_ERROR) || ((fat_sector[7] & 0x08U) != 0U) ||
+        ((ram_disk_memory[65] & 1U) == 0U))
+    {
+        printf("ERROR! failed flush cleared dirty markers\n");
+        test_control_return(53);
+    }
+
+    /* A failed secondary FAT update must also leave the volume dirty.  */
+    fat_sector[7] =  (UCHAR)(fat_sector[7] | 0x08U);
+    ram_disk_memory[65] =  (UCHAR)(ram_disk_memory[65] & (UCHAR)~1U);
+    status =  fx_media_open(&ram_disk, "RAM DISK", fat32_test_driver, ram_disk_memory,
+                             cache_buffer, CACHE_SIZE);
+    if (status != FX_SUCCESS)
+    {
+        printf("ERROR! secondary FAT fault-injection open failed\n");
+        test_control_return(54);
+    }
+    status =  _fx_utility_FAT_entry_write(&ram_disk, 3UL, FX_LAST_CLUSTER_2_32);
+    if (status != FX_SUCCESS)
+    {
+        printf("ERROR! FAT entry write failed\n");
+        test_control_return(55);
+    }
+    fat32_test_fail_secondary_write =  FX_TRUE;
+    status =  fx_media_close(&ram_disk);
+    fat32_test_fail_secondary_write =  FX_FALSE;
+    if ((status != FX_IO_ERROR) || ((fat_sector[7] & 0x08U) != 0U) ||
+        ((ram_disk_memory[65] & 1U) == 0U))
+    {
+        printf("ERROR! failed secondary FAT update cleared dirty markers\n");
+        test_control_return(56);
+    }
+#endif /* FX_STANDALONE_ENABLE */
+
 
     /* Format the media with an even number of FAT32 sectors.  This needs to be done before opening it!  */
     status =  fx_media_format(&ram_disk,
@@ -1065,3 +1258,36 @@ UCHAR       local_buffer[32];
 
 }
 
+#ifdef FX_STANDALONE_ENABLE
+/* Supply write protection and a failing flush for FAT32 marker tests.  */
+static VOID  fat32_test_driver(FX_MEDIA *media_ptr)
+{
+    if ((fat32_test_fail_secondary_write) &&
+        (media_ptr -> fx_media_driver_request == FX_DRIVER_WRITE) &&
+        (media_ptr -> fx_media_driver_sector_type == FX_FAT_SECTOR) &&
+        (media_ptr -> fx_media_driver_logical_sector >=
+         media_ptr -> fx_media_reserved_sectors + media_ptr -> fx_media_sectors_per_FAT) &&
+        (media_ptr -> fx_media_driver_logical_sector <
+         media_ptr -> fx_media_reserved_sectors + (2U * media_ptr -> fx_media_sectors_per_FAT)))
+    {
+        media_ptr -> fx_media_driver_status =  FX_IO_ERROR;
+        return;
+    }
+
+    if (media_ptr -> fx_media_driver_request == FX_DRIVER_FLUSH)
+    {
+        fat32_test_flush_count++;
+        if (fat32_test_flush_count == fat32_test_fail_flush_at)
+        {
+            media_ptr -> fx_media_driver_status =  FX_IO_ERROR;
+            return;
+        }
+    }
+
+    _fx_ram_driver(media_ptr);
+    if ((media_ptr -> fx_media_driver_request == FX_DRIVER_INIT) && fat32_test_write_protect)
+    {
+        media_ptr -> fx_media_driver_write_protect =  FX_TRUE;
+    }
+}
+#endif /* FX_STANDALONE_ENABLE */

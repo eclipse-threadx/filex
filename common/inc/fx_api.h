@@ -809,6 +809,9 @@ typedef struct FX_MEDIA_STRUCT
     UINT                fx_media_32_bit_FAT;
     ULONG               fx_media_FAT32_additional_info_sector;
     UINT                fx_media_FAT32_additional_info_last_available;
+    UINT                fx_media_FAT32_recounted;
+    UINT                fx_media_FAT32_was_clean;
+    UINT                fx_media_FAT32_dirty_set;
 #ifdef FX_DRIVER_USE_64BIT_LBA
     ULONG64             fx_media_hidden_sectors;
 #else
