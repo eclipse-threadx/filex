@@ -30,7 +30,11 @@ if (-not $BuildDir) {
 }
 
 if (-not $ThreadXDir) {
-    $ThreadXDir = Join-Path (Split-Path -Parent $repoRoot) 'threadx-fd'
+    $ThreadXDir = Join-Path (Split-Path -Parent $repoRoot) 'threadx'
+}
+
+if (-not (Test-Path (Join-Path $ThreadXDir 'common\inc\tx_api.h'))) {
+    throw "No ThreadX source tree at $ThreadXDir. Clone eclipse-threadx/threadx beside this repository, or pass -ThreadXDir <path>."
 }
 
 $selectedConfigurations = Resolve-RegressionConfigurations -RequestedConfigurations $Configuration
