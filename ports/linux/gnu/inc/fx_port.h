@@ -331,7 +331,7 @@ extern VOID fault_tolerant_apply_log_callback(struct FX_MEDIA_STRUCT *media_ptr,
 
 #ifdef FX_SYSTEM_INIT
 CHAR                            _fx_version_id[] =
-                                    "(c) 2024 Microsoft Corp. (c) 2026-present Eclipse ThreadX contributors. * FileX Linux/GCC Version 6.5.1.202602 *";
+                                    "(c) 2024 Microsoft Corp. (c) 2026-present Eclipse ThreadX contributors. * FileX Linux/GCC Version 6.5.2.202603 *";
 #else
 extern  CHAR                    _fx_version_id[];
 #endif
