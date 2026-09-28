@@ -9,6 +9,8 @@
 /* SPDX-License-Identifier: MIT                                            */
 /***************************************************************************/
 
+// Portions of this file were generated with AI assistance.
+
 /* This FileX test concentrates on the file rename operations.  */
 
 #ifndef FX_STANDALONE_ENABLE
@@ -46,7 +48,9 @@ static UCHAR                    *cache_buffer;
 static UCHAR                    *fault_tolerant_buffer;
 #else
 static UCHAR                     cache_buffer[CACHE_SIZE];
+#ifdef FX_ENABLE_FAULT_TOLERANT
 static UCHAR                     fault_tolerant_buffer[FAULT_TOLERANT_SIZE];
+#endif
 #endif
 
 
