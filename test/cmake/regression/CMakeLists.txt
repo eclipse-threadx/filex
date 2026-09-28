@@ -15,6 +15,7 @@ set(regression_test_cases
     ${SOURCE_DIR}/filex_directory_long_short_get_test.c
     ${SOURCE_DIR}/filex_directory_naming_test.c
     ${SOURCE_DIR}/filex_directory_rename_test.c
+    ${SOURCE_DIR}/filex_fault_tolerant_apply_logs_bounds_test.c
     ${SOURCE_DIR}/filex_fault_tolerant_corrupted_log_file_test.c
     ${SOURCE_DIR}/filex_fault_tolerant_delete_large_data_test.c
     ${SOURCE_DIR}/filex_fault_tolerant_directory_attributes_set_directory_interrupt_test.c
