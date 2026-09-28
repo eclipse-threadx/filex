@@ -10,4 +10,6 @@
 # SPDX-License-Identifier: MIT
 ##############################################################################
 
-$(dirname `realpath $0`)/../test/cmake/run.sh test all
+export CTEST_PARALLEL_LEVEL="${CTEST_PARALLEL_LEVEL:-1}"
+export CTEST_REPEAT_FAIL="${CTEST_REPEAT_FAIL:-1}"
+"$(dirname "$(realpath "$0")")/../test/cmake/run.sh" test all
