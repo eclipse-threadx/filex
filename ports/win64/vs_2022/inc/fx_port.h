@@ -360,7 +360,7 @@ extern VOID fault_tolerant_apply_log_callback(struct FX_MEDIA_STRUCT *media_ptr,
 
 #ifdef FX_SYSTEM_INIT
 CHAR                            _fx_version_id[] =
-                                    "Copyright (c) 2026 Eclipse ThreadX contributors. * FileX Win64/Visual 6.5.1.202602 *";
+                                    "Copyright (c) 2026 Eclipse ThreadX contributors. * FileX Win64/Visual Version 6.5.2.202603 *";
 #else
 extern  CHAR                    _fx_version_id[];
 #endif
