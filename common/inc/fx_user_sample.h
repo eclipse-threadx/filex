@@ -196,6 +196,7 @@
 /* Defined, force memory operations are disabled.  */
 
 /*#define FX_DISABLE_FORCE_MEMORY_OPERATION   */
+/*#define FX_FAT32_FORCE_RECOUNT              */       /* Recount FAT32 free clusters on every media open.  */
 
 
 /* Defined, build options is disabled.  */
