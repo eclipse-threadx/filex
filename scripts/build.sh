@@ -10,4 +10,4 @@
 # SPDX-License-Identifier: MIT
 ##############################################################################
 
-$(dirname `realpath $0`)/../test/cmake/run.sh build all
+"$(dirname "$(realpath "$0")")/../test/cmake/run.sh" build all

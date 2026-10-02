@@ -9,6 +9,8 @@
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
+// Portions of this file were generated with AI assistance.
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -368,6 +370,18 @@ ULONG                         bytes_per_cluster;
                         /* Fault tolerant log file is valid. */
                         /* Initialize file size. */
                         total_size = _fx_utility_16_unsigned_read((UCHAR *)&log_header -> fx_fault_tolerant_log_header_total_size);
+
+                        /* A reset log file carries just the header and the FAT chain, so that
+                           is the smallest size on record.  The log must also fit both the format
+                           maximum and the buffer the caller supplied.  */
+                        if ((total_size < FX_FAULT_TOLERANT_LOG_CONTENT_OFFSET) ||
+                            (total_size > FX_FAULT_TOLERANT_MAXIMUM_LOG_FILE_SIZE) ||
+                            (total_size > media_ptr -> fx_media_fault_tolerant_memory_buffer_size))
+                        {
+                            FX_UNPROTECT
+                            return(FX_FILE_CORRUPT);
+                        }
+
                         media_ptr -> fx_media_fault_tolerant_file_size = total_size;
 
 

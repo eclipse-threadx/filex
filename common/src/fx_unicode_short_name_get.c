@@ -9,6 +9,8 @@
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
+// Portions of this file were generated with AI assistance.
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -29,6 +31,17 @@
 #include "fx_unicode.h"
 
 
+/* DEPRECATION NOTICE
+ * fx_unicode_short_name_get() is deprecated. Do not use it in new code.
+ *
+ * WHY: Does not accept a destination buffer length; writes up to 13 bytes regardless of the caller's buffer size, risking a buffer overrun.
+ *
+ * WHAT TO DO: replace calls with fx_unicode_short_name_get_extended(), passing the actual
+ * destination buffer size as an additional argument.
+ */
+#pragma message("fx_unicode_short_name_get() is deprecated. " \
+                "Use fx_unicode_short_name_get_extended() and pass the actual buffer size.")
+
 /**************************************************************************/
 /*                                                                        */
 /*  FUNCTION                                               RELEASE        */
@@ -44,9 +57,10 @@
 /*    This function finds the short name associated with the supplied     */
 /*    unicode name.                                                       */
 /*                                                                        */
-/*    Note, this API is deprecated as fx_unicode_short_name_get_extended  */
-/*    should be used. The maximum written size to destination_short_name  */
-/*    could be 13.                                                        */
+/*    DEPRECATED. Use fx_unicode_short_name_get_extended() instead,       */
+/*    passing the actual destination buffer length. It takes no buffer    */
+/*    length and writes up to 13 bytes whatever the size of the caller's  */
+/*    buffer, risking an overrun.                                         */
 /*                                                                        */
 /*  INPUT                                                                 */
 /*                                                                        */

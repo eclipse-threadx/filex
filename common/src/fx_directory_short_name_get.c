@@ -9,6 +9,8 @@
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
+// Portions of this file were generated with AI assistance.
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -29,6 +31,17 @@
 #include "fx_directory.h"
 
 
+/* DEPRECATION NOTICE
+ * fx_directory_short_name_get() is deprecated. Do not use it in new code.
+ *
+ * WHY: Does not accept a destination buffer length; writes up to FX_MAX_SHORT_NAME_LEN bytes regardless of the caller's buffer size, risking a buffer overrun.
+ *
+ * WHAT TO DO: replace calls with fx_directory_short_name_get_extended(), passing the actual
+ * destination buffer size as an additional argument.
+ */
+#pragma message("fx_directory_short_name_get() is deprecated. " \
+                "Use fx_directory_short_name_get_extended() and pass the actual buffer size.")
+
 /**************************************************************************/
 /*                                                                        */
 /*  FUNCTION                                               RELEASE        */
@@ -45,9 +58,10 @@
 /*    name. If the long file name is really a short file name, the short  */
 /*    file name will be returned.                                         */
 /*                                                                        */
-/*    Note, this API is deprecated as fx_directory_short_name_get_extended*/
-/*    should be used. The maximum written size to short_file_name could   */
-/*    be FX_MAX_SHORT_NAME_LEN.                                           */
+/*    DEPRECATED. Use fx_directory_short_name_get_extended() instead,     */
+/*    passing the actual destination buffer length. This function takes no*/
+/*    buffer length and writes up to FX_MAX_SHORT_NAME_LEN bytes whatever */
+/*    the size of the caller's buffer, risking an overrun.                */
 /*                                                                        */
 /*  INPUT                                                                 */
 /*                                                                        */

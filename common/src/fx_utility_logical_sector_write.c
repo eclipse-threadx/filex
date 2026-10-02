@@ -306,8 +306,6 @@ UCHAR             cache_found = FX_FALSE;
             return(FX_SECTOR_INVALID);
         }
 
-        /* Just write the buffer to the media.  */
-
 #ifndef FX_MEDIA_STATISTICS_DISABLE
 
         /* Increment the number of driver write sector(s) requests.  */

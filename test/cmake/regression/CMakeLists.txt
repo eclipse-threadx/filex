@@ -15,6 +15,7 @@ set(regression_test_cases
     ${SOURCE_DIR}/filex_directory_long_short_get_test.c
     ${SOURCE_DIR}/filex_directory_naming_test.c
     ${SOURCE_DIR}/filex_directory_rename_test.c
+    ${SOURCE_DIR}/filex_fault_tolerant_apply_logs_bounds_test.c
     ${SOURCE_DIR}/filex_fault_tolerant_corrupted_log_file_test.c
     ${SOURCE_DIR}/filex_fault_tolerant_delete_large_data_test.c
     ${SOURCE_DIR}/filex_fault_tolerant_directory_attributes_set_directory_interrupt_test.c
@@ -141,16 +142,43 @@ set(regression_test_cases
     ${SOURCE_DIR}/filex_file_write_notify_test.c
     ${SOURCE_DIR}/filex_file_write_available_cluster_test.c
     ${SOURCE_DIR}/filex_utility_test.c
+    ${SOURCE_DIR}/filex_partition_offset_extended_test.c
     ${SOURCE_DIR}/filex_utility_fat_flush_test.c)
 
 add_library(test_utility ${SOURCE_DIR}/fx_ram_driver_test.c
                          ${SOURCE_DIR}/filextestcontrol.c)
 target_link_libraries(test_utility PUBLIC azrtos::filex)
 target_compile_definitions(test_utility PUBLIC BATCH_TEST CTEST)
+if(MSVC AND FX_STANDALONE_ENABLE)
+  target_include_directories(test_utility PUBLIC ${SOURCE_DIR}/win64_compat)
+endif()
 
 foreach(test_case ${regression_test_cases})
   get_filename_component(test_name ${test_case} NAME_WE)
-  add_executable(${test_name} ${test_case})
-  target_link_libraries(${test_name} PRIVATE test_utility)
-  add_test(${CMAKE_BUILD_TYPE}::${test_name} ${test_name})
+  if(MSVC)
+    # CMake repeats the target name in its object directory. Several descriptive
+    # FileX test names otherwise exceed the legacy path limit used by cl.exe in a
+    # normally nested Windows worktree.
+    string(MD5 test_target_hash ${test_name})
+    string(SUBSTRING ${test_target_hash} 0 12 test_target_hash)
+    set(test_target fx_test_${test_target_hash})
+  else()
+    set(test_target ${test_name})
+  endif()
+
+  add_executable(${test_target} ${test_case})
+  target_link_libraries(${test_target} PRIVATE test_utility)
+  set_target_properties(${test_target} PROPERTIES OUTPUT_NAME ${test_name})
+  add_test(NAME ${CMAKE_BUILD_TYPE}::${test_name} COMMAND ${test_target})
 endforeach()
+
+# These two tests write or corrupt large amounts of data on a 900 MB RAM disk and are
+# inherently slow (≈95 s and ≈330 s on Windows).  Override the default 60-second ctest
+# timeout so that they are not mis-reported as failures.
+if(MSVC)
+  set_tests_properties(
+    ${CMAKE_BUILD_TYPE}::filex_fault_tolerant_file_corruption_test
+    ${CMAKE_BUILD_TYPE}::filex_fault_tolerant_media_full_test
+    PROPERTIES TIMEOUT 600
+  )
+endif()
