@@ -494,15 +494,25 @@ static void    ftest_0_entry(ULONG thread_input)
     status =  dot_dot_cluster_read("/DOTA/SUB", &dot_dot_cluster);
     return_if_fail( (status == FX_SUCCESS) && (dot_dot_cluster == parent_cluster) && (parent_cluster != 0));
 
-    /* A rename inside one parent does not touch ".." - and adds no third
-       directory entry write.  */
+    /* A rename inside one parent does not touch "..": it adds no third
+       directory entry write, and it does not read the entry either. Both
+       parent entries are on the media by then, so without fault tolerance
+       an I/O error on such a read would report a failure for a rename
+       that has completed. Let the directory entry read after the last one
+       the rename needs fail: the rename reads the root directory entries
+       up to DOTC for the old name (4), up to the first never used entry
+       for the new name (5) and once more for the free entry (5) - 14
+       reads, so the request is left at 1 afterwards.  */
     status =  fx_directory_create(&ram_disk, "/DOTC");
     return_if_fail( status == FX_SUCCESS);
 #ifndef FX_MEDIA_STATISTICS_DISABLE
     entry_writes_before =  ram_disk.fx_media_directory_entry_writes;
 #endif
+    _fx_directory_entry_read_error_request =  15;
     status =  fx_directory_rename(&ram_disk, "/DOTC", "/DOTD");
     return_if_fail( status == FX_SUCCESS);
+    return_if_fail( _fx_directory_entry_read_error_request == 1);
+    _fx_directory_entry_read_error_request =  0;
 #ifndef FX_MEDIA_STATISTICS_DISABLE
     return_if_fail( (ram_disk.fx_media_directory_entry_writes - entry_writes_before) == 2);
 #endif
@@ -518,6 +528,41 @@ static void    ftest_0_entry(ULONG thread_input)
     return_if_fail( status == FX_SUCCESS);
     status =  dot_dot_cluster_read("/DOTA/SUB2", &dot_dot_cluster);
     return_if_fail( (status == FX_SUCCESS) && (dot_dot_cluster == parent_cluster));
+
+    /* An I/O error on the ".." read of a move is reported. That read is
+       the last directory entry read of the move: the old name is served
+       from the search cache the checks above filled (0), the new name
+       search reads the root directory entries up to the first never used
+       one (6), the free search reads up to the entry DOTC left free (4),
+       then comes the ".." entry (1) - 11 reads.  */
+    _fx_directory_entry_read_error_request =  11;
+    status =  fx_directory_rename(&ram_disk, "/DOTA/SUB2", "/SUB2");
+    return_if_fail( status == FX_IO_ERROR);
+    return_if_fail( _fx_directory_entry_read_error_request == 0);
+#ifdef FX_ENABLE_FAULT_TOLERANT
+
+    /* The transaction is rolled back. The sector cache still shows the
+       entries the failed transaction had logged - they never reached the
+       media, so reopen it to look at what is there: the directory is
+       still where it was, ".." included.  */
+    status =  fx_media_close(&ram_disk);
+    status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
+    return_if_fail( status == FX_SUCCESS);
+    status =  directory_cluster_read("/SUB2", &dot_dot_cluster);
+    return_if_fail( status == FX_NOT_FOUND);
+    status =  dot_dot_cluster_read("/DOTA/SUB2", &dot_dot_cluster);
+    return_if_fail( (status == FX_SUCCESS) && (dot_dot_cluster == parent_cluster));
+#else
+
+    /* Without fault tolerance the error hits after both parent entries
+       were written: the directory is already at its new place, with ".."
+       still naming the old parent - the window only a transaction can
+       close.  */
+    status =  directory_cluster_read("/DOTA/SUB2", &dot_dot_cluster);
+    return_if_fail( status == FX_NOT_FOUND);
+    status =  dot_dot_cluster_read("/SUB2", &dot_dot_cluster);
+    return_if_fail( (status == FX_SUCCESS) && (dot_dot_cluster == parent_cluster));
+#endif
 
     /* Close the media.  */
     status =  fx_media_close(&ram_disk);
