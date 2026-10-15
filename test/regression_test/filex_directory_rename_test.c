@@ -39,6 +39,8 @@ static TX_THREAD                ftest_0;
 #endif
 static FX_MEDIA                 ram_disk;
 static FX_FILE                  probe_file;
+static ULONG                    read_fault_sector;      /* 0: every sector is readable */
+static UINT                     read_fault_hits;
 static CHAR                     max_name[FX_MAX_LONG_NAME_LEN + 2];
 static CHAR                     max_newname[FX_MAX_LONG_NAME_LEN + 1];
 
@@ -62,6 +64,8 @@ static void    ftest_0_entry(ULONG thread_input);
 static UINT    dot_dot_probe(CHAR *marker_path);
 static UINT    directory_cluster_read(CHAR *directory_path, ULONG *cluster_ptr);
 static UINT    dot_dot_cluster_read(CHAR *directory_path, ULONG *cluster_ptr);
+static UINT    directory_first_sector_get(CHAR *directory_path, ULONG *sector_ptr);
+static VOID    ram_driver_read_fault(FX_MEDIA *media_ptr);
 
 VOID  _fx_ram_driver(FX_MEDIA *media_ptr);
 void  test_control_return(UINT status);
@@ -190,6 +194,49 @@ FX_DIR_ENTRY dot_dot_entry;
     *cluster_ptr =  dot_dot_entry.fx_dir_entry_cluster;
 
     return(FX_SUCCESS);
+}
+
+
+/* Return the first sector of the directory at directory_path - the sector
+   that holds its "." and ".." entries.  */
+static UINT    directory_first_sector_get(CHAR *directory_path, ULONG *sector_ptr)
+{
+
+UINT  status;
+ULONG cluster;
+
+    status =  directory_cluster_read(directory_path, &cluster);
+    if (status == FX_SUCCESS)
+    {
+        *sector_ptr =  ram_disk.fx_media_data_sector_start +
+                       (cluster - FX_FAT_ENTRY_START) * ram_disk.fx_media_sectors_per_cluster;
+    }
+
+    return(status);
+}
+
+
+/* This is a RAM driver which may fail to read one logical sector. A read
+   request that covers read_fault_sector will result in an FX_IO_ERROR
+   response and will be counted in read_fault_hits. All other driver
+   requests are forwarded to the RAM driver.
+
+   read_fault_sector is used as a flag and a switch: 0 denotes the boot
+   sector and disables fault injection.  */
+static VOID    ram_driver_read_fault(FX_MEDIA *media_ptr)
+{
+
+    if ((read_fault_sector != 0) &&
+        (media_ptr -> fx_media_driver_request == FX_DRIVER_READ) &&
+        (media_ptr -> fx_media_driver_logical_sector <= read_fault_sector) &&
+        (read_fault_sector < media_ptr -> fx_media_driver_logical_sector + media_ptr -> fx_media_driver_sectors))
+    {
+        read_fault_hits++;
+        media_ptr -> fx_media_driver_status =  FX_IO_ERROR;
+        return;
+    }
+
+    _fx_ram_driver(media_ptr);
 }
 
 
@@ -394,7 +441,8 @@ static void    ftest_0_entry(ULONG thread_input)
 
     /* Format the media again: the checks below build their own fixture
        and must not disturb - or depend on - the directory layout the
-       error-injection steps above are calibrated against.  */
+       error-injection steps above are calibrated against. They open the
+       media through a driver wrapper that can make one sector unreadable.  */
     status =  fx_media_format(&ram_disk,
                             _fx_ram_driver,         // Driver entry
                             ram_disk_memory,        // RAM disk memory pointer
@@ -417,7 +465,7 @@ static void    ftest_0_entry(ULONG thread_input)
 
                             1,                      // Heads
                             1);                     // Sectors per track
-    status += fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, cache_buffer, CACHE_SIZE);
+    status += fx_media_open(&ram_disk, "RAM DISK", ram_driver_read_fault, ram_disk_memory, cache_buffer, CACHE_SIZE);
     return_if_fail( status == FX_SUCCESS);
 
 #ifdef FX_ENABLE_FAULT_TOLERANT
@@ -494,25 +542,46 @@ static void    ftest_0_entry(ULONG thread_input)
     status =  dot_dot_cluster_read("/DOTA/SUB", &dot_dot_cluster);
     return_if_fail( (status == FX_SUCCESS) && (dot_dot_cluster == parent_cluster) && (parent_cluster != 0));
 
-    /* A rename inside one parent does not touch "..": it adds no third
-       directory entry write, and it does not read the entry either. Both
-       parent entries are on the media by then, so without fault tolerance
-       an I/O error on such a read would report a failure for a rename
-       that has completed. Let the directory entry read after the last one
-       the rename needs fail: the rename reads the root directory entries
-       up to DOTC for the old name (4), up to the first never used entry
-       for the new name (5) and once more for the free entry (5) - 14
-       reads, so the request is left at 1 afterwards.  */
+    /* The ".." entry of the renamed directory references its parent
+       directory. Two cases follow from the implementation:
+
+       Case 1: The directory is moved to a different parent. The ".."
+       entry has to be updated, which requires reading it first. The
+       moves above cover this case; a read error on that read is covered
+       at the end of this test.
+
+       Case 2: The directory is only renamed within its parent. The ".."
+       entry stays valid and must be neither updated nor read. Both
+       parent entries are on the media by then, so without fault
+       tolerance an I/O error on that read would report a failure for a
+       rename that has already completed.
+
+       The next test covers case 2 in the root directory. The sector that
+       holds the entries of the renamed directory itself - "." and ".."
+       among them - is made unreadable, and the sector cache is emptied
+       so that a read of it would have to reach the driver. A rename
+       inside one parent works on the parent's entries only: it has to
+       succeed without the driver ever being asked for that sector. It
+       adds no third directory entry write either.
+
+       Looking up the sector leaves the directory search cache warm for
+       the name being renamed. That is intended: answered from the cache,
+       a search reports the directory itself instead of its parent, and
+       the rename has to cope with that.  */
     status =  fx_directory_create(&ram_disk, "/DOTC");
+    return_if_fail( status == FX_SUCCESS);
+    status =  directory_first_sector_get("/DOTC", &read_fault_sector);
+    return_if_fail( status == FX_SUCCESS);
+    status =  fx_media_cache_invalidate(&ram_disk);
     return_if_fail( status == FX_SUCCESS);
 #ifndef FX_MEDIA_STATISTICS_DISABLE
     entry_writes_before =  ram_disk.fx_media_directory_entry_writes;
 #endif
-    _fx_directory_entry_read_error_request =  15;
+    read_fault_hits =  0;
     status =  fx_directory_rename(&ram_disk, "/DOTC", "/DOTD");
+    read_fault_sector =  0;
     return_if_fail( status == FX_SUCCESS);
-    return_if_fail( _fx_directory_entry_read_error_request == 1);
-    _fx_directory_entry_read_error_request =  0;
+    return_if_fail( read_fault_hits == 0);
 #ifndef FX_MEDIA_STATISTICS_DISABLE
     return_if_fail( (ram_disk.fx_media_directory_entry_writes - entry_writes_before) == 2);
 #endif
@@ -521,24 +590,35 @@ static void    ftest_0_entry(ULONG thread_input)
     status =  dot_dot_cluster_read("/DOTD", &dot_dot_cluster);
     return_if_fail( (status == FX_SUCCESS) && (dot_dot_cluster == 0));
 
-    /* Same inside a sub-directory: ".." keeps the parent's cluster.  */
-    status =  fx_directory_rename(&ram_disk, "/DOTA/SUB", "/DOTA/SUB2");
+    /* Case 2 inside a sub-directory: ".." keeps the parent's cluster, and
+       the directory's own sector is not needed here either.  */
+    status =  directory_first_sector_get("/DOTA/SUB", &read_fault_sector);
     return_if_fail( status == FX_SUCCESS);
+    status =  fx_media_cache_invalidate(&ram_disk);
+    return_if_fail( status == FX_SUCCESS);
+    read_fault_hits =  0;
+    status =  fx_directory_rename(&ram_disk, "/DOTA/SUB", "/DOTA/SUB2");
+    read_fault_sector =  0;
+    return_if_fail( status == FX_SUCCESS);
+    return_if_fail( read_fault_hits == 0);
     status =  dot_dot_probe("/DOTA/SUB2/../MARKA.TXT");
     return_if_fail( status == FX_SUCCESS);
     status =  dot_dot_cluster_read("/DOTA/SUB2", &dot_dot_cluster);
     return_if_fail( (status == FX_SUCCESS) && (dot_dot_cluster == parent_cluster));
 
-    /* An I/O error on the ".." read of a move is reported. That read is
-       the last directory entry read of the move: the old name is served
-       from the search cache the checks above filled (0), the new name
-       search reads the root directory entries up to the first never used
-       one (6), the free search reads up to the entry DOTC left free (4),
-       then comes the ".." entry (1) - 11 reads.  */
-    _fx_directory_entry_read_error_request =  11;
+    /* Case 1 with a read error: a move has to read the ".." entry, and
+       that is the only read of the moved directory's own sector a move
+       needs. With that sector unreadable the move fails, and the error
+       is reported.  */
+    status =  directory_first_sector_get("/DOTA/SUB2", &read_fault_sector);
+    return_if_fail( status == FX_SUCCESS);
+    status =  fx_media_cache_invalidate(&ram_disk);
+    return_if_fail( status == FX_SUCCESS);
+    read_fault_hits =  0;
     status =  fx_directory_rename(&ram_disk, "/DOTA/SUB2", "/SUB2");
+    read_fault_sector =  0;
     return_if_fail( status == FX_IO_ERROR);
-    return_if_fail( _fx_directory_entry_read_error_request == 0);
+    return_if_fail( read_fault_hits == 1);
 #ifdef FX_ENABLE_FAULT_TOLERANT
 
     /* The transaction is rolled back. The sector cache still shows the

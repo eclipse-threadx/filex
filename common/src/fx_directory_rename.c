@@ -187,6 +187,15 @@ UINT         j;
         return(FX_WRITE_PROTECT);
     }
 
+#ifndef FX_MEDIA_DISABLE_SEARCH_CACHE
+
+    /* Invalidate the directory search cache. A search that is answered
+       from the cache returns the found directory itself in
+       search_directory instead of its parent directory, which is needed
+       below to detect a change of parent.  */
+    media_ptr -> fx_media_last_found_name[0] =  FX_NULL;
+#endif
+
     /* Search the system for the supplied directory name.  */
     status =  _fx_directory_search(media_ptr, old_directory_name, &old_dir_entry, &search_directory, FX_NULL);
 
@@ -319,6 +328,16 @@ UINT         j;
            the new directory name so it is used from now on.  */
         new_directory_name =  (CHAR *)media_ptr -> fx_media_rename_buffer;
     }
+#endif
+
+#ifndef FX_MEDIA_DISABLE_SEARCH_CACHE
+
+    /* Invalidate the directory search cache again. The search above has
+       filled it with the directory to be renamed: a new name equal to the
+       old name would be answered from the cache, with the directory
+       itself in search_directory, and the new entry would then be placed
+       inside the renamed directory.  */
+    media_ptr -> fx_media_last_found_name[0] =  FX_NULL;
 #endif
 
     /* Search the media for the new directory name - including any supplied path.  */
