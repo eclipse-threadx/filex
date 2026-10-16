@@ -106,6 +106,7 @@ set(regression_test_cases
     ${SOURCE_DIR}/filex_file_attributes_read_set_test.c
     ${SOURCE_DIR}/filex_file_create_delete_test.c
     ${SOURCE_DIR}/filex_file_date_time_set_test.c
+    ${SOURCE_DIR}/filex_file_flush_test.c
     ${SOURCE_DIR}/filex_file_naming_test.c
     ${SOURCE_DIR}/filex_file_read_write_test.c
     ${SOURCE_DIR}/filex_file_rename_test.c

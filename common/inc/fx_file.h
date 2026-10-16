@@ -58,6 +58,7 @@ UINT _fx_file_create(FX_MEDIA *media_ptr, CHAR *file_name);
 UINT _fx_file_date_time_set(FX_MEDIA *media_ptr, CHAR *file_name,
                             UINT year, UINT month, UINT day, UINT hour, UINT minute, UINT second);
 UINT _fx_file_delete(FX_MEDIA *media_ptr, CHAR *file_name);
+UINT _fx_file_flush(FX_FILE *file_ptr);
 UINT _fx_file_open(FX_MEDIA *media_ptr, FX_FILE *file_ptr, CHAR *file_name,
                    UINT open_type);
 UINT _fx_file_read(FX_FILE *file_ptr, VOID *buffer_ptr, ULONG request_size, ULONG *actual_size);
@@ -94,6 +95,7 @@ UINT _fxe_file_create(FX_MEDIA *media_ptr, CHAR *file_name);
 UINT _fxe_file_date_time_set(FX_MEDIA *media_ptr, CHAR *file_name,
                              UINT year, UINT month, UINT day, UINT hour, UINT minute, UINT second);
 UINT _fxe_file_delete(FX_MEDIA *media_ptr, CHAR *file_name);
+UINT _fxe_file_flush(FX_FILE *file_ptr);
 UINT _fxe_file_open(FX_MEDIA *media_ptr, FX_FILE *file_ptr, CHAR *file_name,
                     UINT open_type, UINT file_control_block_size);
 UINT _fxe_file_read(FX_FILE *file_ptr, VOID *buffer_ptr, ULONG request_size, ULONG *actual_size);
