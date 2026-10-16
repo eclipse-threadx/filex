@@ -9,6 +9,8 @@
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
+/* Portions of this file were generated with AI assistance. */
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -1321,6 +1323,7 @@ ULONG                  replace_clusters = 0;        /* The number of clusters to
 
                     /* Setup initial parameters.  */
                     search_ptr -> fx_file_total_clusters =            file_ptr -> fx_file_total_clusters;
+                    search_ptr -> fx_file_first_physical_cluster =    file_ptr -> fx_file_first_physical_cluster;
                     search_ptr -> fx_file_current_physical_cluster =  file_ptr -> fx_file_first_physical_cluster;
                     search_ptr -> fx_file_current_relative_cluster =  0;
                     search_ptr -> fx_file_current_logical_sector =    ((ULONG)media_ptr -> fx_media_data_sector_start) +
