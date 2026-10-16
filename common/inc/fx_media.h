@@ -49,6 +49,7 @@ UINT _fx_media_abort(FX_MEDIA *media_ptr);
 UINT _fx_media_cache_invalidate(FX_MEDIA *media_ptr);
 UINT _fx_media_check(FX_MEDIA *media_ptr, UCHAR *scratch_memory_ptr, ULONG scratch_memory_size, ULONG error_correction_option, ULONG *errors_detected);
 UINT _fx_media_close(FX_MEDIA *media_ptr);
+UINT _fx_media_FAT32_clean_set(FX_MEDIA *media_ptr, UINT clean);
 UINT _fx_media_flush(FX_MEDIA *media_ptr);
 UINT _fx_media_format(FX_MEDIA *media_ptr, VOID (*driver)(FX_MEDIA *media), VOID *driver_info_ptr, UCHAR *memory_ptr, UINT memory_size,
                       CHAR *volume_name, UINT number_of_fats, UINT directory_entries, UINT hidden_sectors,

@@ -9,6 +9,7 @@
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
+/* Portions of this file were generated with AI assistance. */
 
 /**************************************************************************/
 /**************************************************************************/
@@ -327,6 +328,10 @@ FX_INT_SAVE_AREA
     /* Pickup the additional info sector number. This will only be used in FAT32 situations.  */
     additional_info_sector =  _fx_utility_16_unsigned_read(&media_ptr -> fx_media_driver_buffer[48]);
 
+    /* Remember whether the boot-sector dirty marker was clear.  */
+    media_ptr -> fx_media_FAT32_was_clean =
+        ((media_ptr -> fx_media_driver_buffer[65] & 1U) == 0U) ? FX_TRUE : FX_FALSE;
+
     /* Is there at least one?  */
     if (memory_size < media_ptr -> fx_media_bytes_per_sector)
     {
@@ -586,6 +591,42 @@ FX_INT_SAVE_AREA
     media_ptr -> fx_media_cluster_search_start =  0;
 #endif /* FX_DISABLE_FORCE_MEMORY_OPERATION */
 
+    media_ptr -> fx_media_FAT32_recounted =  FX_FALSE;
+    media_ptr -> fx_media_FAT32_dirty_set =  FX_FALSE;
+
+    /* Check the primary FAT clean-shutdown marker before trusting FSInfo.  */
+    if (media_ptr -> fx_media_32_bit_FAT)
+    {
+    UCHAR *buffer_ptr;
+
+#ifndef FX_DISABLE_CACHE
+        buffer_ptr =  media_ptr -> fx_media_sector_cache_list_ptr -> fx_cached_sector_memory_buffer;
+        media_ptr -> fx_media_sector_cache_list_ptr -> fx_cached_sector =  (~(ULONG64)0);
+        media_ptr -> fx_media_sector_cache_list_ptr -> fx_cached_sector_valid =  FX_FALSE;
+#else
+        buffer_ptr =  media_ptr -> fx_media_memory_buffer;
+        media_ptr -> fx_media_memory_buffer_sector =  (ULONG64)-1;
+#endif
+        media_ptr -> fx_media_driver_request =          FX_DRIVER_READ;
+        media_ptr -> fx_media_driver_status =           FX_IO_ERROR;
+        media_ptr -> fx_media_driver_buffer =           buffer_ptr;
+        media_ptr -> fx_media_driver_logical_sector =   media_ptr -> fx_media_reserved_sectors;
+        media_ptr -> fx_media_driver_sectors =          1;
+        media_ptr -> fx_media_driver_sector_type =      FX_FAT_SECTOR;
+        (media_ptr -> fx_media_driver_entry)(media_ptr);
+        if (media_ptr -> fx_media_driver_status != FX_SUCCESS)
+        {
+            media_ptr -> fx_media_driver_request =  FX_DRIVER_UNINIT;
+            (media_ptr -> fx_media_driver_entry)(media_ptr);
+            return(FX_FAT_READ_ERROR);
+        }
+
+        if ((_fx_utility_32_unsigned_read(&buffer_ptr[4]) & 0x08000000UL) == 0UL)
+        {
+            media_ptr -> fx_media_FAT32_was_clean =  FX_FALSE;
+        }
+    }
+
     /* Determine if there is 32-bit FAT additional information sector. */
     if (media_ptr -> fx_media_FAT32_additional_info_sector)
     {
@@ -665,13 +706,19 @@ FX_INT_SAVE_AREA
                        cluster search.  */
                     if ((media_ptr -> fx_media_available_clusters > media_ptr -> fx_media_total_clusters) ||
                         (media_ptr -> fx_media_cluster_search_start > media_ptr -> fx_media_total_clusters + FX_FAT_ENTRY_START) ||
-                        (media_ptr -> fx_media_cluster_search_start < FX_FAT_ENTRY_START))
+                        (media_ptr -> fx_media_cluster_search_start < FX_FAT_ENTRY_START) ||
+                        (media_ptr -> fx_media_FAT32_was_clean == FX_FALSE)
+#ifdef FX_FAT32_FORCE_RECOUNT
+                        || FX_TRUE
+#endif
+                        )
                     {
 
                         /* Something is wrong, clear the available cluster count and search so the regular processing
                            is used.  */
                         media_ptr -> fx_media_available_clusters =    0;
                         media_ptr -> fx_media_cluster_search_start =  0;
+                        media_ptr -> fx_media_FAT32_recounted =  FX_TRUE;
 
                         /* We don't invalidate the additional info sector here because only the data is bad.  */
                     }
@@ -696,6 +743,13 @@ FX_INT_SAVE_AREA
             /* IO error trying to read additional information sector, invalidate the additional info sector.  */
             media_ptr -> fx_media_FAT32_additional_info_sector =  0;
         }
+    }
+
+    if ((media_ptr -> fx_media_32_bit_FAT) &&
+        (media_ptr -> fx_media_FAT32_additional_info_sector) &&
+        (media_ptr -> fx_media_available_clusters == 0))
+    {
+        media_ptr -> fx_media_FAT32_recounted =  FX_TRUE;
     }
 
     /* Search the media to find the first available cluster as well as the total
@@ -891,6 +945,21 @@ FX_INT_SAVE_AREA
     if (media_ptr -> fx_media_cluster_search_start == 0)
     {
         media_ptr -> fx_media_cluster_search_start =  FX_FAT_ENTRY_START;
+    }
+
+    /* A clean writable volume is marked dirty before FileX can modify it.  */
+    if ((media_ptr -> fx_media_32_bit_FAT) &&
+        (media_ptr -> fx_media_FAT32_was_clean) &&
+        (media_ptr -> fx_media_driver_write_protect == FX_FALSE))
+    {
+        status =  _fx_media_FAT32_clean_set(media_ptr, FX_FALSE);
+        if (status != FX_SUCCESS)
+        {
+            media_ptr -> fx_media_driver_request =  FX_DRIVER_UNINIT;
+            (media_ptr -> fx_media_driver_entry)(media_ptr);
+            return(FX_IO_ERROR);
+        }
+        media_ptr -> fx_media_FAT32_dirty_set =  FX_TRUE;
     }
 
     /* Setup the current working directory fields to default to the root
