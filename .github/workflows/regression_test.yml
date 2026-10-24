@@ -22,7 +22,7 @@ jobs:
       # Its test job narrows its own token permissions.
       pages: write
       id-token: write
-    uses: eclipse-threadx/threadx/.github/workflows/regression_template.yml@80dfbe7797f4e03bb878f06b9557ddc4041cf212
+    uses: eclipse-threadx/threadx/.github/workflows/regression_template.yml@c735b12c714e27431374a40163aa0af9619a52d3
     with:
       coverage_name: merged
       coverage_thresholds: '99 100'
