@@ -9,6 +9,8 @@
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
+// Portions of this file were generated with AI assistance.
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -51,6 +53,8 @@
 /*    If found, the rename request is valid and the directory will be     */
 /*    changed to the new name.  Otherwise, if the directory is not found, */
 /*    the appropriate error code is returned to the caller.               */
+/*    If the directory is moved under a different parent, the ".."        */
+/*    entry inside the directory is updated to name the new parent.       */
 /*                                                                        */
 /*  INPUT                                                                 */
 /*                                                                        */
@@ -64,6 +68,7 @@
 /*                                                                        */
 /*  CALLS                                                                 */
 /*                                                                        */
+/*    _fx_directory_entry_read              Read entries from directory   */
 /*    _fx_directory_entry_write             Write the new directory entry */
 /*    _fx_directory_free_search             Search for a free directory   */
 /*                                            entry                       */
@@ -90,6 +95,8 @@ FX_DIR_ENTRY new_dir_entry;
 FX_DIR_ENTRY search_directory;
 CHAR        *new_name_ptr;
 ULONG        i;
+ULONG        old_parent_cluster;
+ULONG        new_parent_cluster;
 CHAR        *work_ptr;
 CHAR         alpha, beta;
 #ifdef FX_RENAME_PATH_INHERIT
@@ -180,6 +187,15 @@ UINT         j;
         return(FX_WRITE_PROTECT);
     }
 
+#ifndef FX_MEDIA_DISABLE_SEARCH_CACHE
+
+    /* Invalidate the directory search cache. A search that is answered
+       from the cache returns the found directory itself in
+       search_directory instead of its parent directory, which is needed
+       below to detect a change of parent.  */
+    media_ptr -> fx_media_last_found_name[0] =  FX_NULL;
+#endif
+
     /* Search the system for the supplied directory name.  */
     status =  _fx_directory_search(media_ptr, old_directory_name, &old_dir_entry, &search_directory, FX_NULL);
 
@@ -211,6 +227,28 @@ UINT         j;
 
         /* Return the not a directory error code.  */
         return(FX_NOT_DIRECTORY);
+    }
+
+    /* Remember the starting cluster of the parent directory in which the
+       renamed directory is now located, because the search for the new
+       name below reuses search_directory and overwrites it with the
+       target's parent.
+
+       An empty name in the search directory indicates the root directory.
+       For FileX, this is the only indicator of the root directory. If the
+       search result is the root directory, the other values of
+       search_directory are not updated and keep their previous contents.  */
+    if (search_directory.fx_dir_entry_name[0])
+    {
+
+        /* The renamed directory is in a sub-directory.  */
+        old_parent_cluster =  search_directory.fx_dir_entry_cluster;
+    }
+    else
+    {
+
+        /* The renamed directory is in the root directory.  */
+        old_parent_cluster =  0;
     }
 
 #ifdef FX_RENAME_PATH_INHERIT
@@ -290,6 +328,16 @@ UINT         j;
            the new directory name so it is used from now on.  */
         new_directory_name =  (CHAR *)media_ptr -> fx_media_rename_buffer;
     }
+#endif
+
+#ifndef FX_MEDIA_DISABLE_SEARCH_CACHE
+
+    /* Invalidate the directory search cache again. The search above has
+       filled it with the directory to be renamed: a new name equal to the
+       old name would be answered from the cache, with the directory
+       itself in search_directory, and the new entry would then be placed
+       inside the renamed directory.  */
+    media_ptr -> fx_media_last_found_name[0] =  FX_NULL;
 #endif
 
     /* Search the media for the new directory name - including any supplied path.  */
@@ -451,20 +499,102 @@ UINT         j;
     /* Now wipe out the old directory entry.  */
     status =  _fx_directory_entry_write(media_ptr, &old_dir_entry);
 
-#ifdef FX_ENABLE_FAULT_TOLERANT
-    /* Check for a bad status.  */
+    /* Determine if the write was successful.  */
     if (status != FX_SUCCESS)
     {
 
+#ifdef FX_ENABLE_FAULT_TOLERANT
         FX_FAULT_TOLERANT_TRANSACTION_FAIL(media_ptr);
+#endif /* FX_ENABLE_FAULT_TOLERANT */
 
         /* Release media protection.  */
         FX_UNPROTECT
 
-        /* Return the bad status.  */
+        /* Return the error code.  */
         return(status);
     }
 
+    /* The renamed directory itself contains a ".." entry, which stores
+       the starting cluster of its parent directory. If the rename moved
+       the directory under a different parent, that stored cluster is
+       stale now: ".." inside the renamed directory would still lead to
+       the old parent and, once the old parent's cluster is reused, to an
+       unrelated place. Update it in place.  */
+
+    /* Determine the starting cluster of the new parent directory. The
+       search directory contains the result of the previous search for
+       the target's parent directory.  */
+    if (search_directory.fx_dir_entry_name[0])
+    {
+
+        /* New parent is a sub-directory.  */
+        new_parent_cluster =  search_directory.fx_dir_entry_cluster;
+    }
+    else
+    {
+
+        /* New parent is the root directory.  */
+        new_parent_cluster =  0;
+    }
+
+    /* The next read operation reads the second directory entry in the
+       renamed directory. Note that the old directory entry still contains
+       the starting cluster of the renamed directory, which is an input
+       parameter for the directory entry read function.
+
+       Please note, if a directory rename operation renames and does not
+       move a directory, you do not need to update the parent directory
+       entry ("..").
+
+       The rename operation has already been completed successfully. If
+       the next read fails, the operation returns a failure. For a medium
+       without fault tolerance, the previous steps of the rename/move
+       operation will not be rolled back. Returning the failure code of
+       the read operation would indicate to the API level that the
+       rename/move operation has failed, which is not the case!  */
+    if (new_parent_cluster != old_parent_cluster)
+    {
+
+        old_dir_entry.fx_dir_entry_last_search_cluster =  0;
+        i =  1;
+        status =  _fx_directory_entry_read(media_ptr, &old_dir_entry, &i, &new_dir_entry);
+
+        /* Update the entry only if it is the ".." entry the FAT format
+           places at this position - on a non-conformant media the rename
+           result is left as it is.  */
+        if ((status == FX_SUCCESS) &&
+            (new_dir_entry.fx_dir_entry_name[0] == '.') &&
+            (new_dir_entry.fx_dir_entry_name[1] == '.') &&
+            (new_dir_entry.fx_dir_entry_name[2] == 0))
+        {
+
+            /* If the renamed directory was moved from a different parent
+               directory, the ".." entry points to the previous parent
+               directory. The next write operation changes the ".." parent
+               directory pointer to the correct parent directory.  */
+            new_dir_entry.fx_dir_entry_cluster =  new_parent_cluster;
+
+            /* Write the updated ".." entry back.  */
+            status =  _fx_directory_entry_write(media_ptr, &new_dir_entry);
+        }
+
+        /* Determine if the ".." update was successful.  */
+        if (status != FX_SUCCESS)
+        {
+
+#ifdef FX_ENABLE_FAULT_TOLERANT
+            FX_FAULT_TOLERANT_TRANSACTION_FAIL(media_ptr);
+#endif /* FX_ENABLE_FAULT_TOLERANT */
+
+            /* Release media protection.  */
+            FX_UNPROTECT
+
+            /* Return the error code.  */
+            return(status);
+        }
+    }
+
+#ifdef FX_ENABLE_FAULT_TOLERANT
     /* End transaction. */
     status = _fx_fault_tolerant_transaction_end(media_ptr);
 #endif /* FX_ENABLE_FAULT_TOLERANT */
