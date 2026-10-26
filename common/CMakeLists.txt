@@ -77,6 +77,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_LIST_DIR}/src/fx_media_check_FAT_chain_check.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fx_media_check_lost_cluster_check.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fx_media_close.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/fx_media_FAT32_clean_set.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fx_media_close_notify_set.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fx_media_extended_space_available.c
 	${CMAKE_CURRENT_LIST_DIR}/src/fx_media_flush.c

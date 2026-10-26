@@ -9,6 +9,7 @@
  * SPDX-License-Identifier: MIT
  **************************************************************************/
 
+/* Portions of this file were generated with AI assistance. */
 
 /**************************************************************************/
 /**************************************************************************/
@@ -166,10 +167,22 @@ UINT     status;
 #endif /* FX_DISABLE_FILE_CLOSE */
 
     /* Flush the cached individual FAT entries */
-    _fx_utility_FAT_flush(media_ptr);
+    status =  _fx_utility_FAT_flush(media_ptr);
+    if (status != FX_SUCCESS)
+    {
+        FX_UNPROTECT
+        _fx_media_abort(media_ptr);
+        return(FX_IO_ERROR);
+    }
 
     /* Flush changed sector(s) in the primary FAT to secondary FATs.  */
-    _fx_utility_FAT_map_flush(media_ptr);
+    status =  _fx_utility_FAT_map_flush(media_ptr);
+    if (status != FX_SUCCESS)
+    {
+        FX_UNPROTECT
+        _fx_media_abort(media_ptr);
+        return(FX_IO_ERROR);
+    }
 
 
     /* Flush the internal logical sector cache.  */
@@ -189,11 +202,11 @@ UINT     status;
         return(FX_IO_ERROR);
     }
 
-    /* Determine if the media needs to have the additional information sector updated. This will
-       only be the case for 32-bit FATs. The logic here only needs to be done if the last reported
-       available cluster count is different that the currently available clusters.  */
+    /* Update FAT32 FSInfo when the free count changes or a recount may have
+       corrected the next-free hint.  */
     if ((media_ptr -> fx_media_FAT32_additional_info_sector) &&
-        (media_ptr -> fx_media_FAT32_additional_info_last_available != media_ptr -> fx_media_available_clusters) &&
+        ((media_ptr -> fx_media_FAT32_additional_info_last_available != media_ptr -> fx_media_available_clusters) ||
+         (media_ptr -> fx_media_FAT32_recounted)) &&
         (media_ptr -> fx_media_driver_write_protect == FX_FALSE))
     {
 
@@ -333,6 +346,25 @@ UINT     status;
 
     /* Call the specified I/O driver with the flush request.  */
     (media_ptr -> fx_media_driver_entry) (media_ptr);
+
+    /* Clear the markers only after all data and FSInfo reached the driver.  */
+    if (media_ptr -> fx_media_driver_status != FX_SUCCESS)
+    {
+        FX_UNPROTECT
+        _fx_media_abort(media_ptr);
+        return(FX_IO_ERROR);
+    }
+
+    if (media_ptr -> fx_media_FAT32_dirty_set)
+    {
+        status =  _fx_media_FAT32_clean_set(media_ptr, FX_TRUE);
+        if (status != FX_SUCCESS)
+        {
+            FX_UNPROTECT
+            _fx_media_abort(media_ptr);
+            return(FX_IO_ERROR);
+        }
+    }
 
     /* Build the "uninitialize" I/O driver request.  */
     media_ptr -> fx_media_driver_request =      FX_DRIVER_UNINIT;
