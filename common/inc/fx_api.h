@@ -291,6 +291,7 @@ extern   "C" {
 #define FX_TRACE_UNICODE_LENGTH_GET                     276             /* I1 = unicode name, I2 = length                                           */
 #define FX_TRACE_UNICODE_NAME_GET                       277             /* I1 = media ptr, I2 = source short name, I3 = unicode name, I4 = length   */
 #define FX_TRACE_UNICODE_SHORT_NAME_GET                 278             /* I1 = media ptr, I2 = source unicode name, I3 = length, I4 =  short name  */
+#define FX_TRACE_FILE_FLUSH                             279             /* I1 = file ptr, I3 = file size                                            */
 #endif
 
 
@@ -1177,6 +1178,7 @@ typedef FX_FILE  *FX_FILE_PTR;
 #define fx_file_create                        _fx_file_create
 #define fx_file_date_time_set                 _fx_file_date_time_set
 #define fx_file_delete                        _fx_file_delete
+#define fx_file_flush                         _fx_file_flush
 #define fx_file_open                          _fx_file_open
 #define fx_file_read                          _fx_file_read
 #ifndef FX_DISABLE_ONE_LINE_FUNCTION
@@ -1273,6 +1275,7 @@ typedef FX_FILE  *FX_FILE_PTR;
 #define fx_file_create                        _fxe_file_create
 #define fx_file_date_time_set                 _fxe_file_date_time_set
 #define fx_file_delete                        _fxe_file_delete
+#define fx_file_flush                         _fxe_file_flush
 #define fx_file_open(m, f, n, t)              _fxe_file_open(m, f, n, t, sizeof(FX_FILE))
 #define fx_file_read                          _fxe_file_read
 #ifndef FX_DISABLE_ONE_LINE_FUNCTION
@@ -1377,6 +1380,7 @@ UINT fx_file_create(FX_MEDIA *media_ptr, CHAR *file_name);
 UINT fx_file_date_time_set(FX_MEDIA *media_ptr, CHAR *file_name,
                            UINT year, UINT month, UINT day, UINT hour, UINT minute, UINT second);
 UINT fx_file_delete(FX_MEDIA *media_ptr, CHAR *file_name);
+UINT fx_file_flush(FX_FILE *file_ptr);
 #ifdef FX_DISABLE_ERROR_CHECKING
 UINT _fx_file_open(FX_MEDIA *media_ptr, FX_FILE *file_ptr, CHAR *file_name,
                    UINT open_type);
