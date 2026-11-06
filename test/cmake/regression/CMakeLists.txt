@@ -108,6 +108,7 @@ set(regression_test_cases
     ${SOURCE_DIR}/filex_file_date_time_set_test.c
     ${SOURCE_DIR}/filex_file_naming_test.c
     ${SOURCE_DIR}/filex_file_read_write_test.c
+    ${SOURCE_DIR}/filex_file_open_empty_reader_test.c
     ${SOURCE_DIR}/filex_file_rename_test.c
     ${SOURCE_DIR}/filex_file_seek_test.c
     ${SOURCE_DIR}/filex_file_name_test.c
@@ -171,6 +172,10 @@ foreach(test_case ${regression_test_cases})
   set_target_properties(${test_target} PROPERTIES OUTPUT_NAME ${test_name})
   add_test(NAME ${CMAKE_BUILD_TYPE}::${test_name} COMMAND ${test_target})
 endforeach()
+
+set_tests_properties(
+  ${CMAKE_BUILD_TYPE}::filex_file_open_empty_reader_test
+  PROPERTIES FAIL_REGULAR_EXPRESSION "ERROR CODE")
 
 # These two tests write or corrupt large amounts of data on a 900 MB RAM disk and are
 # inherently slow (≈95 s and ≈330 s on Windows).  Override the default 60-second ctest
