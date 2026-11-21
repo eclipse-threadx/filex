@@ -58,7 +58,7 @@ import xml.etree.ElementTree as ET
 root = ET.parse(sys.argv[1]).getroot()
 for label, attribute, minimum in (
     ('line', 'lines', 999),
-    ('branch', 'branches', 993),
+    ('branch', 'branches', 996),
 ):
     covered = int(root.get(f'{attribute}-covered', '0'))
     valid = int(root.get(f'{attribute}-valid', '0'))

@@ -33,8 +33,10 @@ typedef enum TEST_DRIVER_MODE_ENUM
     TEST_DRIVER_SUCCESS,
     TEST_DRIVER_READ_ERROR,
     TEST_DRIVER_BAD_SIGNATURE,
+    TEST_DRIVER_BAD_SIGNATURE_2,
     TEST_DRIVER_EMPTY_PARTITION,
-    TEST_DRIVER_CHAIN
+    TEST_DRIVER_CHAIN,
+    TEST_DRIVER_CHAIN_LBA
 } TEST_DRIVER_MODE;
 
 static TEST_DRIVER_MODE test_driver_mode;
@@ -58,17 +60,22 @@ UCHAR *sector;
     {
         sector[510] = (UCHAR)0;
     }
+    if (test_driver_mode == TEST_DRIVER_BAD_SIGNATURE_2)
+    {
+        sector[511] = (UCHAR)0;
+    }
     if (test_driver_mode != TEST_DRIVER_EMPTY_PARTITION)
     {
         sector[TEST_PARTITION_OFFSET + TEST_PARTITION_TYPE_OFFSET] = (UCHAR)0x0B;
         sector[TEST_PARTITION_OFFSET + TEST_PARTITION_START_OFFSET] = (UCHAR)3;
         sector[TEST_PARTITION_OFFSET + TEST_PARTITION_SIZE_OFFSET] = (UCHAR)9;
     }
-    if (test_driver_mode == TEST_DRIVER_CHAIN)
+    if ((test_driver_mode == TEST_DRIVER_CHAIN) || (test_driver_mode == TEST_DRIVER_CHAIN_LBA))
     {
         if (media_ptr->fx_media_driver_logical_sector == (ULONG)7)
         {
-            sector[TEST_PARTITION_OFFSET + 16u + TEST_PARTITION_TYPE_OFFSET] = (UCHAR)0x05;
+            sector[TEST_PARTITION_OFFSET + 16u + TEST_PARTITION_TYPE_OFFSET] =
+                (test_driver_mode == TEST_DRIVER_CHAIN_LBA) ? (UCHAR)0x0F : (UCHAR)0x05;
             sector[TEST_PARTITION_OFFSET + 16u + TEST_PARTITION_START_OFFSET] = (UCHAR)20;
         }
         else
@@ -217,6 +224,238 @@ UINT status;
     if ((status != FX_SUCCESS) || (start != (ULONG)31) || (size != (ULONG)9))
     {
         test_control_return((UINT)11);
+        return;
+    }
+
+    /* Boot sector with 0xE9 instead of 0xEB.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[0] = (UCHAR)0xE9;
+    sector[0x16] = (UCHAR)1;
+    sector[0x13] = (UCHAR)0x20;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 0, &start, &size);
+    if ((status != FX_SUCCESS) || (size != (ULONG)0x20))
+    {
+        test_control_return((UINT)15);
+        return;
+    }
+
+    /* Boot sector with 0xEB but sector[2] != 0x90.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[0] = (UCHAR)0xEB;
+    sector[2] = (UCHAR)0x00;
+    sector[0x16] = (UCHAR)1;
+    sector[510] = (UCHAR)0x55;
+    sector[511] = (UCHAR)0xAA;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_TYPE_OFFSET] = (UCHAR)0x0B;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_START_OFFSET] = (UCHAR)7;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_SIZE_OFFSET] = (UCHAR)9;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 0, &start, &size);
+    if ((status != FX_SUCCESS) || (start != (ULONG)7))
+    {
+        test_control_return((UINT)16);
+        return;
+    }
+
+    /* Sectors per FAT: byte 0x17 != 0.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[0] = (UCHAR)0xEB;
+    sector[2] = (UCHAR)0x90;
+    sector[0x17] = (UCHAR)1;
+    sector[0x13] = (UCHAR)0x10;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 0, &start, &size);
+    if (status != FX_SUCCESS)
+    {
+        test_control_return((UINT)17);
+        return;
+    }
+
+    /* Sectors per FAT: byte 0x24 != 0.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[0] = (UCHAR)0xEB;
+    sector[2] = (UCHAR)0x90;
+    sector[0x24] = (UCHAR)1;
+    sector[0x13] = (UCHAR)0x10;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 0, &start, &size);
+    if (status != FX_SUCCESS)
+    {
+        test_control_return((UINT)18);
+        return;
+    }
+
+    /* Sectors per FAT: byte 0x25 != 0.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[0] = (UCHAR)0xEB;
+    sector[2] = (UCHAR)0x90;
+    sector[0x25] = (UCHAR)1;
+    sector[0x13] = (UCHAR)0x10;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 0, &start, &size);
+    if (status != FX_SUCCESS)
+    {
+        test_control_return((UINT)19);
+        return;
+    }
+
+    /* Sectors per FAT: byte 0x26 != 0.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[0] = (UCHAR)0xEB;
+    sector[2] = (UCHAR)0x90;
+    sector[0x26] = (UCHAR)1;
+    sector[0x13] = (UCHAR)0x10;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 0, &start, &size);
+    if (status != FX_SUCCESS)
+    {
+        test_control_return((UINT)20);
+        return;
+    }
+
+    /* Sectors per FAT: byte 0x27 != 0.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[0] = (UCHAR)0xEB;
+    sector[2] = (UCHAR)0x90;
+    sector[0x27] = (UCHAR)1;
+    sector[0x13] = (UCHAR)0x10;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 0, &start, &size);
+    if (status != FX_SUCCESS)
+    {
+        test_control_return((UINT)21);
+        return;
+    }
+
+    /* Sectors per FAT: all 6 bytes zero.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[0] = (UCHAR)0xEB;
+    sector[2] = (UCHAR)0x90;
+    sector[510] = (UCHAR)0x55;
+    sector[511] = (UCHAR)0xAA;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_TYPE_OFFSET] = (UCHAR)0x0B;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_START_OFFSET] = (UCHAR)7;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_SIZE_OFFSET] = (UCHAR)9;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 0, &start, &size);
+    if ((status != FX_SUCCESS) || (start != (ULONG)7))
+    {
+        test_control_return((UINT)22);
+        return;
+    }
+
+    /* Boot sector: total_sectors == 0.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[0] = (UCHAR)0xEB;
+    sector[2] = (UCHAR)0x90;
+    sector[0x16] = (UCHAR)1;
+    sector[510] = (UCHAR)0x55;
+    sector[511] = (UCHAR)0xAA;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_TYPE_OFFSET] = (UCHAR)0x0B;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_START_OFFSET] = (UCHAR)7;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_SIZE_OFFSET] = (UCHAR)9;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 0, &start, &size);
+    if ((status != FX_SUCCESS) || (start != (ULONG)7))
+    {
+        test_control_return((UINT)23);
+        return;
+    }
+
+    /* Boot sector: partition_size == FX_NULL with non-NULL partition_start.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[0] = (UCHAR)0xEB;
+    sector[2] = (UCHAR)0x90;
+    sector[0x16] = (UCHAR)1;
+    sector[0x13] = (UCHAR)0x10;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 0, &start, FX_NULL);
+    if ((status != FX_SUCCESS) || (start != (ULONG)0))
+    {
+        test_control_return((UINT)24);
+        return;
+    }
+
+    /* Primary partition table signature: 510 == 0x55 but 511 != 0xAA.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[510] = (UCHAR)0x55;
+    sector[511] = (UCHAR)0x00;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 0, &start, &size);
+    if (status != FX_NOT_FOUND)
+    {
+        test_control_return((UINT)25);
+        return;
+    }
+
+    /* Primary partition: extended partition type 0x0F (FX_PARTITION_TYPE_EXTENDED_LBA).  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[510] = (UCHAR)0x55;
+    sector[511] = (UCHAR)0xAA;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_TYPE_OFFSET] = (UCHAR)0x0F;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_START_OFFSET] = (UCHAR)7;
+    media.fx_media_driver_entry = test_partition_driver;
+    test_driver_mode = TEST_DRIVER_SUCCESS;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 4, &start, &size);
+    if ((status != FX_SUCCESS) || (start != (ULONG)10) || (size != (ULONG)9))
+    {
+        test_control_return((UINT)26);
+        return;
+    }
+
+    /* Extended partition: signature byte 511 != 0xAA.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[510] = (UCHAR)0x55;
+    sector[511] = (UCHAR)0xAA;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_TYPE_OFFSET] = (UCHAR)0x05;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_START_OFFSET] = (UCHAR)7;
+    test_driver_mode = TEST_DRIVER_BAD_SIGNATURE_2;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 4, &start, &size);
+    if (status != FX_NOT_FOUND)
+    {
+        test_control_return((UINT)27);
+        return;
+    }
+
+    /* Extended partition: NULL partition_start and NULL partition_size.  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[510] = (UCHAR)0x55;
+    sector[511] = (UCHAR)0xAA;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_TYPE_OFFSET] = (UCHAR)0x05;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_START_OFFSET] = (UCHAR)7;
+    test_driver_mode = TEST_DRIVER_SUCCESS;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 4, FX_NULL, FX_NULL);
+    if (status != FX_SUCCESS)
+    {
+        test_control_return((UINT)28);
+        return;
+    }
+
+    (void)memset(sector, 0, sizeof(sector));
+    sector[510] = (UCHAR)0x55;
+    sector[511] = (UCHAR)0xAA;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_TYPE_OFFSET] = (UCHAR)0x05;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_START_OFFSET] = (UCHAR)7;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 4, &start, FX_NULL);
+    if ((status != FX_SUCCESS) || (start != (ULONG)10))
+    {
+        test_control_return((UINT)29);
+        return;
+    }
+
+    (void)memset(sector, 0, sizeof(sector));
+    sector[510] = (UCHAR)0x55;
+    sector[511] = (UCHAR)0xAA;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_TYPE_OFFSET] = (UCHAR)0x05;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_START_OFFSET] = (UCHAR)7;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 4, FX_NULL, &size);
+    if ((status != FX_SUCCESS) || (size != (ULONG)9))
+    {
+        test_control_return((UINT)30);
+        return;
+    }
+
+    /* Extended partition chain using type 0x0F (FX_PARTITION_TYPE_EXTENDED_LBA).  */
+    (void)memset(sector, 0, sizeof(sector));
+    sector[510] = (UCHAR)0x55;
+    sector[511] = (UCHAR)0xAA;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_TYPE_OFFSET] = (UCHAR)0x05;
+    sector[TEST_PARTITION_OFFSET + TEST_PARTITION_START_OFFSET] = (UCHAR)7;
+    test_driver_mode = TEST_DRIVER_CHAIN_LBA;
+    status = _fx_partition_offset_calculate_extended(&media, sector, 5, &start, &size);
+    if ((status != FX_SUCCESS) || (start != (ULONG)31) || (size != (ULONG)9))
+    {
+        test_control_return((UINT)31);
         return;
     }
 
